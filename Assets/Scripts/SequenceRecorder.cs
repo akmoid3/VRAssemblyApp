@@ -5,9 +5,17 @@ using System.IO;
 public class SequenceRecorder : MonoBehaviour
 {
     public List<string> buildOrder = new List<string>();
+    public bool isRecording = false;
 
     public void RecordAction(string objectName)
     {
+        // Check if recording is enabled
+        if (!isRecording)
+        {
+            Debug.Log("Recording is not enabled.");
+            return;
+        }
+
         // Check if the component already exists in the sequence
         if (!buildOrder.Contains(objectName))
         {
@@ -30,5 +38,11 @@ public class SequenceRecorder : MonoBehaviour
     public void ClearRecordedActions()
     {
         buildOrder.Clear();
+    }
+
+    public void StartRecording()
+    {
+        isRecording = true;
+        Debug.Log("Recording started.");
     }
 }

@@ -9,7 +9,6 @@ public class SnapToPosition : MonoBehaviour
     private List<SnapPoint> snapPoints;
     private HashSet<GameObject> snappedObjects = new HashSet<GameObject>(); // Track snapped objects
     public SequenceRecorder recorder; // Reference to the BuildSequenceRecorder
-    private bool isSequenceSaved = false; // Flag to track if the sequence is already saved
 
     private void Start()
     {
@@ -32,12 +31,13 @@ public class SnapToPosition : MonoBehaviour
     private void OnTriggerEnter(Collider other)
     {
         if (other.GetComponent<Rigidbody>().isKinematic)
-           other.GetComponent<Rigidbody>().isKinematic = false;
+            other.GetComponent<Rigidbody>().isKinematic = false;
     }
 
     private void OnTriggerStay(Collider other)
     {
         Debug.Log($"Object in trigger: {other.name}");
+
 
         // Check if the object has already been snapped
         if (snappedObjects.Contains(other.gameObject))
@@ -62,18 +62,18 @@ public class SnapToPosition : MonoBehaviour
     {
         foreach (var snapPoint in snapPoints)
         {
-
             if (other.name == snapPoint.componentName)
             {
-
                 float distance = Vector3.Distance(other.transform.position, snapPoint.snapTransform.position);
                 float angle = Quaternion.Angle(other.transform.rotation, snapPoint.snapTransform.rotation);
 
                 if (distance < snapDistance && angle < snapAngle)
                 {
-
+                    Debug.Log("Snapping");
                     other.transform.position = snapPoint.snapTransform.position;
                     other.transform.rotation = snapPoint.snapTransform.rotation;
+                    //other.attachedRigidbody.position = (snapPoint.snapTransform.position);
+                    //other.attachedRigidbody.rotation = (snapPoint.snapTransform.rotation);
                     other.GetComponent<Rigidbody>().isKinematic = true;
 
                     // Disable the MeshRenderer
@@ -109,7 +109,6 @@ public class SnapToPosition : MonoBehaviour
     private void SaveSequence()
     {
         recorder.SaveSequenceToJson("Assets/BuildSequence.json"); // Save the sequence to JSON
-        isSequenceSaved = true; // Update the flag to indicate that the sequence is saved
         Debug.Log("Sequence saved.");
     }
 
@@ -126,8 +125,8 @@ public class SnapToPosition : MonoBehaviour
 
     private void Update()
     {
-        // Check if all snap points are complete and the sequence is not saved yet
-        if (!isSequenceSaved && AreAllSnapPointsFilled())
+        // Check if all snap points are complete
+        if (recorder.isRecording && AreAllSnapPointsFilled())
         {
             SaveSequence();
         }
