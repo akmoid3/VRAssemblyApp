@@ -1,44 +1,58 @@
 using System.Collections.Generic;
-using UnityEngine;
 using UnityEngine.XR.Interaction.Toolkit;
+using static SnapToPosition;
 
 namespace UnityEngine.XR.Content.Interaction
 {
     /// <summary>
-    /// Socket Interactor for holding a group of Interactables at predefined snap points.
+    /// Socket Interactor for holding a group of Interactables using predefined snappoints.
     /// </summary>
     /// <remarks>
-    /// During Awake, it sets up the snap points based on predefined Transforms.
+    /// The snappoints are child objects of a parent object.
     /// </remarks>
     public class XRSnapPointSocketInteractor : XRSocketInteractor
     {
         [Space]
         [SerializeField]
-        [Tooltip("Maximum distance within which an object can snap to a snap point.")]
-        private float snapDistance = 0.1f;
+        [Tooltip("The parent transform that holds the snappoints.")]
 
+        List<Transform> snappoints = new List<Transform>();
         [SerializeField]
-        [Tooltip("Maximum angle difference (in degrees) within which an object can snap to a snap point.")]
-        private float snapAngle = 15f;
+        float distanceThreshold = 0.5f;
+        [SerializeField]
+        float angleThreshold = 10f;
 
-        private List<Transform> snapPoints = new List<Transform>();
-        private readonly HashSet<Transform> usedSnapPoints = new HashSet<Transform>();
-        private readonly Dictionary<IXRInteractable, Transform> snapPointByInteractable = new Dictionary<IXRInteractable, Transform>();
+        readonly HashSet<Transform> usedSnappoints = new HashSet<Transform>();
+        readonly Dictionary<IXRInteractable, Transform> snappointByInteractable = new Dictionary<IXRInteractable, Transform>();
+
+        bool hasEmptySnappoint => usedSnappoints.Count < snappoints.Count;
+
+        void CollectSnappoints()
+        {
+            snappoints.Clear();
+            foreach (Transform child in this.transform)
+            {
+                snappoints.Add(child);
+            }
+        }
 
         /// <inheritdoc />
         protected override void Awake()
         {
             base.Awake();
-            GatherSnapPoints();
+            CollectSnappoints();
+
+            // The same material is used on both situations
+            interactableCantHoverMeshMaterial = interactableHoverMeshMaterial;
         }
 
-        private void GatherSnapPoints()
+        /// <summary>
+        /// See <see cref="MonoBehaviour"/>.
+        /// </summary>
+        protected override void OnValidate()
         {
-            snapPoints.Clear();
-            foreach (Transform child in transform)
-            {
-                snapPoints.Add(child);
-            }
+            base.OnValidate();
+            CollectSnappoints();
         }
 
         /// <inheritdoc />
@@ -46,86 +60,80 @@ namespace UnityEngine.XR.Content.Interaction
         {
             base.OnSelectEntering(args);
 
-            var closestSnapPoint = GetClosestSnapPoint(args.interactableObject);
-            if (closestSnapPoint != null)
-            {
-                usedSnapPoints.Add(closestSnapPoint);
-                snapPointByInteractable.Add(args.interactableObject, closestSnapPoint);
-            }
+            var snappoint = GetAttachTransform(args.interactableObject);
+            usedSnappoints.Add(snappoint);
+            snappointByInteractable.Add(args.interactableObject, snappoint);
+            
         }
+
 
         /// <inheritdoc />
         protected override void OnSelectExiting(SelectExitEventArgs args)
         {
-            if (snapPointByInteractable.TryGetValue(args.interactableObject, out var closestSnapPoint))
-            {
-                usedSnapPoints.Remove(closestSnapPoint);
-                snapPointByInteractable.Remove(args.interactableObject);
-            }
+            var snappoint = snappointByInteractable[args.interactableObject];
+            usedSnappoints.Remove(snappoint);
+            snappointByInteractable.Remove(args.interactableObject);
 
             base.OnSelectExiting(args);
         }
 
+
         /// <inheritdoc />
         public override bool CanSelect(IXRSelectInteractable interactable)
         {
-            return IsSelecting(interactable)
-                   || (HasAvailableSnapPoint(interactable) && !interactable.isSelected && !usedSnapPoints.Contains(GetClosestSnapPoint(interactable)));
+            var attachTransform = GetAttachTransform(interactable);
+            if (attachTransform != null)
+            {
+                return IsSelecting(interactable)
+                       || (hasEmptySnappoint && !interactable.isSelected && !usedSnappoints.Contains(attachTransform));
+            }
+            else return false;
         }
 
         /// <inheritdoc />
         public override bool CanHover(IXRHoverInteractable interactable)
         {
-            return base.CanHover(interactable)
-                   && !usedSnapPoints.Contains(GetClosestSnapPoint(interactable));
+            var attachTransform = GetAttachTransform(interactable);
+            if(attachTransform != null)
+            {
+                return base.CanHover(interactable)
+                  && !usedSnappoints.Contains(attachTransform);
+            }else return false;
+           
         }
 
         /// <inheritdoc />
         public override Transform GetAttachTransform(IXRInteractable interactable)
         {
-            if (snapPointByInteractable.TryGetValue(interactable, out var interactableSnapPoint))
-                return interactableSnapPoint;
+            if (snappointByInteractable.TryGetValue(interactable, out var interactableSnappoint))
+                return interactableSnappoint;
 
-            return GetClosestSnapPoint(interactable);
-        }
+            var interactableName = interactable.transform.name;
+            Transform matchingSnappoint = null;
 
-        private bool HasAvailableSnapPoint(IXRInteractable interactable)
-        {
-            foreach (var snapPoint in snapPoints)
+            foreach (var snappoint in snappoints)
             {
-                if (!usedSnapPoints.Contains(snapPoint) && snapPoint.name == interactable.transform.name)
+                if (snappoint.name.Equals(interactableName))
                 {
-                    return true;
+                    // Check if the snappoint is not already used
+                    if (!usedSnappoints.Contains(snappoint))
+                    {
+                        float distance = Vector3.Distance(interactable.GetAttachTransform(this).position, snappoint.position);
+                        if (distance < distanceThreshold)
+                        {
+                            float angle = Quaternion.Angle(interactable.GetAttachTransform(this).rotation, snappoint.rotation);
+                            if (angle < angleThreshold)
+                            {
+                                matchingSnappoint = snappoint;
+                                break;
+                            }
+                        }
+                    }
                 }
             }
-            return false;
+
+            return matchingSnappoint;
         }
 
-        private Transform GetClosestSnapPoint(IXRInteractable interactable)
-        {
-            Transform closestSnapPoint = null;
-            float closestDistance = snapDistance;
-            float closestAngle = snapAngle;
-
-            foreach (var snapPoint in snapPoints)
-            {
-                if (usedSnapPoints.Contains(snapPoint) || snapPoint.name != interactable.transform.name)
-                    continue;
-
-                float distance = Vector3.Distance(interactable.GetAttachTransform(this).position, snapPoint.position);
-                if (distance > closestDistance)
-                    continue;
-
-                float angle = Quaternion.Angle(interactable.GetAttachTransform(this).rotation, snapPoint.rotation);
-                if (angle > closestAngle)
-                    continue;
-
-                closestSnapPoint = snapPoint;
-                closestDistance = distance;
-                closestAngle = angle;
-            }
-
-            return closestSnapPoint;
-        }
     }
 }
