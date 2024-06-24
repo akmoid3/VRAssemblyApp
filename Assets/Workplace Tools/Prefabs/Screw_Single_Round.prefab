@@ -13,9 +13,11 @@ GameObject:
   - component: {fileID: 23000010250119876}
   - component: {fileID: 64000012078462578}
   - component: {fileID: 3874477731437048653}
+  - component: {fileID: 5101588851130558040}
+  - component: {fileID: 7764766286163962353}
   m_Layer: 0
   m_Name: Screw_Single_Round
-  m_TagString: Screw
+  m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -134,3 +136,36 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
+--- !u!65 &5101588851130558040
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1000012111449378}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 0.04042874, y: 0.04042874, z: 0.0119508505}
+  m_Center: {x: 0.00004333444, y: -0.000059064478, z: 0.031425178}
+--- !u!114 &7764766286163962353
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1000012111449378}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5b03fa60c1c4d554487be7bdbee00a24, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
