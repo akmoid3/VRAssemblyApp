@@ -38,6 +38,7 @@ public class Screw : MonoBehaviour
         {
             isCollidingWithScrewdriver = true;
             screwdriverScript = other.GetComponentInParent<ScrewDriver>();
+            Debug.Log("entered");
         }
         else if(other.CompareTag("Component"))
         {
