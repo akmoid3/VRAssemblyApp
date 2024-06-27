@@ -7,7 +7,9 @@ public class Screw : MonoBehaviour
     private bool isCollidingWithScrewdriver = false;
     private ScrewDriver screwdriverScript;
     [SerializeField] private float pitch = 0.1f; // Distance the screw moves per rotation
-    [SerializeField] private float maxAllowedDotProduct = -0.9f; // Maximum allowed dot product for correct direction
+    private float maxAllowedDotProduct = -0.9f; // Maximum allowed dot product for correct direction
+    [SerializeField]
+    private bool canStop = false;
 
     private bool isStopped = false; // Flag to track if the screw should stop moving
 
@@ -38,9 +40,10 @@ public class Screw : MonoBehaviour
         {
             isCollidingWithScrewdriver = true;
             screwdriverScript = other.GetComponentInParent<ScrewDriver>();
+            canStop = true;
             Debug.Log("entered");
         }
-        else if(other.CompareTag("Component"))
+        else if(other.CompareTag("Component") && canStop)
         {
             // Check if the screw has collided with a component
             if (!isStopped)

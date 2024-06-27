@@ -3,6 +3,7 @@ using UnityEngine.XR.Interaction.Toolkit;
 
 public class ComponentObject : MonoBehaviour
 {
+    [SerializeField]
     private XRGrabInteractable grabInteractable;
     private Manager manager;
 
