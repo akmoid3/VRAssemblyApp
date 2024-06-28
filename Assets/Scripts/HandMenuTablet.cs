@@ -1,48 +1,35 @@
 using UnityEngine;
 using UnityEngine.XR;
 using System.Collections.Generic;
+using UnityEngine.InputSystem;
 
 public class HandMenuTablet : MonoBehaviour
 {
-    public GameObject targetObject; // The GameObject you want to enable/disable
+    [SerializeField]
+    private GameObject handMenu;
 
-    private InputDevice leftController;
+    [SerializeField]
+    private InputActionReference toggleReference;
 
-    void Start()
+    private void Awake()
     {
-        TryInitializeLeftController();
+        toggleReference.action.started += Toggle;
     }
 
-    void Update()
+    private void OnDestroy()
     {
-        if (!leftController.isValid)
-        {
-            TryInitializeLeftController();
-        }
-        else
-        {
-            bool xButtonPressed;
-            if (leftController.TryGetFeatureValue(CommonUsages.primaryButton, out xButtonPressed) && xButtonPressed)
-            {
-                // Toggle the active state of the target object
-                targetObject.SetActive(!targetObject.activeSelf);
-            }
-        }
+        toggleReference.action.started -= Toggle;
     }
 
-    private void TryInitializeLeftController()
-    {
-        var leftHandedControllers = new List<InputDevice>();
-        InputDevices.GetDevicesAtXRNode(XRNode.LeftHand, leftHandedControllers);
 
-        if (leftHandedControllers.Count > 0)
-        {
-            leftController = leftHandedControllers[0];
-            Debug.Log("Left controller found.");
-        }
-        else
-        {
-            Debug.LogWarning("Left controller not found.");
-        }
+    private void Update()
+    {
+        
+    }
+
+    private void Toggle(InputAction.CallbackContext context)
+    {
+      bool isActive = !handMenu.activeSelf;
+      handMenu.SetActive(isActive);
     }
 }

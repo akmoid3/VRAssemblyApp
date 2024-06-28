@@ -4,14 +4,14 @@ using UnityEngine;
 
 public class Screw : MonoBehaviour
 {
-    private bool isCollidingWithScrewdriver = false;
     private ScrewDriver screwdriverScript;
-    [SerializeField] private float pitch = 0.1f; // Distance the screw moves per rotation
-    private float maxAllowedDotProduct = -0.9f; // Maximum allowed dot product for correct direction
-    [SerializeField]
-    private bool canStop = false;
 
-    private bool isStopped = false; // Flag to track if the screw should stop moving
+    [SerializeField] private float pitch = 0.1f; // Distance the screw moves per rotation
+    private float maxAllowedDotProduct = -0.9f;
+
+    [SerializeField] private bool isCollidingWithScrewdriver = false;
+    [SerializeField] private bool canStop = false;
+    [SerializeField] private bool isStopped = false; // Flag if the screw should stop moving
 
     void Update()
     {
@@ -27,7 +27,7 @@ public class Screw : MonoBehaviour
                 float rotationSpeed = screwdriverScript.GetRotationSpeed();
                 transform.Rotate(Vector3.forward, rotationSpeed * Time.deltaTime * -1);
 
-                // Calculate the linear movement along the screw's axis based on the rotation speed and pitch
+                // Calculate the movement along the screw's axis based on the rotation speed and pitch
                 float linearMovement = (rotationSpeed * pitch / 360) * Time.deltaTime;
                 transform.Translate(Vector3.forward * linearMovement);
             }

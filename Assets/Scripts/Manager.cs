@@ -2,13 +2,18 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.XR.Interaction.Toolkit;
 using UnityEngine.UI;
+using System.Collections.Generic;
 
 
 public class Manager : MonoBehaviour
 {
+    [SerializeField] private GameObject currentSelectedPrefabName;
+    [SerializeField] private SaveSequence saveSequence;
     [SerializeField] private GameObject currentSelectedComponent;
     [SerializeField] private bool isRecording = false;
     [SerializeField] private bool isPlayBacking = false;
+    [SerializeField] private bool isModelConfirmed = false;
+    [SerializeField] private bool finishedRecording = false;
     [SerializeField] private float increment = 0.1f;
 
     [SerializeField] private TMP_Text componentNameText;
@@ -32,6 +37,8 @@ public class Manager : MonoBehaviour
     [SerializeField] private Button reduceRotXButton;
     [SerializeField] private Button reduceRotYButton;
     [SerializeField] private Button reduceRotZButton;
+
+    [SerializeField] private List<GameObject> sequenceOrderList = new List<GameObject>();
 
     private void Start()
     {
@@ -88,6 +95,12 @@ public class Manager : MonoBehaviour
     {
         currentSelectedComponent = args.interactableObject.transform.gameObject;
         Debug.Log("Selected: " + currentSelectedComponent.name);
+
+        // Add current selected component to the list
+        if (isRecording && !sequenceOrderList.Contains(currentSelectedComponent))
+        {
+            sequenceOrderList.Add(currentSelectedComponent);
+        }
     }
 
     public void OnSelectExit(SelectExitEventArgs args)
@@ -104,9 +117,29 @@ public class Manager : MonoBehaviour
         isRecording = recording;
     }
 
+    public bool GetRecording()
+    {
+        return isRecording;
+    }
+
     public void SetPlayBacking(bool playBacking)
     {
         isPlayBacking = playBacking;
+    }
+
+    public bool GetPlayBacking()
+    {
+        return isPlayBacking;
+    }
+
+    public void setModelConfirmed(bool modelConfermation)
+    {
+        isModelConfirmed = modelConfermation;
+    }
+
+    public bool GetModelConfirmed()
+    {
+        return isModelConfirmed;
     }
 
     private void AddToPosition(Vector3 increment)
@@ -122,6 +155,29 @@ public class Manager : MonoBehaviour
         if (currentSelectedComponent != null)
         {
             currentSelectedComponent.transform.eulerAngles += increment;
+        }
+    }
+
+    public void SetCurrentSelectedPrefabName(GameObject name)
+    {
+        currentSelectedPrefabName = name;
+    }
+
+    public GameObject GetCurrentSelectedPrefabName()
+    {
+        return currentSelectedPrefabName;
+    }
+
+
+    public void SaveBuildingSequence()
+    {
+        if (saveSequence != null)
+        {
+            saveSequence.SaveComponentsSequence(sequenceOrderList);
+        }
+        else
+        {
+            Debug.LogError("SaveSequence reference is not set.");
         }
     }
 }

@@ -5,8 +5,9 @@ using System.Collections.Generic;
 
 public class TMPDropdownPopulator : MonoBehaviour
 {
-    public TMP_Dropdown dropdown;
-    public Transform prefabContainer;
+    [SerializeField] private TMP_Dropdown dropdown;
+    [SerializeField] private Transform prefabContainer;
+    [SerializeField] private Manager manager;
     private Dictionary<string, GameObject> prefabInstances = new Dictionary<string, GameObject>();
 
     void Start()
@@ -18,6 +19,7 @@ public class TMPDropdownPopulator : MonoBehaviour
         if (dropdown.options.Count > 0)
         {
             ShowPrefab(dropdown.options[0].text);
+            manager.SetCurrentSelectedPrefabName(prefabInstances[dropdown.options[0].text]);
         }
     }
 
@@ -59,10 +61,37 @@ public class TMPDropdownPopulator : MonoBehaviour
 
             // Set the position of the instance to (0, 0, 0) relative to the container
             instance.transform.localPosition = Vector3.zero;
+
+            manager.SetCurrentSelectedPrefabName(instance);
+
         }
         else
         {
             Debug.LogWarning("Prefab " + prefabName + " not found.");
+        }
+    }
+
+    void Update()
+    {
+        if (manager.GetModelConfirmed())
+        {
+            HideAllPrefabs();
+        }
+    }
+
+    void HideAllPrefabs()
+    {
+        foreach (var prefabInstance in prefabInstances.Values)
+        {
+            if (prefabInstance != null)
+            {
+                prefabInstance.SetActive(false);
+            }
+        }
+
+        foreach (Transform child in prefabContainer)
+        {
+            Destroy(child.gameObject);
         }
     }
 }
