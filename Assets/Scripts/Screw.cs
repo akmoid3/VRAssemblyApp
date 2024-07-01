@@ -56,10 +56,16 @@ public class Screw : MonoBehaviour
 
     private void OnTriggerExit(Collider other)
     {
+
         if (other.CompareTag("Screwdriver"))
         {
             isCollidingWithScrewdriver = false;
             screwdriverScript = null;
+        }
+        else if (other.CompareTag("Component") && isStopped)
+        {
+                canStop = false;
+                isStopped = false;
         }
     }
 }

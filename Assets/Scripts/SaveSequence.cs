@@ -11,7 +11,6 @@ public class SaveSequence : MonoBehaviour
         public string componentName;
         public Vector3 position;
         public Quaternion rotation;
-        public int sequence;
     }
 
     // A class to hold the data for all components
@@ -23,23 +22,20 @@ public class SaveSequence : MonoBehaviour
 
     private ObjectData objectData = new ObjectData();
 
-    public void SaveComponentsSequence(List<GameObject> selectedObjects)
+    public void SaveComponent(GameObject component)
     {
-        objectData.components.Clear();
-
-        // Iterate through each selected object and save its data
-        for (int i = 0; i < selectedObjects.Count; i++)
+        ComponentData data = new ComponentData
         {
-            GameObject obj = selectedObjects[i];
-            ComponentData data = new ComponentData
-            {
-                componentName = obj.name,
-                position = obj.transform.localPosition,
-                rotation = obj.transform.localRotation,
-                sequence = i // Use the index as sequence number
-            };
-            objectData.components.Add(data);
-        }
+            componentName = component.name,
+            position = component.transform.localPosition,
+            rotation = component.transform.localRotation,
+        };
+        objectData.components.Add(data);
+
+    }
+    public void SaveSequenceToJSON(string name)
+    {
+        
         /* DA USARE PER LA BUILD
         string json = JsonUtility.ToJson(objectData, true);
 
@@ -50,6 +46,7 @@ public class SaveSequence : MonoBehaviour
 
         */
         // Serialize objectData to JSON
+
         string json = JsonUtility.ToJson(objectData, true);
 
         // Define the path to the custom folder within Assets
@@ -60,12 +57,12 @@ public class SaveSequence : MonoBehaviour
         }
 
         // Save JSON to a file within the custom folder
-        string filePath = Path.Combine(folderPath, "componentsData.json");
+        string filePath = Path.Combine(folderPath, name+".json");
         File.WriteAllText(filePath, json);
 
         // Refresh the Asset Database to show changes in Unity Editor
         UnityEditor.AssetDatabase.Refresh();
 
-        Debug.Log($"Components and sequence saved to {filePath}");
+
     }
 }

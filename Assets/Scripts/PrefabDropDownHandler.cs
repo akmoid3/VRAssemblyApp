@@ -19,7 +19,7 @@ public class TMPDropdownPopulator : MonoBehaviour
         if (dropdown.options.Count > 0)
         {
             ShowPrefab(dropdown.options[0].text);
-            manager.SetCurrentSelectedPrefabName(prefabInstances[dropdown.options[0].text]);
+            manager.SetCurrentSelectedPrefabName(dropdown.options[0].text);
         }
     }
 
@@ -37,14 +37,9 @@ public class TMPDropdownPopulator : MonoBehaviour
         string selectedPrefabName = dropdown.options[change.value].text;
         ShowPrefab(selectedPrefabName);
     }
+
     void ShowPrefab(string prefabName)
     {
-        // Check if the prefab instance exists and is active
-        if (prefabInstances.ContainsKey(prefabName) && prefabInstances[prefabName] != null)
-        {
-            prefabInstances[prefabName].SetActive(false);
-        }
-
         // Remove the previous instances from the container
         foreach (Transform child in prefabContainer)
         {
@@ -62,8 +57,7 @@ public class TMPDropdownPopulator : MonoBehaviour
             // Set the position of the instance to (0, 0, 0) relative to the container
             instance.transform.localPosition = Vector3.zero;
 
-            manager.SetCurrentSelectedPrefabName(instance);
-
+            manager.SetCurrentSelectedPrefabName(prefabName);
         }
         else
         {
@@ -89,6 +83,7 @@ public class TMPDropdownPopulator : MonoBehaviour
             }
         }
 
+        // Remove the previous instances from the container
         foreach (Transform child in prefabContainer)
         {
             Destroy(child.gameObject);
