@@ -24,18 +24,31 @@ public class SaveSequence : MonoBehaviour
 
     public void SaveComponent(GameObject component)
     {
-        ComponentData data = new ComponentData
-        {
-            componentName = component.name,
-            position = component.transform.localPosition,
-            rotation = component.transform.localRotation,
-        };
-        objectData.components.Add(data);
+        // Check if the component already exists in the list
+        ComponentData existingData = objectData.components.Find(data => data.componentName == component.name);
 
+        if (existingData != null)
+        {
+            // Update existing component data
+            existingData.position = component.transform.localPosition;
+            existingData.rotation = component.transform.localRotation;
+        }
+        else
+        {
+            // Add new component data
+            ComponentData newData = new ComponentData
+            {
+                componentName = component.name,
+                position = component.transform.localPosition,
+                rotation = component.transform.localRotation,
+            };
+            objectData.components.Add(newData);
+        }
     }
+
     public void SaveSequenceToJSON(string name)
     {
-        
+
         /* DA USARE PER LA BUILD
         string json = JsonUtility.ToJson(objectData, true);
 
@@ -57,7 +70,7 @@ public class SaveSequence : MonoBehaviour
         }
 
         // Save JSON to a file within the custom folder
-        string filePath = Path.Combine(folderPath, name+".json");
+        string filePath = Path.Combine(folderPath, name + ".json");
         File.WriteAllText(filePath, json);
 
         // Refresh the Asset Database to show changes in Unity Editor

@@ -3,6 +3,7 @@ using UnityEngine;
 using UnityEngine.XR.Interaction.Toolkit;
 using UnityEngine.UI;
 using System.Collections.Generic;
+using System.Collections;
 
 
 public class Manager : MonoBehaviour
@@ -32,11 +33,6 @@ public class Manager : MonoBehaviour
     public void OnSelectEnter(SelectEnterEventArgs args)
     {
         currentSelectedComponent = args.interactableObject.transform.gameObject;
-        // Add current selected component to the list
-        if (isRecording && !sequenceOrderList.Contains(currentSelectedComponent))
-        {
-            sequenceOrderList.Add(currentSelectedComponent);
-        }
     }
 
     public void OnSelectExit(SelectExitEventArgs args)
@@ -110,4 +106,6 @@ public class Manager : MonoBehaviour
             Debug.LogError("SaveSequence reference is not set.");
         }
     }
+
+
 }

@@ -3,7 +3,7 @@ using UnityEngine.XR;
 using System.Collections.Generic;
 using UnityEngine.InputSystem;
 
-public class HandMenuTablet : MonoBehaviour
+public class HandMenuController : MonoBehaviour
 {
     [SerializeField]
     private GameObject handMenu;

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.XR.Interaction.Toolkit;
 
 public class HandMenuManager : MonoBehaviour
 {
@@ -31,7 +32,19 @@ public class HandMenuManager : MonoBehaviour
     [SerializeField] private Button reduceRotYButton;
     [SerializeField] private Button reduceRotZButton;
 
+    [SerializeField] private Button saveComponentButton;
+    [SerializeField] private Button modifyButton;
+    [SerializeField] private Button groupSelectionButton;
+
+
     [SerializeField] private TMP_Dropdown incrementDropdown;
+
+    private MakeGrabbable makeGrabbable;
+
+    [SerializeField] private GameObject newParent;
+
+    [SerializeField] private bool isParentGrabbable = false;
+    private XRInteractionManager interactionManager;
 
     private void Start()
     {
@@ -50,17 +63,23 @@ public class HandMenuManager : MonoBehaviour
         reduceRotYButton.onClick.AddListener(() => AddToRotation(Vector3.down * increment));
         reduceRotZButton.onClick.AddListener(() => AddToRotation(Vector3.back * increment));
 
+        modifyButton.onClick.AddListener(() => Modify());
+        groupSelectionButton.onClick.AddListener(() => GroupSelection());
+        saveComponentButton.onClick.AddListener(() => SaveComponent());
+
         // Set up dropdown listener
         incrementDropdown.onValueChanged.AddListener(UpdateIncrement);
         UpdateIncrement(incrementDropdown.value); // Set initial increment based on dropdown value
+
+        interactionManager = FindObjectOfType<XRInteractionManager>();
     }
 
-    // Update is called once per frame
     void Update()
     {
         GameObject currentSelectedComponent = manager.GetCurrentSelectedComponent();
         if (currentSelectedComponent != null)
         {
+            ComponentObject componentObject = currentSelectedComponent.GetComponent<ComponentObject>();
             Vector3 position = currentSelectedComponent.transform.position;
             Vector3 rotation = currentSelectedComponent.transform.eulerAngles;
 
@@ -71,6 +90,18 @@ public class HandMenuManager : MonoBehaviour
             rotationXText.text = $"{rotation.x:F2}";
             rotationYText.text = $"{rotation.y:F2}";
             rotationZText.text = $"{rotation.z:F2}";
+
+            if (componentObject)
+            {
+                if (componentObject.GetIsPlaced())
+                {
+                    modifyButton.gameObject.SetActive(true);
+                }
+                else
+                {
+                    modifyButton.gameObject.SetActive(false);
+                }
+            }
         }
         else
         {
@@ -80,6 +111,8 @@ public class HandMenuManager : MonoBehaviour
             rotationXText.text = "N/A";
             rotationYText.text = "N/A";
             rotationZText.text = "N/A";
+
+            modifyButton.gameObject.SetActive(false);
         }
     }
 
@@ -96,6 +129,107 @@ public class HandMenuManager : MonoBehaviour
         if (manager.GetCurrentSelectedComponent() != null)
         {
             manager.GetCurrentSelectedComponent().transform.eulerAngles += increment;
+        }
+    }
+
+    private void Modify()
+    {
+        GameObject currentSelectedComponent = manager.GetCurrentSelectedComponent();
+        
+        if (currentSelectedComponent != null)
+        {
+            ComponentObject componentObject = currentSelectedComponent.GetComponent<ComponentObject>();
+            makeGrabbable = currentSelectedComponent.GetComponent<MakeGrabbable>();
+
+            if (componentObject != null)
+            {
+                if (componentObject.GetIsPlaced()) {
+
+                    if (makeGrabbable != null)
+                    {
+                        StartCoroutine(makeGrabbable.MakeObjectGrabbable());
+                    }
+
+                    componentObject.SetIsPlaced(false);
+
+                }
+                
+            }
+            
+
+            
+        }
+    }
+
+    private void SaveComponent()
+    {
+        GameObject currentSelectedComponent = manager.GetCurrentSelectedComponent();
+
+        if (currentSelectedComponent != null)
+        {
+            ComponentObject componentObject = currentSelectedComponent.GetComponent<ComponentObject>();
+            makeGrabbable = currentSelectedComponent.GetComponent<MakeGrabbable>();
+
+            if (componentObject != null)
+            {
+                if (!componentObject.GetIsPlaced())
+                {
+
+                    if (makeGrabbable != null)
+                    {
+                        makeGrabbable.MakeObjectNonGrabbable();
+                    }
+
+                    componentObject.SetIsPlaced(true);
+
+                    if(newParent == null)
+                    {
+                        newParent = new GameObject("NewParent");
+                        newParent.AddComponent<Rigidbody>();
+                        Rigidbody rb = newParent.GetComponent<Rigidbody>();
+                        rb.isKinematic = true;
+                        newParent.AddComponent<XRGrabInteractable>();
+                        XRGrabInteractable grabInteractable = newParent.GetComponent<XRGrabInteractable>();
+                        grabInteractable.enabled = false;
+                        grabInteractable.selectMode = InteractableSelectMode.Multiple;
+                        grabInteractable.useDynamicAttach = true;
+                        
+                    }
+                    newParent.transform.position = Vector3.zero; 
+                    newParent.transform.rotation = Quaternion.identity;
+
+                    // Change the parent of the current selected component
+                    currentSelectedComponent.transform.SetParent(newParent.transform);
+                }
+            }
+        }
+    }
+
+    private void GroupSelection()
+    {
+        if (newParent != null)
+        {
+            
+            foreach (Transform child in newParent.transform)
+            {
+                XRSimpleInteractable childGrabInteractable = child.GetComponent<XRSimpleInteractable>();
+
+                if (childGrabInteractable != null)
+                {
+                    interactionManager.UnregisterInteractable(childGrabInteractable);
+                    childGrabInteractable.enabled = false;
+                }
+            }
+
+            newParent.AddComponent<Rigidbody>();
+            Rigidbody rb = newParent.GetComponent<Rigidbody>();
+            rb.isKinematic = true;
+            newParent.AddComponent<XRGrabInteractable>();
+
+            XRGrabInteractable grabInteractable = newParent.GetComponent<XRGrabInteractable>();
+            grabInteractable.enabled = true;
+            grabInteractable.selectMode = InteractableSelectMode.Multiple;
+            grabInteractable.useDynamicAttach = true;
         }
     }
 

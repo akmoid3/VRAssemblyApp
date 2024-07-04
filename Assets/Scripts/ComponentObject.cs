@@ -3,22 +3,16 @@ using UnityEngine.XR.Interaction.Toolkit;
 
 public class ComponentObject : MonoBehaviour
 {
-    [SerializeField]
-    private XRGrabInteractable grabInteractable;
-    private Manager manager;
+    private bool isPlaced = false;
 
-    void Start()
+    public bool GetIsPlaced()
     {
-        grabInteractable = GetComponent<XRGrabInteractable>();
-        manager = FindObjectOfType<Manager>();
-
-        grabInteractable.selectEntered.AddListener(manager.OnSelectEnter);
-        grabInteractable.selectExited.AddListener(manager.OnSelectExit);
+        return isPlaced;
     }
 
-    void OnDestroy()
+    public void SetIsPlaced(bool value)
     {
-        grabInteractable.selectEntered.RemoveListener(manager.OnSelectEnter);
-        grabInteractable.selectExited.RemoveListener(manager.OnSelectExit);
+        isPlaced = value;
     }
+
 }
