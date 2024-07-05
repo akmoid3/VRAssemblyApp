@@ -1,6 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Reflection;
 using TMPro;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.XR.Interaction.Toolkit;
@@ -35,6 +37,7 @@ public class HandMenuManager : MonoBehaviour
     [SerializeField] private Button saveComponentButton;
     [SerializeField] private Button modifyButton;
     [SerializeField] private Button groupSelectionButton;
+    [SerializeField] private Toggle toggle;
 
 
     [SerializeField] private TMP_Dropdown incrementDropdown;
@@ -43,11 +46,24 @@ public class HandMenuManager : MonoBehaviour
 
     [SerializeField] private GameObject newParent;
 
-    [SerializeField] private bool isParentGrabbable = false;
+    [SerializeField] private bool isGrabInteractableEnabled = false;
     private XRInteractionManager interactionManager;
 
+
+    private List<Button> allButtonsToDeactivate;
     private void Start()
     {
+        toggle.isOn = isGrabInteractableEnabled;
+        // Initialize the button list
+        allButtonsToDeactivate = new List<Button>
+        {
+            addPosXButton, addPosYButton, addPosZButton,
+            addRotXButton, addRotYButton, addRotZButton,
+            reducePosXButton, reducePosYButton, reducePosZButton,
+            reduceRotXButton, reduceRotYButton, reduceRotZButton,
+            saveComponentButton
+        };
+
         // Set up button listeners
         addPosXButton.onClick.AddListener(() => AddToPosition(Vector3.right * increment));
         addPosYButton.onClick.AddListener(() => AddToPosition(Vector3.up * increment));
@@ -96,10 +112,13 @@ public class HandMenuManager : MonoBehaviour
                 if (componentObject.GetIsPlaced())
                 {
                     modifyButton.gameObject.SetActive(true);
+                    SetButtonsActive(false);
+
                 }
                 else
                 {
                     modifyButton.gameObject.SetActive(false);
+                    SetButtonsActive(true);
                 }
             }
         }
@@ -113,6 +132,14 @@ public class HandMenuManager : MonoBehaviour
             rotationZText.text = "N/A";
 
             modifyButton.gameObject.SetActive(false);
+        }
+    }
+
+    private void SetButtonsActive(bool isActive)
+    {
+        foreach (var button in allButtonsToDeactivate)
+        {
+            button.gameObject.SetActive(isActive);
         }
     }
 
@@ -138,6 +165,7 @@ public class HandMenuManager : MonoBehaviour
         
         if (currentSelectedComponent != null)
         {
+            currentSelectedComponent.transform.SetParent(null);
             ComponentObject componentObject = currentSelectedComponent.GetComponent<ComponentObject>();
             makeGrabbable = currentSelectedComponent.GetComponent<MakeGrabbable>();
 
@@ -185,7 +213,7 @@ public class HandMenuManager : MonoBehaviour
                     if(newParent == null)
                     {
                         newParent = new GameObject("NewParent");
-                        newParent.AddComponent<Rigidbody>();
+                        /*newParent.AddComponent<Rigidbody>();
                         Rigidbody rb = newParent.GetComponent<Rigidbody>();
                         rb.isKinematic = true;
                         newParent.AddComponent<XRGrabInteractable>();
@@ -193,7 +221,7 @@ public class HandMenuManager : MonoBehaviour
                         grabInteractable.enabled = false;
                         grabInteractable.selectMode = InteractableSelectMode.Multiple;
                         grabInteractable.useDynamicAttach = true;
-                        
+                        */
                     }
                     newParent.transform.position = Vector3.zero; 
                     newParent.transform.rotation = Quaternion.identity;
@@ -207,29 +235,142 @@ public class HandMenuManager : MonoBehaviour
 
     private void GroupSelection()
     {
+        StartCoroutine(GroupSelection2());
+    }
+
+    private IEnumerator GroupSelection2()
+    {
         if (newParent != null)
         {
-            
-            foreach (Transform child in newParent.transform)
-            {
-                XRSimpleInteractable childGrabInteractable = child.GetComponent<XRSimpleInteractable>();
+            isGrabInteractableEnabled = !isGrabInteractableEnabled;
 
-                if (childGrabInteractable != null)
+            toggle.isOn = isGrabInteractableEnabled;
+            List<Collider> clonedColliders = new List<Collider>();
+
+            if (isGrabInteractableEnabled)
+            {
+                // Disable all child XRSimpleInteractables
+                foreach (Transform child in newParent.transform)
                 {
-                    interactionManager.UnregisterInteractable(childGrabInteractable);
-                    childGrabInteractable.enabled = false;
+                    XRSimpleInteractable childGrabInteractable = child.GetComponent<XRSimpleInteractable>();
+
+                    if (childGrabInteractable != null)
+                    {
+                        interactionManager.UnregisterInteractable(childGrabInteractable as IXRInteractable);
+                        childGrabInteractable.enabled = false;
+                    }
+
+
+                    // Clone child colliders
+                    Collider[] childColliders = child.GetComponents<Collider>();
+                    foreach (Collider col in childColliders)
+                    {
+                        Collider clonedCollider = child.gameObject.AddComponent(col.GetType()) as Collider;
+                        CopyPropertiesAndFields(col, clonedCollider);
+                        clonedColliders.Add(clonedCollider);
+                        col.enabled = false; // Disable the original collider
+                    }
+
+                }
+                    yield return 0;
+
+                // Add Rigidbody if not present
+                Rigidbody rb = newParent.GetComponent<Rigidbody>();
+                if (rb == null)
+                {
+                    rb = newParent.AddComponent<Rigidbody>();
+                }
+                rb.isKinematic = true;
+
+                // Add XRGrabInteractable
+                XRGrabInteractable grabInteractable = newParent.GetComponent<XRGrabInteractable>();
+                if (grabInteractable == null)
+                {
+                    grabInteractable = newParent.AddComponent<XRGrabInteractable>();
+                }
+                grabInteractable.enabled = false;
+                grabInteractable.movementType = XRBaseInteractable.MovementType.Kinematic;
+                grabInteractable.selectMode = InteractableSelectMode.Multiple;
+                grabInteractable.useDynamicAttach = true;
+                grabInteractable.throwOnDetach = false;
+
+
+                grabInteractable.colliders.Clear();
+                grabInteractable.colliders.AddRange(clonedColliders);
+
+                yield return 0;
+
+                grabInteractable.enabled = true;
+
+            }
+            else
+            {
+                XRGrabInteractable grabInteractable = newParent.GetComponent<XRGrabInteractable>();
+                if (grabInteractable != null)
+                {
+                    interactionManager.UnregisterInteractable(grabInteractable as IXRInteractable);
+                    Destroy(grabInteractable);
+                }
+
+                foreach (Collider col in clonedColliders)
+                {
+                    Destroy(col);
+                }
+                clonedColliders.Clear();
+                // Enable child XRSimpleInteractables and restore original colliders
+                foreach (Transform child in newParent.transform)
+                {
+                    XRSimpleInteractable childGrabInteractable = child.GetComponent<XRSimpleInteractable>();
+                    if (childGrabInteractable != null)
+                    {
+                        interactionManager.RegisterInteractable(childGrabInteractable as IXRInteractable);
+                        childGrabInteractable.enabled = true;
+                    }
+
+                   
+                    
+
+                    Collider[] childColliders = child.GetComponents<Collider>();
+                    foreach (Collider col in childColliders)
+                    {
+                        col.enabled = true; // Enable the original collider
+                    }
                 }
             }
+        }
+    }
 
-            newParent.AddComponent<Rigidbody>();
-            Rigidbody rb = newParent.GetComponent<Rigidbody>();
-            rb.isKinematic = true;
-            newParent.AddComponent<XRGrabInteractable>();
+    private void CopyPropertiesAndFields(object source, object destination)
+    {
+        // copy all properties
+        var properties = source.GetType().GetProperties(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
+        foreach (var property in properties)
+        {
+            if (property.CanWrite)
+            {
+                try
+                {
+                    property.SetValue(destination, property.GetValue(source));
+                }
+                catch
+                {
+                    // Ignora le proprietà che non possono essere copiate
+                }
+            }
+        }
 
-            XRGrabInteractable grabInteractable = newParent.GetComponent<XRGrabInteractable>();
-            grabInteractable.enabled = true;
-            grabInteractable.selectMode = InteractableSelectMode.Multiple;
-            grabInteractable.useDynamicAttach = true;
+        // Copy all fields
+        var fields = source.GetType().GetFields(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
+        foreach (var field in fields)
+        {
+            try
+            {
+                field.SetValue(destination, field.GetValue(source));
+            }
+            catch
+            {
+                // Ignora i campi che non possono essere copiati
+            }
         }
     }
 

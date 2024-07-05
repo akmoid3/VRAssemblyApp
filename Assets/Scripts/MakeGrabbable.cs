@@ -38,8 +38,18 @@ public class MakeGrabbable : MonoBehaviour
             (interactable as MonoBehaviour).enabled = false;
         }
 
+        // Clone original colliders
+        List<Collider> clonedColliders = new List<Collider>();
+        foreach (var collider in originalColliders)
+        {
+            Collider clonedCollider = gameObject.AddComponent(collider.GetType()) as Collider;
+            CopyPropertiesAndFields(collider, clonedCollider);
+            clonedColliders.Add(clonedCollider);
+            collider.enabled = false;
+        }
         // Add grab interactable 
         grabInteractable = gameObject.AddComponent<XRGrabInteractable>();
+        grabInteractable.enabled = false;
         grabInteractable.throwOnDetach = false;
         grabInteractable.movementType = XRBaseInteractable.MovementType.Kinematic;
         grabInteractable.useDynamicAttach = true;
@@ -47,20 +57,17 @@ public class MakeGrabbable : MonoBehaviour
         grabInteractable.selectEntered.AddListener(OnSelectEnter);
         grabInteractable.selectExited.AddListener(OnSelectExit);
 
-        yield return null; // Wait a frame for the component to initialize
+        yield return 0; // Wait a frame for the component to initialize
 
-        // Clone original colliders
-        foreach (var collider in originalColliders)
-        {
-            var clonedCollider = gameObject.AddComponent(collider.GetType()) as Collider;
-            if (clonedCollider != null)
-            {
-                CopyPropertiesAndFields(collider, clonedCollider);
-            }
-        }
+        
 
+
+        // Clear existing colliders and add cloned colliders
         grabInteractable.colliders.Clear();
-        grabInteractable.colliders.AddRange(GetComponents<Collider>());
+        grabInteractable.colliders.AddRange(clonedColliders);
+
+        yield return 0; // Wait a frame for the component to initialize
+
         grabInteractable.enabled = true;
     }
 
@@ -99,10 +106,18 @@ public class MakeGrabbable : MonoBehaviour
     }
     public void MakeObjectNonGrabbable()
     {
+        foreach (var collider in originalColliders)
+        {
+            collider.enabled = true;
+        }
+
         if (grabInteractable != null)
         {
+            interactionManager.UnregisterInteractable(grabInteractable as IXRInteractable);
             Destroy(grabInteractable);
         }
+
+       
 
         // Remove cloned colliders
         var clonedColliders = GetComponents<Collider>();
