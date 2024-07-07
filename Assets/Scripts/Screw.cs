@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class Screw : MonoBehaviour
 {
-    private ScrewDriver screwdriverScript;
+    private BaseScrewDriver screwdriverScript;
 
     [SerializeField] private float pitch = 0.1f; // Distance the screw moves per rotation
     private float maxAllowedDotProduct = -0.9f;
@@ -39,11 +39,10 @@ public class Screw : MonoBehaviour
         if (other.CompareTag("Screwdriver"))
         {
             isCollidingWithScrewdriver = true;
-            screwdriverScript = other.GetComponentInParent<ScrewDriver>();
+            screwdriverScript = other.GetComponentInParent<BaseScrewDriver>();
             canStop = true;
-            Debug.Log("entered");
         }
-        else if(other.CompareTag("Component") && canStop)
+        else if (other.CompareTag("Component") && canStop)
         {
             // Check if the screw has collided with a component
             if (!isStopped)
@@ -56,7 +55,6 @@ public class Screw : MonoBehaviour
 
     private void OnTriggerExit(Collider other)
     {
-
         if (other.CompareTag("Screwdriver"))
         {
             isCollidingWithScrewdriver = false;
@@ -64,8 +62,8 @@ public class Screw : MonoBehaviour
         }
         else if (other.CompareTag("Component") && isStopped)
         {
-                canStop = false;
-                isStopped = false;
+            canStop = false;
+            isStopped = false;
         }
     }
 }

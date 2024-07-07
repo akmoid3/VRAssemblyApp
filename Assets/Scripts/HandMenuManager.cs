@@ -44,7 +44,7 @@ public class HandMenuManager : MonoBehaviour
 
     private MakeGrabbable makeGrabbable;
 
-    [SerializeField] private GameObject newParent;
+    [SerializeField] private GameObject Group;
 
     [SerializeField] private bool isGrabInteractableEnabled = false;
     private XRInteractionManager interactionManager;
@@ -210,24 +210,16 @@ public class HandMenuManager : MonoBehaviour
 
                     componentObject.SetIsPlaced(true);
 
-                    if(newParent == null)
+                    if(Group == null)
                     {
-                        newParent = new GameObject("NewParent");
-                        /*newParent.AddComponent<Rigidbody>();
-                        Rigidbody rb = newParent.GetComponent<Rigidbody>();
-                        rb.isKinematic = true;
-                        newParent.AddComponent<XRGrabInteractable>();
-                        XRGrabInteractable grabInteractable = newParent.GetComponent<XRGrabInteractable>();
-                        grabInteractable.enabled = false;
-                        grabInteractable.selectMode = InteractableSelectMode.Multiple;
-                        grabInteractable.useDynamicAttach = true;
-                        */
+                        Group = new GameObject("Group");
+                        Group.transform.position = Vector3.zero;
+                        Group.transform.rotation = Quaternion.identity;
                     }
-                    newParent.transform.position = Vector3.zero; 
-                    newParent.transform.rotation = Quaternion.identity;
+                   
 
                     // Change the parent of the current selected component
-                    currentSelectedComponent.transform.SetParent(newParent.transform);
+                    currentSelectedComponent.transform.SetParent(Group.transform);
                 }
             }
         }
@@ -240,7 +232,7 @@ public class HandMenuManager : MonoBehaviour
 
     private IEnumerator GroupSelection2()
     {
-        if (newParent != null)
+        if (Group != null)
         {
             isGrabInteractableEnabled = !isGrabInteractableEnabled;
 
@@ -250,9 +242,9 @@ public class HandMenuManager : MonoBehaviour
             if (isGrabInteractableEnabled)
             {
                 // Disable all child XRSimpleInteractables
-                foreach (Transform child in newParent.transform)
+                foreach (Transform child in Group.transform)
                 {
-                    XRSimpleInteractable childGrabInteractable = child.GetComponent<XRSimpleInteractable>();
+                    XRBaseInteractable childGrabInteractable = child.GetComponent<XRBaseInteractable>();
 
                     if (childGrabInteractable != null)
                     {
@@ -274,25 +266,34 @@ public class HandMenuManager : MonoBehaviour
                 }
                     yield return 0;
 
+                ComponentObject componentObject = Group.GetComponent<ComponentObject>();
+                if (componentObject == null)
+                {
+                    componentObject = Group.AddComponent<ComponentObject>();
+                }
+
+
                 // Add Rigidbody if not present
-                Rigidbody rb = newParent.GetComponent<Rigidbody>();
+                Rigidbody rb = Group.GetComponent<Rigidbody>();
                 if (rb == null)
                 {
-                    rb = newParent.AddComponent<Rigidbody>();
+                    rb = Group.AddComponent<Rigidbody>();
                 }
                 rb.isKinematic = true;
 
                 // Add XRGrabInteractable
-                XRGrabInteractable grabInteractable = newParent.GetComponent<XRGrabInteractable>();
+                XRGrabInteractable grabInteractable = Group.GetComponent<XRGrabInteractable>();
                 if (grabInteractable == null)
                 {
-                    grabInteractable = newParent.AddComponent<XRGrabInteractable>();
+                    grabInteractable = Group.AddComponent<XRGrabInteractable>();
                 }
                 grabInteractable.enabled = false;
                 grabInteractable.movementType = XRBaseInteractable.MovementType.Kinematic;
                 grabInteractable.selectMode = InteractableSelectMode.Multiple;
                 grabInteractable.useDynamicAttach = true;
                 grabInteractable.throwOnDetach = false;
+                grabInteractable.selectEntered.AddListener(manager.OnSelectEnter);
+                grabInteractable.selectExited.AddListener(manager.OnSelectExit);
 
 
                 grabInteractable.colliders.Clear();
@@ -305,7 +306,7 @@ public class HandMenuManager : MonoBehaviour
             }
             else
             {
-                XRGrabInteractable grabInteractable = newParent.GetComponent<XRGrabInteractable>();
+                XRBaseInteractable grabInteractable = Group.GetComponent<XRBaseInteractable>();
                 if (grabInteractable != null)
                 {
                     interactionManager.UnregisterInteractable(grabInteractable as IXRInteractable);
@@ -317,18 +318,16 @@ public class HandMenuManager : MonoBehaviour
                     Destroy(col);
                 }
                 clonedColliders.Clear();
+
                 // Enable child XRSimpleInteractables and restore original colliders
-                foreach (Transform child in newParent.transform)
+                foreach (Transform child in Group.transform)
                 {
-                    XRSimpleInteractable childGrabInteractable = child.GetComponent<XRSimpleInteractable>();
+                    XRBaseInteractable childGrabInteractable = child.GetComponent<XRBaseInteractable>();
                     if (childGrabInteractable != null)
                     {
                         interactionManager.RegisterInteractable(childGrabInteractable as IXRInteractable);
                         childGrabInteractable.enabled = true;
                     }
-
-                   
-                    
 
                     Collider[] childColliders = child.GetComponents<Collider>();
                     foreach (Collider col in childColliders)
