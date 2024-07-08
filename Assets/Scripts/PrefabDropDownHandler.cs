@@ -40,36 +40,43 @@ public class TMPDropdownPopulator : MonoBehaviour
 
     void ShowPrefab(string prefabName)
     {
-        // Remove the previous instances from the container
-        foreach (Transform child in prefabContainer)
+        HideAllPrefabs();
+
+        // Check if the prefab instance is already created and stored in the dictionary
+        if (prefabInstances.TryGetValue(prefabName, out GameObject instance))
         {
-            Destroy(child.gameObject);
-        }
-
-        // Instantiate the selected prefab
-        GameObject prefab = Resources.Load<GameObject>("Prefabs/" + prefabName);
-        if (prefab != null)
-        {
-            // Instantiate the prefab and store the instance in the dictionary
-            GameObject instance = Instantiate(prefab, prefabContainer);
-            prefabInstances[prefabName] = instance;
-
-            // Set the position of the instance to (0, 0, 0) relative to the container
-            instance.transform.localPosition = Vector3.zero;
-
-            manager.SetCurrentSelectedPrefabName(prefabName);
+            // If the instance exists set active
+            instance.SetActive(true);
         }
         else
         {
-            Debug.LogWarning("Prefab " + prefabName + " not found.");
+            // Instantiate the selected prefab
+            GameObject prefab = Resources.Load<GameObject>("Prefabs/" + prefabName);
+            if (prefab != null)
+            {
+                // Instantiate the prefab and store the instance in the dictionary
+                instance = Instantiate(prefab, prefabContainer);
+                prefabInstances[prefabName] = instance;
+
+                instance.transform.localPosition = Vector3.zero;
+            }
+            else
+            {
+                Debug.LogWarning("Prefab " + prefabName + " not found.");
+            }
         }
+
+        manager.SetCurrentSelectedPrefabName(prefabName);
     }
 
     void Update()
     {
         if (manager.GetModelConfirmed())
         {
-            HideAllPrefabs();
+            foreach (Transform child in prefabContainer)
+            {
+                Destroy(child.gameObject);
+            }
         }
     }
 
@@ -77,16 +84,10 @@ public class TMPDropdownPopulator : MonoBehaviour
     {
         foreach (var prefabInstance in prefabInstances.Values)
         {
-            if (prefabInstance != null)
+            if (prefabInstance != null && prefabInstance.activeSelf == true)
             {
                 prefabInstance.SetActive(false);
             }
-        }
-
-        // Remove the previous instances from the container
-        foreach (Transform child in prefabContainer)
-        {
-            Destroy(child.gameObject);
         }
     }
 }

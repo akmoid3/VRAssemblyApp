@@ -21,7 +21,6 @@ public class ManualScrewDriver : BaseScrewDriver
             if (isSelected)
             {
                 CalculateRotationSpeed();
-                RotateScrewDriver();
             }
         }
     }
@@ -43,12 +42,12 @@ public class ManualScrewDriver : BaseScrewDriver
         if (rotationDirection > 0)
         {
             // Clockwise rotation
-            currentRotationSpeed = angle / Time.deltaTime * speedMultiplier * -1;
+            currentRotationSpeed = angle / Time.deltaTime * speedMultiplier * -1.0f;
         }
         else
         {
             // Counterclockwise rotation
-            currentRotationSpeed = 0;
+            currentRotationSpeed = angle / Time.deltaTime * speedMultiplier;
         }
 
         lastRotation = currentRotation;

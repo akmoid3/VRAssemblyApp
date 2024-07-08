@@ -25,10 +25,10 @@ public class Screw : MonoBehaviour
             if (dotProduct <= maxAllowedDotProduct)
             {
                 float rotationSpeed = screwdriverScript.GetRotationSpeed();
-                transform.Rotate(Vector3.forward, rotationSpeed * Time.deltaTime * -1);
+                transform.Rotate(Vector3.forward, rotationSpeed * Time.deltaTime);
 
                 // Calculate the movement along the screw's axis based on the rotation speed and pitch
-                float linearMovement = (rotationSpeed * pitch / 360) * Time.deltaTime;
+                float linearMovement = (rotationSpeed * pitch / 360) * Time.deltaTime * -1;
                 transform.Translate(Vector3.forward * linearMovement);
             }
         }

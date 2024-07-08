@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.XR.Interaction.Toolkit;
 
-public class ScrewDriver : BaseScrewDriver
+public class EletricScrewDriver : BaseScrewDriver
 {
     public override void ProcessInteractable(XRInteractionUpdateOrder.UpdatePhase updatePhase)
     {
@@ -21,8 +21,8 @@ public class ScrewDriver : BaseScrewDriver
         if (firstInteractorSelecting is XRBaseControllerInteractor interactor)
         {
             InteractionState activateState = interactor.xrController.activateInteractionState;
-            currentRotationSpeed = activateState.value * speedMultiplier * -1;
-            screwDriver.Rotate(Vector3.forward * currentRotationSpeed * Time.deltaTime);
+            currentRotationSpeed = activateState.value * speedMultiplier;
+            screwDriver.Rotate(Vector3.forward * currentRotationSpeed * Time.deltaTime * -1.0f);
         }
     }
 }

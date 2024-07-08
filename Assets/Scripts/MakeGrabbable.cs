@@ -51,7 +51,7 @@ public class MakeGrabbable : MonoBehaviour
         grabInteractable = gameObject.AddComponent<XRGrabInteractable>();
         grabInteractable.enabled = false;
         grabInteractable.throwOnDetach = false;
-        grabInteractable.movementType = XRBaseInteractable.MovementType.Kinematic;
+        grabInteractable.movementType = XRBaseInteractable.MovementType.VelocityTracking;
         grabInteractable.useDynamicAttach = true;
         grabInteractable.selectMode = InteractableSelectMode.Multiple;
         grabInteractable.selectEntered.AddListener(OnSelectEnter);
