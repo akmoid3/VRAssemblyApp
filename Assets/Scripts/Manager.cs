@@ -64,12 +64,8 @@ public class Manager : MonoBehaviour
         return isPlayBacking;
     }
 
-    public void setModelConfirmed(bool modelConfermation)
-    {
-        isModelConfirmed = modelConfermation;
-    }
 
-    public bool GetModelConfirmed()
+    public bool GtModelConfirmed()
     {
         return isModelConfirmed;
     }

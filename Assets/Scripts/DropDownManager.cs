@@ -3,7 +3,7 @@ using UnityEngine.UI;
 using TMPro;
 using System.Collections.Generic;
 
-public class TMPDropdownPopulator : MonoBehaviour
+public class DropDownManager : MonoBehaviour
 {
     [SerializeField] private TMP_Dropdown dropdown;
     [SerializeField] private Transform prefabContainer;
@@ -69,14 +69,11 @@ public class TMPDropdownPopulator : MonoBehaviour
         manager.SetCurrentSelectedPrefabName(prefabName);
     }
 
-    void Update()
+    public void DestroyPrefabs()
     {
-        if (manager.GetModelConfirmed())
+        foreach (Transform child in prefabContainer)
         {
-            foreach (Transform child in prefabContainer)
-            {
-                Destroy(child.gameObject);
-            }
+            Destroy(child.gameObject);
         }
     }
 

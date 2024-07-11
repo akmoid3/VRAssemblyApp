@@ -7,18 +7,18 @@ public class PrefabPositioner : MonoBehaviour
     [SerializeField]
     private GameObject table;
     [SerializeField]
-    private float extraSpacing = 0.1f; // Additional spacing between objects
+    private float extraSpacing = 0.1f;
     [SerializeField]
     private Manager manager;
     [SerializeField]
     private bool prefabInstanced = false;
 
-    private void Update()
+    public void SpawnComponents()
     {
         string prefabName = manager.GetCurrentSelectedPrefabName();
         GameObject prefab = Resources.Load<GameObject>("Prefabs/" + prefabName);
 
-        if (manager.GetModelConfirmed() && !prefabInstanced)
+        if (prefab != null)
         {
             GameObject instantiatedPrefab = Instantiate(prefab, transform.position, Quaternion.identity, null);
             Vector3 tablePosition = table.transform.position;
@@ -35,7 +35,7 @@ public class PrefabPositioner : MonoBehaviour
             for (int i = 0; i < instantiatedPrefab.transform.childCount; i++)
             {
                 child = instantiatedPrefab.transform.GetChild(i);
-                
+
                 Renderer renderer = child.GetComponent<Renderer>();
                 if (renderer != null)
                 {

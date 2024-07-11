@@ -181,11 +181,7 @@ public class HandMenuManager : MonoBehaviour
                     componentObject.SetIsPlaced(false);
 
                 }
-                
             }
-            
-
-            
         }
     }
 
@@ -217,7 +213,6 @@ public class HandMenuManager : MonoBehaviour
                         Group.transform.rotation = Quaternion.identity;
                     }
                    
-
                     // Change the parent of the current selected component
                     currentSelectedComponent.transform.SetParent(Group.transform);
                 }
@@ -227,10 +222,10 @@ public class HandMenuManager : MonoBehaviour
 
     private void GroupSelection()
     {
-        StartCoroutine(GroupSelection2());
+        StartCoroutine(GroupSelectionMethod());
     }
 
-    private IEnumerator GroupSelection2()
+    private IEnumerator GroupSelectionMethod()
     {
         if (Group != null)
         {
@@ -258,7 +253,7 @@ public class HandMenuManager : MonoBehaviour
                     foreach (Collider col in childColliders)
                     {
                         Collider clonedCollider = child.gameObject.AddComponent(col.GetType()) as Collider;
-                        CopyPropertiesAndFields(col, clonedCollider);
+                        col.CopyPropertiesAndFields(clonedCollider);
                         clonedColliders.Add(clonedCollider);
                         col.enabled = false; // Disable the original collider
                     }
@@ -335,40 +330,6 @@ public class HandMenuManager : MonoBehaviour
                         col.enabled = true; // Enable the original collider
                     }
                 }
-            }
-        }
-    }
-
-    private void CopyPropertiesAndFields(object source, object destination)
-    {
-        // copy all properties
-        var properties = source.GetType().GetProperties(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
-        foreach (var property in properties)
-        {
-            if (property.CanWrite)
-            {
-                try
-                {
-                    property.SetValue(destination, property.GetValue(source));
-                }
-                catch
-                {
-                    // Ignora le proprietà che non possono essere copiate
-                }
-            }
-        }
-
-        // Copy all fields
-        var fields = source.GetType().GetFields(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
-        foreach (var field in fields)
-        {
-            try
-            {
-                field.SetValue(destination, field.GetValue(source));
-            }
-            catch
-            {
-                // Ignora i campi che non possono essere copiati
             }
         }
     }

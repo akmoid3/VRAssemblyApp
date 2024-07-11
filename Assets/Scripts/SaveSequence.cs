@@ -22,7 +22,7 @@ public class SaveSequence : MonoBehaviour
 
     private ObjectData objectData = new ObjectData();
 
-    public void SaveComponent(GameObject component)
+    public void SaveComponentOrModify(GameObject component)
     {
         // Check if the component already exists in the list
         ComponentData existingData = objectData.components.Find(data => data.componentName == component.name);

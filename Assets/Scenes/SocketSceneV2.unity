@@ -2900,17 +2900,29 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
-      - m_Target: {fileID: 658687901}
-        m_TargetAssemblyTypeName: Manager, Assembly-CSharp
-        m_MethodName: setModelConfirmed
-        m_Mode: 6
+      - m_Target: {fileID: 492116154}
+        m_TargetAssemblyTypeName: DropDownManager, Assembly-CSharp
+        m_MethodName: DestroyPrefabs
+        m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
           m_IntArgument: 0
           m_FloatArgument: 0
           m_StringArgument: 
-          m_BoolArgument: 1
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 116211870}
+        m_TargetAssemblyTypeName: PrefabPositioner, Assembly-CSharp
+        m_MethodName: SpawnComponents
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
         m_CallState: 2
 --- !u!114 &489315995
 MonoBehaviour:
@@ -5305,6 +5317,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_MovementType
       value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 5099137272370049615, guid: f5a2d19d564785d45a6207078113bcaa,
+        type: 3}
+      propertyPath: m_ThrowOnDetach
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 7498613696612083094, guid: f5a2d19d564785d45a6207078113bcaa,
         type: 3}
@@ -8654,6 +8671,16 @@ PrefabInstance:
       propertyPath: m_Enabled
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 2728902658200667494, guid: 895f6f3c2d334633b5800312285058d2,
+        type: 3}
+      propertyPath: m_TurnAmount
+      value: 30
+      objectReference: {fileID: 0}
+    - target: {fileID: 3711799367079663623, guid: 895f6f3c2d334633b5800312285058d2,
+        type: 3}
+      propertyPath: m_SmoothTurnEnabled
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 4134505312059479865, guid: 895f6f3c2d334633b5800312285058d2,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -8704,6 +8731,17 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 6321641679068453239, guid: 895f6f3c2d334633b5800312285058d2,
+        type: 3}
+      propertyPath: m_TurnSpeed
+      value: 80
+      objectReference: {fileID: 0}
+    - target: {fileID: 6321641679068453239, guid: 895f6f3c2d334633b5800312285058d2,
+        type: 3}
+      propertyPath: m_RightHandTurnAction.m_Reference
+      value: 
+      objectReference: {fileID: -6493913391331992944, guid: c348712bda248c246b8c49b3db54643f,
+        type: 3}
     - target: {fileID: 6321641679068453239, guid: 895f6f3c2d334633b5800312285058d2,
         type: 3}
       propertyPath: m_LeftHandTurnAction.m_UseReference
@@ -10076,7 +10114,7 @@ MonoBehaviour:
     m_RotationOrder: 4
   m_ThrowVelocityScale: 1.5
   m_ThrowAngularVelocityScale: 1
-  m_ForceGravityOnDetach: 0
+  m_ForceGravityOnDetach: 1
   m_RetainTransformParent: 1
   m_AttachPointCompatibilityMode: 0
   m_StartingSingleGrabTransformers: []

@@ -43,7 +43,7 @@ public class MakeGrabbable : MonoBehaviour
         foreach (var collider in originalColliders)
         {
             Collider clonedCollider = gameObject.AddComponent(collider.GetType()) as Collider;
-            CopyPropertiesAndFields(collider, clonedCollider);
+            collider.CopyPropertiesAndFields(clonedCollider);
             clonedColliders.Add(clonedCollider);
             collider.enabled = false;
         }
@@ -71,39 +71,6 @@ public class MakeGrabbable : MonoBehaviour
         grabInteractable.enabled = true;
     }
 
-    private void CopyPropertiesAndFields(object source, object destination)
-    {
-        // copy all properties
-        var properties = source.GetType().GetProperties(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
-        foreach (var property in properties)
-        {
-            if (property.CanWrite)
-            {
-                try
-                {
-                    property.SetValue(destination, property.GetValue(source));
-                }
-                catch
-                {
-                    // Ignora le proprietà che non possono essere copiate
-                }
-            }
-        }
-
-        // Copy all fields
-        var fields = source.GetType().GetFields(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
-        foreach (var field in fields)
-        {
-            try
-            {
-                field.SetValue(destination, field.GetValue(source));
-            }
-            catch
-            {
-                // Ignora i campi che non possono essere copiati
-            }
-        }
-    }
     public void MakeObjectNonGrabbable()
     {
         foreach (var collider in originalColliders)
