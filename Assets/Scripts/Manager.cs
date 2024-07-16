@@ -103,5 +103,30 @@ public class Manager : MonoBehaviour
         }
     }
 
+    public void ModifyBuildingSequence()
+    {
+        if (saveSequence != null)
+        {
+            saveSequence.ModifyComponent(currentSelectedComponent);
+            saveSequence.SaveSequenceToJSON(currentPrefabName);
+        }
+        else
+        {
+            Debug.LogError("SaveSequence reference is not set.");
+        }
+    }
+
+    public void RemoveComponentFromSequence()
+    {
+        if (saveSequence != null)
+        {
+            saveSequence.RemoveComponent(currentSelectedComponent);
+            saveSequence.SaveSequenceToJSON(currentPrefabName);
+        }
+        else
+        {
+            Debug.LogError("SaveSequence reference is not set.");
+        }
+    }
 
 }

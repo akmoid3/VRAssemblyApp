@@ -22,10 +22,10 @@ public class SaveSequence : MonoBehaviour
 
     private ObjectData objectData = new ObjectData();
 
-    public void SaveComponentOrModify(GameObject component)
+    public void ModifyComponent(GameObject component)
     {
-        // Check if the component already exists in the list
-        ComponentData existingData = objectData.components.Find(data => data.componentName == component.name);
+        // Gets the last data of the component
+        ComponentData existingData = objectData.components.FindLast(data => data.componentName == component.name);
 
         if (existingData != null)
         {
@@ -36,13 +36,33 @@ public class SaveSequence : MonoBehaviour
         else
         {
             // Add new component data
-            ComponentData newData = new ComponentData
-            {
-                componentName = component.name,
-                position = component.transform.localPosition,
-                rotation = component.transform.localRotation,
-            };
-            objectData.components.Add(newData);
+            SaveComponent(component);
+        }
+    }
+
+    // Method to save components
+    public void SaveComponent(GameObject component)
+    {
+        // Create new component data
+        ComponentData newData = new ComponentData
+        {
+            componentName = component.name,
+            position = component.transform.localPosition,
+            rotation = component.transform.localRotation,
+        };
+        objectData.components.Add(newData);
+    }
+
+    // Method to remove the last occurrence of component data with a given name
+    public void RemoveComponent(GameObject component)
+    {
+        // Find the last occurrence of the component data with the given component name
+        int index = objectData.components.FindLastIndex(data => data.componentName == component.name);
+
+        // If found, remove it from the list
+        if (index != -1)
+        {
+            objectData.components.RemoveAt(index);
         }
     }
 

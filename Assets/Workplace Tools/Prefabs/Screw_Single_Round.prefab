@@ -13,7 +13,6 @@ GameObject:
   - component: {fileID: 23000010250119876}
   - component: {fileID: 64000012078462578}
   - component: {fileID: 3874477731437048653}
-  - component: {fileID: 5101588851130558040}
   - component: {fileID: 7764766286163962353}
   - component: {fileID: 1731398390018089557}
   - component: {fileID: 8573840933703042431}
@@ -139,27 +138,6 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 2
---- !u!65 &5101588851130558040
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1000012111449378}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 1
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Size: {x: 0.04042874, y: 0.04042874, z: 0.0119508505}
-  m_Center: {x: 0.00004333444, y: -0.000059064478, z: 0.031425178}
 --- !u!114 &7764766286163962353
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -173,7 +151,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   pitch: 0.1
-  isCollidingWithScrewdriver: 0
+  isCollidingWithTool: 0
+  isCollidingWithComponent: 0
   canStop: 0
   isStopped: 0
 --- !u!114 &1731398390018089557

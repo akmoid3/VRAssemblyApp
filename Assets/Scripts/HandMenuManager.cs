@@ -36,7 +36,9 @@ public class HandMenuManager : MonoBehaviour
 
     [SerializeField] private Button saveComponentButton;
     [SerializeField] private Button modifyButton;
+    [SerializeField] private Button addStepButton;
     [SerializeField] private Button groupSelectionButton;
+    [SerializeField] private Button removeButton;
     [SerializeField] private Toggle toggle;
 
 
@@ -47,13 +49,15 @@ public class HandMenuManager : MonoBehaviour
     [SerializeField] private GameObject Group;
 
     [SerializeField] private bool isGrabInteractableEnabled = false;
+    [SerializeField] private bool modifying = false;
+    [SerializeField] private bool newStep = false;
+
     private XRInteractionManager interactionManager;
 
 
     private List<Button> allButtonsToDeactivate;
     private void Start()
     {
-        toggle.isOn = isGrabInteractableEnabled;
         // Initialize the button list
         allButtonsToDeactivate = new List<Button>
         {
@@ -79,8 +83,15 @@ public class HandMenuManager : MonoBehaviour
         reduceRotYButton.onClick.AddListener(() => AddToRotation(Vector3.down * increment));
         reduceRotZButton.onClick.AddListener(() => AddToRotation(Vector3.back * increment));
 
-        modifyButton.onClick.AddListener(() => Modify());
+        modifyButton.onClick.AddListener(() => ModifyComponent());
+        addStepButton.onClick.AddListener(() => ModifyComponent());
+        removeButton.onClick.AddListener(() => RemoveComponent());
+        modifyButton.onClick.AddListener(() => Modifying());
+        addStepButton.onClick.AddListener(() => NewStep());
+
         groupSelectionButton.onClick.AddListener(() => GroupSelection());
+        toggle.isOn = isGrabInteractableEnabled;
+
         saveComponentButton.onClick.AddListener(() => SaveComponent());
 
         // Set up dropdown listener
@@ -95,7 +106,7 @@ public class HandMenuManager : MonoBehaviour
         GameObject currentSelectedComponent = manager.GetCurrentSelectedComponent();
         if (currentSelectedComponent != null)
         {
-            ComponentObject componentObject = currentSelectedComponent.GetComponent<ComponentObject>();
+
             Vector3 position = currentSelectedComponent.transform.position;
             Vector3 rotation = currentSelectedComponent.transform.eulerAngles;
 
@@ -107,20 +118,42 @@ public class HandMenuManager : MonoBehaviour
             rotationYText.text = $"{rotation.y:F2}";
             rotationZText.text = $"{rotation.z:F2}";
 
-            if (componentObject)
+            if (currentSelectedComponent.name != "Group")
             {
-                if (componentObject.GetIsPlaced())
-                {
-                    modifyButton.gameObject.SetActive(true);
-                    SetButtonsActive(false);
+                ComponentObject componentObject = currentSelectedComponent.GetComponent<ComponentObject>();
 
-                }
-                else
+                if (componentObject)
                 {
-                    modifyButton.gameObject.SetActive(false);
-                    SetButtonsActive(true);
+                    if (componentObject.GetIsPlaced())
+                    {
+                        modifyButton.gameObject.SetActive(true);
+                        addStepButton.gameObject.SetActive(true);
+                        removeButton.gameObject.SetActive(true);
+
+                        SetTransformsButtonsActive(false);
+
+                    }
+                    else
+                    {
+                        modifyButton.gameObject.SetActive(false);
+                        addStepButton.gameObject.SetActive(false);
+                        removeButton.gameObject.SetActive(false);
+
+                        SetTransformsButtonsActive(true);
+                    }
                 }
             }
+            else
+            {
+                modifyButton.gameObject.SetActive(false);
+                addStepButton.gameObject.SetActive(false);
+                removeButton.gameObject.SetActive(false);
+
+                SetTransformsButtonsActive(true);
+            }
+            
+
+            
         }
         else
         {
@@ -132,16 +165,47 @@ public class HandMenuManager : MonoBehaviour
             rotationZText.text = "N/A";
 
             modifyButton.gameObject.SetActive(false);
+            addStepButton.gameObject.SetActive(false);
+            removeButton.gameObject.SetActive(false);
+            SetTransformsButtonsActive(false);
+
+
         }
+
+        if (Group && Group.transform.childCount > 0)
+        {
+            groupSelectionButton.gameObject.SetActive(true);
+            toggle.gameObject.SetActive(true);
+        }
+        else
+        {
+            groupSelectionButton.gameObject.SetActive(false);
+            toggle.gameObject.SetActive(false);
+        }
+
+
+
+
     }
 
-    private void SetButtonsActive(bool isActive)
+    private void Modifying()
+    {
+        modifying = true;
+    }
+
+    private void NewStep()
+    {
+        newStep = true;
+    }
+
+    private void SetTransformsButtonsActive(bool isActive)
     {
         foreach (var button in allButtonsToDeactivate)
         {
             button.gameObject.SetActive(isActive);
         }
     }
+
 
     private void AddToPosition(Vector3 increment)
     {
@@ -159,7 +223,7 @@ public class HandMenuManager : MonoBehaviour
         }
     }
 
-    private void Modify()
+    private void ModifyComponent()
     {
         GameObject currentSelectedComponent = manager.GetCurrentSelectedComponent();
         
@@ -179,12 +243,17 @@ public class HandMenuManager : MonoBehaviour
                     }
 
                     componentObject.SetIsPlaced(false);
-
                 }
             }
         }
     }
 
+    private void RemoveComponent()
+    {
+        ModifyComponent();
+        manager.RemoveComponentFromSequence();
+
+    }
     private void SaveComponent()
     {
         GameObject currentSelectedComponent = manager.GetCurrentSelectedComponent();
@@ -217,6 +286,21 @@ public class HandMenuManager : MonoBehaviour
                     currentSelectedComponent.transform.SetParent(Group.transform);
                 }
             }
+
+            if (modifying)
+            {
+                manager.ModifyBuildingSequence();
+                modifying = false;
+            }else if (newStep)
+            {
+                manager.SaveBuildingSequence();
+                newStep = false;
+            }
+            else
+            {
+                manager.SaveBuildingSequence();
+
+            }
         }
     }
 
@@ -247,6 +331,9 @@ public class HandMenuManager : MonoBehaviour
                         childGrabInteractable.enabled = false;
                     }
 
+                    ComponentObject componentObj = child.GetComponent<ComponentObject>();
+                    if(componentObj != null)
+                        componentObj.enabled = false;
 
                     // Clone child colliders
                     Collider[] childColliders = child.GetComponents<Collider>();
@@ -260,12 +347,6 @@ public class HandMenuManager : MonoBehaviour
 
                 }
                     yield return 0;
-
-                ComponentObject componentObject = Group.GetComponent<ComponentObject>();
-                if (componentObject == null)
-                {
-                    componentObject = Group.AddComponent<ComponentObject>();
-                }
 
 
                 // Add Rigidbody if not present
@@ -323,6 +404,10 @@ public class HandMenuManager : MonoBehaviour
                         interactionManager.RegisterInteractable(childGrabInteractable as IXRInteractable);
                         childGrabInteractable.enabled = true;
                     }
+
+                    ComponentObject componentObj = child.GetComponent<ComponentObject>();
+                    if (componentObj != null)
+                        componentObj.enabled = true;
 
                     Collider[] childColliders = child.GetComponents<Collider>();
                     foreach (Collider col in childColliders)

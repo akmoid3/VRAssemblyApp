@@ -9,7 +9,7 @@ public class ManualScrewDriver : BaseScrewDriver
 
     void Start()
     {
-        lastRotation = transform.rotation;
+        lastRotation = transform.localRotation; // Use local rotation
     }
 
     public override void ProcessInteractable(XRInteractionUpdateOrder.UpdatePhase updatePhase)
@@ -27,7 +27,7 @@ public class ManualScrewDriver : BaseScrewDriver
 
     private void CalculateRotationSpeed()
     {
-        Quaternion currentRotation = transform.rotation;
+        Quaternion currentRotation = transform.localRotation; // Use local rotation
         Quaternion deltaRotation = currentRotation * Quaternion.Inverse(lastRotation);
         float angle;
         Vector3 axis;
@@ -36,8 +36,8 @@ public class ManualScrewDriver : BaseScrewDriver
         if (angle > 180)
             angle -= 360;
 
-        // Determine the direction of the rotation
-        float rotationDirection = Vector3.Dot(axis, Vector3.forward);
+        // Determine the direction of the rotation relative to the local forward axis
+        float rotationDirection = Vector3.Dot(axis, transform.forward);
 
         if (rotationDirection > 0)
         {
@@ -55,6 +55,7 @@ public class ManualScrewDriver : BaseScrewDriver
 
     public override void RotateScrewDriver()
     {
-        screwDriver.Rotate(Vector3.forward * currentRotationSpeed * Time.deltaTime);
+        // Rotate around the local forward axis
+        screwDriver.Rotate(transform.forward * currentRotationSpeed * Time.deltaTime);
     }
 }

@@ -1,69 +1,45 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
-public class Screw : MonoBehaviour
+public class Screw : Fastener
 {
     private BaseScrewDriver screwdriverScript;
 
-    [SerializeField] private float pitch = 0.1f; // Distance the screw moves per rotation
-    private float maxAllowedDotProduct = -0.9f;
-
-    [SerializeField] private bool isCollidingWithScrewdriver = false;
-    [SerializeField] private bool canStop = false;
-    [SerializeField] private bool isStopped = false; // Flag if the screw should stop moving
-
-    void Update()
+    protected override void HandleInteraction()
     {
-        if (isCollidingWithScrewdriver && screwdriverScript != null && !isStopped)
+        if (screwdriverScript != null && isAligned)
         {
-            // Check the alignment using dot product
             Vector3 screwdriverDir = screwdriverScript.transform.forward;
             Vector3 screwDir = transform.forward;
             float dotProduct = Vector3.Dot(screwdriverDir.normalized, screwDir.normalized);
 
-            if (dotProduct <= maxAllowedDotProduct)
+            if (dotProduct >= maxAllowedDotProduct)
             {
                 float rotationSpeed = screwdriverScript.GetRotationSpeed();
-                transform.Rotate(Vector3.forward, rotationSpeed * Time.deltaTime);
+                transform.Rotate(Vector3.forward, rotationSpeed * Time.deltaTime * -1.0f);
 
-                // Calculate the movement along the screw's axis based on the rotation speed and pitch
-                float linearMovement = (rotationSpeed * pitch / 360) * Time.deltaTime * -1;
+                float linearMovement = (rotationSpeed * pitch / 360) * Time.deltaTime;
                 transform.Translate(Vector3.forward * linearMovement);
+
+                float distanceTraveled = Mathf.Abs(Vector3.Distance(transform.localPosition, initialZPosition));
+
+                if (distanceTraveled >= distanceToTravel)
+                {
+                    isStopped = true;
+                    fastenerRenderer.material.color = alignedColor;
+                }
             }
         }
     }
 
-    private void OnTriggerEnter(Collider other)
+    protected override void OnToolCollisionEnter(Collider other)
     {
-        if (other.CompareTag("Screwdriver"))
-        {
-            isCollidingWithScrewdriver = true;
-            screwdriverScript = other.GetComponentInParent<BaseScrewDriver>();
-            canStop = true;
-        }
-        else if (other.CompareTag("Component") && canStop)
-        {
-            // Check if the screw has collided with a component
-            if (!isStopped)
-            {
-                isStopped = true;
-                Debug.Log("Screw has reached maximum depth");
-            }
-        }
+        screwdriverScript = other.GetComponentInParent<BaseScrewDriver>();
+
+        Debug.Log(screwdriverScript);
     }
 
-    private void OnTriggerExit(Collider other)
+    protected override void OnToolCollisionExit(Collider other)
     {
-        if (other.CompareTag("Screwdriver"))
-        {
-            isCollidingWithScrewdriver = false;
-            screwdriverScript = null;
-        }
-        else if (other.CompareTag("Component") && isStopped)
-        {
-            canStop = false;
-            isStopped = false;
-        }
+        screwdriverScript = null;
     }
 }
