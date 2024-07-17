@@ -14,7 +14,7 @@ public abstract class Fastener : MonoBehaviour
 
     [SerializeField] protected bool canStop = false;
     [SerializeField] protected bool isStopped = false; // Flag if the fastener should stop moving
-
+    [SerializeField] protected float headSize = 0.005f;
     protected Renderer fastenerRenderer;
     protected Color alignedColor = Color.green;
     protected Color notAlignedColor = Color.red;
@@ -40,7 +40,7 @@ public abstract class Fastener : MonoBehaviour
 
         // Calculate the length of the fastener mesh
         fastenerLength = GetComponent<Renderer>().bounds.size.z;
-        distanceToTravel = fastenerLength - 0.005f;
+        distanceToTravel = fastenerLength - headSize;
     }
 
     protected virtual void Update()
