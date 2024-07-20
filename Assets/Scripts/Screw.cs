@@ -3,6 +3,7 @@ using UnityEngine;
 public class Screw : Fastener
 {
     private BaseScrewDriver screwdriverScript;
+    [SerializeField] protected float pitch = 0.1f;
 
     protected override void HandleInteraction()
     {
@@ -25,7 +26,7 @@ public class Screw : Fastener
                 if (distanceTraveled >= distanceToTravel)
                 {
                     isStopped = true;
-                    fastenerRenderer.material.color = alignedColor;
+                    fastenerRenderer.material.color = defaultColor;
                 }
             }
         }
@@ -34,8 +35,6 @@ public class Screw : Fastener
     protected override void OnToolCollisionEnter(Collider other)
     {
         screwdriverScript = other.GetComponentInParent<BaseScrewDriver>();
-
-        Debug.Log(screwdriverScript);
     }
 
     protected override void OnToolCollisionExit(Collider other)

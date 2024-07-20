@@ -19,29 +19,25 @@ public class Manager : MonoBehaviour
 
     [SerializeField] private List<GameObject> sequenceOrderList = new List<GameObject>();
 
-    void Update()
-    {
-        if (isRecording)
-        {
-        }
-
-        if (isPlayBacking)
-        {
-        }
-    }
 
     public void OnSelectEnter(SelectEnterEventArgs args)
     {
         currentSelectedComponent = args.interactableObject.transform.gameObject;
+
+        Transform parent = currentSelectedComponent.transform.parent;
+        if (parent != null && parent.name != "Group")
+        {
+            currentSelectedComponent.transform.SetParent(null); // Remove the parent
+        }
     }
 
     public void OnSelectExit(SelectExitEventArgs args)
     {
-        //if (currentSelectedComponent == args.interactableObject.transform.gameObject)
-        //{
-        //    currentSelectedComponent = null;
-        //    Debug.Log("Deselected: " + args.interactableObject.transform.gameObject.name);
-        //}
+        Transform parent = currentSelectedComponent.transform.parent;
+        if (parent != null && parent.name != "Group")
+        {
+            currentSelectedComponent.transform.SetParent(null); // Remove the parent
+        }
     }
 
     public void SetRecording(bool recording)

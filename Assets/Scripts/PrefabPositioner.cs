@@ -1,6 +1,7 @@
 using UnityEngine;
 using System.Collections.Generic;
 using UnityEngine.UIElements;
+using Unity.VisualScripting;
 
 public class PrefabPositioner : MonoBehaviour
 {
@@ -8,6 +9,8 @@ public class PrefabPositioner : MonoBehaviour
     private GameObject prefab;
     [SerializeField]
     private MeshRenderer tableRenderer;
+    [SerializeField]
+    private Object tableRoll;
     [SerializeField]
     private float extraSpacing = 0.1f;
     [SerializeField]
@@ -18,20 +21,22 @@ public class PrefabPositioner : MonoBehaviour
     private float scrollSpeed = 1.0f;
     [SerializeField]
     private KeyCode scrollKey = KeyCode.Space;
+    [SerializeField]
+    private GameObject parent;
 
     private List<Transform> spawnedChildren = new List<Transform>();
     private Bounds tableBounds;
-    private float totalWidth = 0.0f;
 
     void Start()
     {
-        if (tableRenderer != null)
+        tableRenderer = tableRoll.GetComponent<MeshRenderer>();
+
+        tableBounds = tableRenderer.bounds;
+
+        // Create the common parent if not assigned
+        if (parent == null)
         {
-            tableBounds = tableRenderer.bounds;
-        }
-        else
-        {
-            Debug.LogError("Table Renderer not assigned!");
+            parent = new GameObject("Parent");
         }
     }
 
@@ -57,14 +62,14 @@ public class PrefabPositioner : MonoBehaviour
         if (prefab != null)
         {
             GameObject instantiatedPrefab = Instantiate(prefab, transform.position, Quaternion.identity, null);
-            Vector3 newPosition = Vector3.zero;
+            Vector3 newPosition;
             float width;
             float height;
             float startPosition = tableBounds.min.x; // Start position for the components
             float currentX = startPosition;
-
+            float childCount = instantiatedPrefab.transform.childCount;
             // Position the components within the bounds of the table
-            for (int i = 0; i < instantiatedPrefab.transform.childCount; i++)
+            for (int i = 0; i < childCount; i++)
             {
                 Transform child = instantiatedPrefab.transform.GetChild(i);
                 Renderer renderer = child.GetComponent<Renderer>();
@@ -78,22 +83,32 @@ public class PrefabPositioner : MonoBehaviour
                     currentX += width + extraSpacing;
 
                     spawnedChildren.Add(child);
+
+
                     // Deactivate if out of bounds
                     if (child.position.x > tableBounds.max.x)
                     {
                         child.gameObject.SetActive(false);
-                    }else
-                    child.gameObject.SetActive(true);
+                    }
+                    else
+                    {
+                        child.gameObject.SetActive(true);
+                    }
                 }
             }
 
+            for (int i = 0; i < childCount; i++)
+            {
+                spawnedChildren[i].SetParent(parent.transform);
+            }
+
+            Destroy(instantiatedPrefab);
             prefabInstanced = true;
         }
     }
-
     private void ScrollComponents()
     {
-        foreach (Transform child in spawnedChildren)
+        foreach (Transform child in parent.transform)
         {
             Vector3 position = child.position;
             position.x -= scrollSpeed * Time.deltaTime;
@@ -103,7 +118,7 @@ public class PrefabPositioner : MonoBehaviour
             {
                 // Find the rightmost child to determine new position
                 float rightmostX = float.MinValue;
-                foreach (Transform sibling in spawnedChildren)
+                foreach (Transform sibling in parent.transform)
                 {
                     float siblingRightX = sibling.position.x + sibling.GetComponent<Renderer>().bounds.size.x / 2;
                     if (siblingRightX > rightmostX)

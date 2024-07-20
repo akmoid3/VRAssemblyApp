@@ -5,7 +5,6 @@ using UnityEngine.XR.Interaction.Toolkit;
 
 public abstract class Fastener : MonoBehaviour
 {
-    [SerializeField] protected float pitch = 0.1f; // Distance the fastener moves per rotation
     protected float maxAllowedDotProduct = 0.9f;
 
     protected float alignmentDotProductThreshold = -0.9f;
@@ -15,36 +14,42 @@ public abstract class Fastener : MonoBehaviour
     [SerializeField] protected bool canStop = false;
     [SerializeField] protected bool isStopped = false; // Flag if the fastener should stop moving
     [SerializeField] protected float headSize = 0.005f;
+
+    protected GameObject tool;
+
     protected Renderer fastenerRenderer;
     protected Color alignedColor = Color.green;
     protected Color notAlignedColor = Color.red;
 
     protected Color defaultColor = Color.white;
 
-    protected float fastenerLength; // Length of the fastener mesh
     protected Vector3 initialZPosition; // Initial position of the fastener along the Z-axis
     protected float distanceToTravel; // Depth to stop the fastener
 
     protected Collider component = null;
 
     protected bool isAligned = false;
+    protected float fastenerLength;
 
-    // Store the original interaction layer mask
-    protected int originalLayerMask;
+
+    public GameObject getTool()
+    {
+        return tool;
+    }
 
     protected virtual void Start()
     {
-      
         fastenerRenderer = GetComponent<Renderer>();
         defaultColor = fastenerRenderer.material.color;
 
-        // Calculate the length of the fastener mesh
+        // Length of the mesh
         fastenerLength = GetComponent<Renderer>().bounds.size.z;
         distanceToTravel = fastenerLength - headSize;
     }
 
     protected virtual void Update()
     {
+
         if (isCollidingWithTool && !isStopped)
         {
             HandleInteraction();
@@ -63,6 +68,7 @@ public abstract class Fastener : MonoBehaviour
     {
         if (other.CompareTag("Tool"))
         {
+            tool = other.gameObject;
             isCollidingWithTool = true;
             OnToolCollisionEnter(other);
             canStop = true;
@@ -71,9 +77,6 @@ public abstract class Fastener : MonoBehaviour
         {
             component = other;
             isCollidingWithComponent = true;
-
-            // Set initial position at the point of contact
-            initialZPosition = transform.localPosition;
         }
     }
 
@@ -99,7 +102,7 @@ public abstract class Fastener : MonoBehaviour
 
     protected void AlignWithContactPoint(Collider componentCollider)
     {
-        // Calculate the closest point on the component's surface
+        // Get the closest point on the component's surface
         Vector3 closestPoint = componentCollider.ClosestPoint(transform.position);
 
         // Get the normal of the closest point
@@ -110,11 +113,17 @@ public abstract class Fastener : MonoBehaviour
 
         if (dotProduct <= alignmentDotProductThreshold)
         {
-            // Align the fastener's forward direction with the normal
-            transform.LookAt(transform.position + (-normalAtContact));
-            fastenerRenderer.material.color = alignedColor;
+            Quaternion targetRotation = Quaternion.LookRotation(-normalAtContact);
+            Vector3 directionToMove = -transform.forward;
+            Vector3 targetPosition = closestPoint + directionToMove * fastenerLength / 2.0f;
+
+            transform.SetPositionAndRotation(targetPosition, targetRotation);
+
+            // Set initial position at the point of contact
+            initialZPosition = transform.localPosition;
 
             isAligned = true;
+            fastenerRenderer.material.color = alignedColor;
         }
         else
         {
@@ -122,8 +131,6 @@ public abstract class Fastener : MonoBehaviour
             isAligned = false;
         }
     }
-
-
 
 
 

@@ -7,6 +7,7 @@ public class SimpleHammer : BaseHammer
 {
     private Vector3 lastPosition;
     private Vector3 impactDirection;
+    
 
     void Start()
     {
@@ -35,13 +36,17 @@ public class SimpleHammer : BaseHammer
         float movementSpeed = deltaPosition.magnitude / Time.deltaTime;
 
         // Determine the impact force based on movement speed and force multiplier
-        currentImpactForce = movementSpeed * forceMultiplier;
+        float rawImpactForce = movementSpeed * forceMultiplier;
+
+        // Clamp the impact force to the range between minImpactForce and maxImpactForce
+        currentImpactForce = Mathf.Clamp(rawImpactForce, minImpactForce, maxImpactForce);
 
         // Calculate the direction of the impact force
         impactDirection = deltaPosition.normalized;
 
         lastPosition = currentPosition;
     }
+
 
     public Vector3 GetImpactDirection()
     {

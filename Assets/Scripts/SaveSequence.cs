@@ -11,6 +11,7 @@ public class SaveSequence : MonoBehaviour
         public string componentName;
         public Vector3 position;
         public Quaternion rotation;
+        public string toolName;
     }
 
     // A class to hold the data for all components
@@ -43,12 +44,24 @@ public class SaveSequence : MonoBehaviour
     // Method to save components
     public void SaveComponent(GameObject component)
     {
+        string name = "null";
+        Fastener fastener = component.GetComponent<Fastener>();
+        if (fastener != null)
+        {
+            GameObject tool = fastener.getTool();
+            if (tool != null)
+            {
+                name = tool.name;
+            }
+
+        }
         // Create new component data
         ComponentData newData = new ComponentData
         {
             componentName = component.name,
             position = component.transform.localPosition,
             rotation = component.transform.localRotation,
+            toolName = name
         };
         objectData.components.Add(newData);
     }
