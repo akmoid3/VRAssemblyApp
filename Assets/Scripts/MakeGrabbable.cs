@@ -1,6 +1,5 @@
 using System.Collections;
 using System.Collections.Generic;
-using System.Reflection;
 using UnityEngine;
 using UnityEngine.XR.Interaction.Toolkit;
 
@@ -11,7 +10,14 @@ public class MakeGrabbable : MonoBehaviour
     private XRGrabInteractable grabInteractable;
     private XRInteractionManager interactionManager;
     private Manager manager;
-    
+
+    // Fields to be modified in the Inspector
+    [Header("XRGrabInteractable Settings")]
+    public bool throwOnDetach = false;
+    public XRBaseInteractable.MovementType movementType = XRBaseInteractable.MovementType.VelocityTracking;
+    public bool useDynamicAttach = true;
+    public InteractableSelectMode selectMode = InteractableSelectMode.Multiple;
+
     private void Start()
     {
         interactionManager = FindObjectOfType<XRInteractionManager>();
@@ -50,17 +56,16 @@ public class MakeGrabbable : MonoBehaviour
         // Add grab interactable 
         grabInteractable = gameObject.AddComponent<XRGrabInteractable>();
         grabInteractable.enabled = false;
-        grabInteractable.throwOnDetach = false;
-        grabInteractable.movementType = XRBaseInteractable.MovementType.VelocityTracking;
-        grabInteractable.useDynamicAttach = true;
-        grabInteractable.selectMode = InteractableSelectMode.Multiple;
+
+        // Apply inspector-modifiable properties
+        grabInteractable.throwOnDetach = throwOnDetach;
+        grabInteractable.movementType = movementType;
+        grabInteractable.useDynamicAttach = useDynamicAttach;
+        grabInteractable.selectMode = selectMode;
         grabInteractable.selectEntered.AddListener(OnSelectEnter);
         grabInteractable.selectExited.AddListener(OnSelectExit);
 
         yield return 0; // Wait a frame for the component to initialize
-
-        
-
 
         // Clear existing colliders and add cloned colliders
         grabInteractable.colliders.Clear();
@@ -84,8 +89,6 @@ public class MakeGrabbable : MonoBehaviour
             Destroy(grabInteractable);
         }
 
-       
-
         // Remove cloned colliders
         var clonedColliders = GetComponents<Collider>();
         foreach (var collider in clonedColliders)
@@ -96,7 +99,7 @@ public class MakeGrabbable : MonoBehaviour
             }
         }
 
-        // enable original interactables
+        // Enable original interactables
         foreach (var interactable in originalInteractables)
         {
             interactionManager.RegisterInteractable(interactable);
@@ -118,5 +121,4 @@ public class MakeGrabbable : MonoBehaviour
     {
         manager.OnSelectExit(args);
     }
-
 }

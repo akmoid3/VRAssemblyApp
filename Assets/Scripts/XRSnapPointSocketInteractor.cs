@@ -27,6 +27,19 @@ namespace UnityEngine.XR.Content.Interaction
 
         bool hasEmptySnappoint => usedSnappoints.Count < snappoints.Count;
 
+         // Getter and Setter for distanceThreshold
+        public float DistanceThreshold
+        {
+            get => distanceThreshold;
+            set => distanceThreshold = value;
+        }
+
+        // Getter and Setter for angleThreshold
+        public float AngleThreshold
+        {
+            get => angleThreshold;
+            set => angleThreshold = value;
+        }
         void CollectSnappoints()
         {
             snappoints.Clear();
@@ -46,14 +59,6 @@ namespace UnityEngine.XR.Content.Interaction
             interactableCantHoverMeshMaterial = interactableHoverMeshMaterial;
         }
 
-        /// <summary>
-        /// See <see cref="MonoBehaviour"/>.
-        /// </summary>
-        protected override void OnValidate()
-        {
-            base.OnValidate();
-            CollectSnappoints();
-        }
 
         /// <inheritdoc />
         protected override void OnSelectEntering(SelectEnterEventArgs args)

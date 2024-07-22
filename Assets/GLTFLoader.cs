@@ -1,15 +1,23 @@
 using UnityEngine;
 using UnityGLTF;
 using System.IO;
+using System.Collections;
 
 public class GLTFLoader : MonoBehaviour
 {
-    public string gltfFileName = "Table.gltf"; // Just the name of the file, not the full path
+    [Tooltip("Just the name of the file")]
+    [SerializeField]
+    private string fileName = "Table.gltf";
+
+    private string gltfFilePath;
 
     void Start()
     {
-        // Log the persistent data path for debugging purposes
-        Debug.Log("Persistent Data Path: " + Application.persistentDataPath);
+        // Construct the full path to the GLTF file
+        gltfFilePath = Path.Combine(Application.persistentDataPath, fileName);
+        gltfFilePath += ".glb";
+
+        Debug.Log($"Persistent Data Path: {Application.persistentDataPath}");
     }
 
     void Update()
@@ -17,39 +25,47 @@ public class GLTFLoader : MonoBehaviour
         // Check for mouse click (left button)
         if (Input.GetMouseButtonDown(0))
         {
-            string gltfFilePath = Path.Combine(Application.persistentDataPath, gltfFileName);
-            Debug.Log("Attempting to load GLTF file from: " + gltfFilePath);
-            LoadGLTF(gltfFilePath);
+            Debug.Log($"Attempting to load GLB file from: {gltfFilePath}");
+            StartCoroutine(LoadGLTF(gltfFilePath));
         }
     }
 
-    public async void LoadGLTF(string path)
+    private IEnumerator LoadGLTF(string path)
     {
         if (!File.Exists(path))
         {
-            Debug.LogError("File not found at " + path);
-            return;
+            Debug.LogError($"File not found at {path}");
+            yield break;
         }
 
-        try
+
+        // Check if GLTFComponent already exists to avoid duplicates
+        GLTFComponent gltfComponent = gameObject.GetComponent<GLTFComponent>();
+        if (gltfComponent == null)
         {
-            GLTFComponent gltfComponent = gameObject.AddComponent<GLTFComponent>();
-            gltfComponent.GLTFUri = path;
-            gltfComponent.Multithreaded = true;
-            gltfComponent.UseStream = true;
-
-
-            // Log success message
-            Debug.Log("GLTF file loading started from: " + path);
-
-            await gltfComponent.Load();
-
-            Debug.Log("GLTF file loaded successfully from: " + path);
+            gltfComponent = gameObject.AddComponent<GLTFComponent>();
         }
-        catch (System.Exception e)
-        {
-            Debug.LogError("Error loading GLTF file: " + e.Message);
-            Debug.LogError(e.StackTrace);
-        }
+
+        // Configure GLTFComponent settings
+        gltfComponent.GLTFUri = path;
+        gltfComponent.Multithreaded = true;
+        gltfComponent.UseStream = true;
+
+        // Log success message
+        Debug.Log($"GLB file loading started from: {path}");
+
+        // Start the loading process
+        yield return gltfComponent.Load();
+
+        // Create a new empty GameObject with the name of the model
+        string modelName = Path.GetFileNameWithoutExtension(path);
+        GameObject modelParent = new GameObject(modelName);
+
+        // Set the parent of the loaded model to the new GameObject
+        gltfComponent.transform.SetParent(modelParent.transform, false);
+
+        // Log success message after loading is complete
+        Debug.Log($"GLB file loaded successfully and parented to: {modelParent.name}");
+
     }
 }
