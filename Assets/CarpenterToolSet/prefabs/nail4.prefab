@@ -16,7 +16,6 @@ GameObject:
   - component: {fileID: 8500966704919187492}
   - component: {fileID: 3674657277291188814}
   - component: {fileID: 3314579011623310631}
-  - component: {fileID: 7390660523163014152}
   - component: {fileID: 2067357945300887665}
   m_Layer: 0
   m_Name: nail4
@@ -134,6 +133,7 @@ MonoBehaviour:
   canStop: 0
   isStopped: 0
   headSize: 0.005
+  rayLength: 0.25
   forceScalingFactor: 0.5
   minimumImpactForce: 2
   moveCooldown: 0.5
@@ -263,27 +263,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6b4bf78270455e544a23948853c9a349, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!65 &7390660523163014152
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 104060}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 1
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Size: {x: 0.021914016, y: 0.021914005, z: 0.14384782}
-  m_Center: {x: 0.0000000027939677, y: 0.0000000018626451, z: 0.023634532}
+  throwOnDetach: 0
+  movementType: 0
+  useDynamicAttach: 1
+  selectMode: 1
 --- !u!65 &2067357945300887665
 BoxCollider:
   m_ObjectHideFlags: 0

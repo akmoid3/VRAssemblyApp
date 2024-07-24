@@ -68,7 +68,9 @@ namespace UnityEngine.XR.Content.Interaction
             var snappoint = GetAttachTransform(args.interactableObject);
             usedSnappoints.Add(snappoint);
             snappointByInteractable.Add(args.interactableObject, snappoint);
-            
+            GameObject gameObject = args.interactableObject.transform.gameObject;
+            XRGrabInteractable xr = gameObject.GetComponent<XRGrabInteractable>();
+            xr.selectMode = InteractableSelectMode.Single;
         }
 
 
@@ -78,7 +80,9 @@ namespace UnityEngine.XR.Content.Interaction
             var snappoint = snappointByInteractable[args.interactableObject];
             usedSnappoints.Remove(snappoint);
             snappointByInteractable.Remove(args.interactableObject);
-
+            GameObject gameObject = args.interactableObject.transform.gameObject;
+            XRGrabInteractable xr = gameObject.GetComponent<XRGrabInteractable>();
+            xr.selectMode = InteractableSelectMode.Multiple;
             base.OnSelectExiting(args);
         }
 
@@ -89,6 +93,7 @@ namespace UnityEngine.XR.Content.Interaction
             var attachTransform = GetAttachTransform(interactable);
             if (attachTransform != null)
             {
+
                 return IsSelecting(interactable)
                        || (hasEmptySnappoint && !interactable.isSelected && !usedSnappoints.Contains(attachTransform));
             }
@@ -104,7 +109,6 @@ namespace UnityEngine.XR.Content.Interaction
                 return base.CanHover(interactable)
                   && !usedSnappoints.Contains(attachTransform);
             }else return false;
-           
         }
 
         /// <inheritdoc />

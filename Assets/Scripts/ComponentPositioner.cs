@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine.UIElements;
 using Unity.VisualScripting;
 
-public class PrefabPositioner : MonoBehaviour
+public class ComponentPositioner : MonoBehaviour
 {
     [SerializeField]
     private GameObject prefab;
@@ -23,6 +23,8 @@ public class PrefabPositioner : MonoBehaviour
     private KeyCode scrollKey = KeyCode.Space;
     [SerializeField]
     private GameObject parent;
+
+    private bool isOverTableMaxX = false;
 
     private List<Transform> spawnedChildren = new List<Transform>();
     private Bounds tableBounds;
@@ -89,6 +91,7 @@ public class PrefabPositioner : MonoBehaviour
                     if (child.position.x > tableBounds.max.x)
                     {
                         child.gameObject.SetActive(false);
+                        isOverTableMaxX = true;
                     }
                     else
                     {
@@ -128,7 +131,10 @@ public class PrefabPositioner : MonoBehaviour
                 }
 
                 // Position this child behind the rightmost child
+
                 position.x = rightmostX + child.GetComponent<Renderer>().bounds.size.x;
+
+
             }
 
             // Deactivate if out of bounds
@@ -145,3 +151,4 @@ public class PrefabPositioner : MonoBehaviour
         }
     }
 }
+

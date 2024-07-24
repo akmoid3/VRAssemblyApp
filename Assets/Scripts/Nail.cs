@@ -2,11 +2,11 @@ using UnityEngine;
 
 public class Nail : Fastener
 {
-    private SimpleHammer hammerScript; // Assuming SimpleHammer or BaseHammer is used
+    private SimpleHammer hammerScript; 
     [SerializeField] private float forceScalingFactor = 0.5f;
-    [SerializeField] private float minimumImpactForce = 10f;
+    [SerializeField] private float minimumImpactForce = 2f;
 
-    [SerializeField] private float moveCooldown = 1f; // Cooldown duration in seconds
+    [SerializeField] private float moveCooldown = 0.5f; // Cooldown duration in seconds
 
     private float lastMoveTime = 0f;
 

@@ -15,10 +15,11 @@ public class Manager : MonoBehaviour
     [SerializeField] private bool isPlayBacking = false;
     [SerializeField] private bool isModelConfirmed = false;
     [SerializeField] private bool finishedRecording = false;
- 
+    [SerializeField] private bool isRealeased = false;
 
     [SerializeField] private List<GameObject> sequenceOrderList = new List<GameObject>();
 
+    public bool IsRealeased { get => isRealeased; set => isRealeased = value; }
 
     public void OnSelectEnter(SelectEnterEventArgs args)
     {
@@ -29,6 +30,9 @@ public class Manager : MonoBehaviour
         {
             currentSelectedComponent.transform.SetParent(null); // Remove the parent
         }
+        ComponentObject componentObject = currentSelectedComponent.GetComponent<ComponentObject>();
+        if (componentObject != null)
+            componentObject.IsReleased = false;
     }
 
     public void OnSelectExit(SelectExitEventArgs args)
@@ -38,6 +42,10 @@ public class Manager : MonoBehaviour
         {
             currentSelectedComponent.transform.SetParent(null); // Remove the parent
         }
+
+        ComponentObject componentObject = currentSelectedComponent.GetComponent<ComponentObject>();
+        if (componentObject != null)
+            componentObject.IsReleased = true;
     }
 
     public void SetRecording(bool recording)

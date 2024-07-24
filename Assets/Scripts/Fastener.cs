@@ -4,7 +4,7 @@ using UnityEngine;
 public abstract class Fastener : MonoBehaviour
 {
     protected float maxAllowedDotProduct = 0.9f;
-    protected float alignmentDotProductThreshold = -0.9f;
+    protected float alignmentDotProductThreshold = 0.95f;
 
     [SerializeField] protected bool isCollidingWithTool = false;
     [SerializeField] protected bool isCollidingWithComponent = false;
@@ -12,9 +12,9 @@ public abstract class Fastener : MonoBehaviour
     [SerializeField] protected bool canStop = false;
     [SerializeField] protected bool isStopped = false; // Flag if the fastener should stop moving
     [SerializeField] protected float headSize = 0.005f;
+    [SerializeField] protected float rayLength = 0.15f;
 
     protected GameObject tool;
-
     protected Renderer fastenerRenderer;
     protected Color alignedColor = Color.green;
     protected Color notAlignedColor = Color.red;
@@ -24,11 +24,12 @@ public abstract class Fastener : MonoBehaviour
     protected Vector3 initialZPosition; // Initial position of the fastener along the Z-axis
     protected float distanceToTravel; // Depth to stop the fastener
 
-    protected List<Collider> components = new List<Collider>();
+    protected Collider colliderComponent;
 
     protected bool isAligned = false;
     protected float fastenerLength;
 
+    protected ComponentObject componentObject;
     public GameObject getTool()
     {
         return tool;
@@ -51,10 +52,8 @@ public abstract class Fastener : MonoBehaviour
             HandleInteraction();
         }
 
-        if (isCollidingWithComponent && !isAligned)
-        {
-            AlignWithClosestComponent();
-        }
+        if (!canStop && !isStopped)
+            PerformComponentRaycast();
     }
 
     protected abstract void HandleInteraction();
@@ -68,14 +67,6 @@ public abstract class Fastener : MonoBehaviour
             OnToolCollisionEnter(other);
             canStop = true;
         }
-        else if (other.CompareTag("Component"))
-        {
-            if (!components.Contains(other))
-            {
-                components.Add(other);
-                isCollidingWithComponent = true;
-            }
-        }
     }
 
     protected virtual void OnTriggerExit(Collider other)
@@ -85,70 +76,61 @@ public abstract class Fastener : MonoBehaviour
             isCollidingWithTool = false;
             OnToolCollisionExit(other);
         }
-        else if (other.CompareTag("Component"))
-        {
-            if (components.Contains(other))
-            {
-                components.Remove(other);
-                if (components.Count == 0)
-                {
-                    isCollidingWithComponent = false;
-                    isAligned = false;
-                    isStopped = false;
-                    fastenerRenderer.material.color = defaultColor;
-                }
-            }
-        }
     }
 
     protected abstract void OnToolCollisionEnter(Collider other);
     protected abstract void OnToolCollisionExit(Collider other);
 
-    protected void AlignWithClosestComponent()
+    protected void PerformComponentRaycast()
     {
-        Collider closestComponent = null;
-        float closestDistance = float.MaxValue;
-        Vector3 closestPoint = Vector3.zero;
-        Vector3 normalAtContact = Vector3.zero;
+        isCollidingWithComponent = false;
 
-        foreach (Collider component in components)
+        RaycastHit hit;
+        if (Physics.Raycast(transform.position, transform.forward, out hit, rayLength))
         {
-            Vector3 point = component.ClosestPoint(transform.position);
-            float distance = Vector3.Distance(transform.position, point);
-
-            if (distance < closestDistance)
+            if (hit.collider.CompareTag("Component"))
             {
-                closestDistance = distance;
-                closestComponent = component;
-                closestPoint = point;
-                normalAtContact = (transform.position - closestPoint).normalized;
+                isCollidingWithComponent = true;
+
+                // Check alignment with dot product
+                Vector3 normalAtContact = hit.normal;
+                float dotProduct = Vector3.Dot(transform.forward, -normalAtContact);
+                componentObject = GetComponent<ComponentObject>();
+                if (dotProduct >= alignmentDotProductThreshold)
+                {
+                    fastenerRenderer.material.color = alignedColor;
+                    if (componentObject && componentObject.IsReleased)
+                        AlignWithComponent(hit.point, normalAtContact);
+                }
+                else
+                {
+                    fastenerRenderer.material.color = notAlignedColor;
+                    isAligned = false;
+                }
             }
         }
-
-        if (closestComponent != null)
+        else
         {
-            // Check the dot product with the normal
-            float dotProduct = Vector3.Dot(transform.forward, normalAtContact);
+            isStopped = false;
+            canStop = false;
+            isCollidingWithComponent = false;
+            isAligned = false;
+            fastenerRenderer.material.color = defaultColor;
 
-            if (dotProduct <= alignmentDotProductThreshold)
-            {
-                Quaternion targetRotation = Quaternion.LookRotation(-normalAtContact);
-                Vector3 directionToMove = -transform.forward;
-                Vector3 targetPosition = closestPoint + directionToMove * fastenerLength / 2.0f;
-
-                transform.SetPositionAndRotation(targetPosition, targetRotation);
-
-                // Set initial position at the point of contact
-                initialZPosition = transform.localPosition;
-
-                isAligned = true;
-                fastenerRenderer.material.color = alignedColor;
-            }
-            else
-            {
-                fastenerRenderer.material.color = notAlignedColor;
-                isAligned = false;
-            }
         }
+    }
+
+    protected void AlignWithComponent(Vector3 contactPoint, Vector3 contactNormal)
+    {
+        Quaternion targetRotation = Quaternion.LookRotation(-contactNormal);
+        Vector3 directionToMove = -transform.forward;
+        Vector3 targetPosition = contactPoint + directionToMove * fastenerLength / 2.0f;
+
+        transform.SetPositionAndRotation(targetPosition, targetRotation);
+
+        // Set initial position at the point of contact
+        initialZPosition = transform.localPosition;
+
+        isAligned = true;
     }
 }
