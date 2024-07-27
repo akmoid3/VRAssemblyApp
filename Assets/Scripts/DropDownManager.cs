@@ -126,4 +126,17 @@ public class DropDownManager : MonoBehaviour
             }
         }
     }
+
+    public GameObject GetPrefabInstance(string modelName)
+    {
+        if (prefabInstances.TryGetValue(modelName, out GameObject instance))
+        {
+            return instance;
+        }
+        else
+        {
+            Debug.LogWarning("Prefab instance for " + modelName + " not found.");
+            return null;
+        }
+    }
 }

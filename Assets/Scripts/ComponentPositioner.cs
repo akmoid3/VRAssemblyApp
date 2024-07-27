@@ -6,8 +6,6 @@ using Unity.VisualScripting;
 public class ComponentPositioner : MonoBehaviour
 {
     [SerializeField]
-    private GameObject prefab;
-    [SerializeField]
     private MeshRenderer tableRenderer;
     [SerializeField]
     private Object tableRoll;
@@ -23,8 +21,7 @@ public class ComponentPositioner : MonoBehaviour
     private KeyCode scrollKey = KeyCode.Space;
     [SerializeField]
     private GameObject parent;
-
-    private bool isOverTableMaxX = false;
+    [SerializeField] DropDownManager dropDownManager;
 
     private List<Transform> spawnedChildren = new List<Transform>();
     private Bounds tableBounds;
@@ -59,7 +56,7 @@ public class ComponentPositioner : MonoBehaviour
         }
 
         string prefabName = manager.GetCurrentSelectedPrefabName();
-        GameObject prefab = Resources.Load<GameObject>("Prefabs/" + prefabName);
+        GameObject prefab = dropDownManager.GetPrefabInstance(prefabName);
 
         if (prefab != null)
         {
@@ -67,13 +64,14 @@ public class ComponentPositioner : MonoBehaviour
             Vector3 newPosition;
             float width;
             float height;
-            float startPosition = tableBounds.min.x; // Start position for the components
+            float startPosition = tableBounds.min.x;
             float currentX = startPosition;
             float childCount = instantiatedPrefab.transform.childCount;
             // Position the components within the bounds of the table
             for (int i = 0; i < childCount; i++)
             {
                 Transform child = instantiatedPrefab.transform.GetChild(i);
+                child.rotation = Quaternion.identity;
                 Renderer renderer = child.GetComponent<Renderer>();
                 if (renderer != null)
                 {
@@ -91,7 +89,6 @@ public class ComponentPositioner : MonoBehaviour
                     if (child.position.x > tableBounds.max.x)
                     {
                         child.gameObject.SetActive(false);
-                        isOverTableMaxX = true;
                     }
                     else
                     {
