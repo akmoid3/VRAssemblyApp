@@ -19,6 +19,9 @@ public class Manager : MonoBehaviour
 
     [SerializeField] private List<GameObject> sequenceOrderList = new List<GameObject>();
 
+    [SerializeField] private Color outlineColor = Color.white;
+    [SerializeField] private float outlineWidth = 1.0f;
+
     public bool IsRealeased { get => isRealeased; set => isRealeased = value; }
 
     public void OnSelectEnter(SelectEnterEventArgs args)
@@ -46,6 +49,37 @@ public class Manager : MonoBehaviour
         ComponentObject componentObject = currentSelectedComponent.GetComponent<ComponentObject>();
         if (componentObject != null)
             componentObject.IsReleased = true;
+    }
+
+    public void OnHoverEnter(HoverEnterEventArgs args)
+    {
+        GameObject gameObject = args.interactableObject.transform.gameObject;
+        Outline outline = gameObject.GetComponent<Outline>();
+
+        if (outline == null)
+        {
+            outline = gameObject.AddComponent<Outline>();
+            outline.OutlineColor = outlineColor;
+            outline.OutlineWidth = outlineWidth;
+        }
+        else
+            outline.enabled = true;
+
+    }
+
+    public void OnHoverExit(HoverExitEventArgs args)
+    {
+        GameObject gameObject = args.interactableObject.transform.gameObject;
+        Outline outline = gameObject.GetComponent<Outline>();
+
+        if (outline == null)
+        {
+            outline = gameObject.AddComponent<Outline>();
+            outline.OutlineColor = outlineColor;
+            outline.OutlineWidth = outlineWidth;
+        }
+        else
+            outline.enabled = false;
     }
 
     public void SetRecording(bool recording)

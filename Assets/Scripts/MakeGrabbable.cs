@@ -64,7 +64,8 @@ public class MakeGrabbable : MonoBehaviour
         grabInteractable.selectMode = selectMode;
         grabInteractable.selectEntered.AddListener(OnSelectEnter);
         grabInteractable.selectExited.AddListener(OnSelectExit);
-
+        grabInteractable.hoverEntered.AddListener(OnHoverEnter);
+        grabInteractable.hoverExited.AddListener(OnHoverExit);
         yield return 0; // Wait a frame for the component to initialize
 
         // Clear existing colliders and add cloned colliders
@@ -106,6 +107,8 @@ public class MakeGrabbable : MonoBehaviour
             (interactable as MonoBehaviour).enabled = true;
             (interactable as XRBaseInteractable).selectEntered.AddListener(OnSelectEnter);
             (interactable as XRBaseInteractable).selectExited.AddListener(OnSelectExit);
+            (interactable as XRBaseInteractable).hoverEntered.AddListener(OnHoverEnter);
+            (interactable as XRBaseInteractable).hoverExited.AddListener(OnHoverExit);
         }
 
         originalInteractables.Clear();
@@ -120,5 +123,15 @@ public class MakeGrabbable : MonoBehaviour
     private void OnSelectExit(SelectExitEventArgs args)
     {
         manager.OnSelectExit(args);
+    }
+
+    private void OnHoverEnter(HoverEnterEventArgs args)
+    {
+        manager.OnHoverEnter(args);
+    }
+
+    private void OnHoverExit(HoverExitEventArgs args)
+    {
+        manager.OnHoverExit(args);
     }
 }

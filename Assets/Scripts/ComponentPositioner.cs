@@ -111,34 +111,55 @@ public class ComponentPositioner : MonoBehaviour
     }
     private void ScrollComponents()
     {
+        Transform rightmostChild = null;
+        float rightmostX = float.MinValue;
+
+        // Scroll all children and find the rightmost child
         foreach (Transform child in parent.transform)
         {
             Vector3 position = child.position;
             position.x -= scrollSpeed * Time.deltaTime;
+            child.position = position;
 
-            // Check if the component has moved out of the left bounds
-            if (position.x < tableBounds.min.x - child.GetComponent<Renderer>().bounds.size.x / 2)
+            // Find the rightmost child
+            float childRightX = position.x + child.GetComponent<Renderer>().bounds.size.x / 2;
+            if (childRightX > rightmostX)
             {
-                // Find the rightmost child to determine new position
-                float rightmostX = float.MinValue;
-                foreach (Transform sibling in parent.transform)
-                {
-                    float siblingRightX = sibling.position.x + sibling.GetComponent<Renderer>().bounds.size.x / 2;
-                    if (siblingRightX > rightmostX)
-                    {
-                        rightmostX = siblingRightX;
-                    }
-                }
-
-                // Position this child behind the rightmost child
-
-                position.x = rightmostX + child.GetComponent<Renderer>().bounds.size.x;
-
-
+                rightmostX = childRightX;
+                rightmostChild = child;
             }
+        }
 
-            // Deactivate if out of bounds
-            if (position.x < tableBounds.min.x || position.x > tableBounds.max.x)
+        // Check if the rightmost child is out of the left bounds
+        if (rightmostChild != null && rightmostChild.position.x < tableBounds.min.x - rightmostChild.GetComponent<Renderer>().bounds.size.x / 2)
+        {
+            Vector3 newPosition;
+            float width;
+            float height;
+            float startPosition = tableBounds.max.x; // Start position for the components
+            float currentX = startPosition;
+            float childCount = parent.transform.childCount;
+
+            for (int i = 0; i < childCount; i++)
+            {
+                Transform child = parent.transform.GetChild(i);
+                Renderer renderer = child.GetComponent<Renderer>();
+                if (renderer != null)
+                {
+                    Bounds childBounds = renderer.bounds;
+                    width = childBounds.size.x;
+                    height = childBounds.size.y;
+                    newPosition = new Vector3(currentX + width / 2, tableBounds.max.y + height / 2, tableBounds.center.z);
+                    child.position = newPosition;
+                    currentX += width + extraSpacing;
+                }
+            }
+        }
+
+        // Optional: Deactivate out-of-bounds children (performance optimization)
+        foreach (Transform child in parent.transform)
+        {
+            if (child.position.x < tableBounds.min.x || child.position.x > tableBounds.max.x)
             {
                 child.gameObject.SetActive(false);
             }
@@ -146,9 +167,10 @@ public class ComponentPositioner : MonoBehaviour
             {
                 child.gameObject.SetActive(true);
             }
-
-            child.position = position;
         }
     }
+
+
+
 }
 
