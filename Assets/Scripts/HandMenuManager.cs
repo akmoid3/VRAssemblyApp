@@ -151,9 +151,9 @@ public class HandMenuManager : MonoBehaviour
 
                 SetTransformsButtonsActive(true);
             }
-            
 
-            
+
+
         }
         else
         {
@@ -226,7 +226,7 @@ public class HandMenuManager : MonoBehaviour
     private void ModifyComponent()
     {
         GameObject currentSelectedComponent = manager.GetCurrentSelectedComponent();
-        
+
         if (currentSelectedComponent != null)
         {
             currentSelectedComponent.transform.SetParent(null);
@@ -235,7 +235,8 @@ public class HandMenuManager : MonoBehaviour
 
             if (componentObject != null)
             {
-                if (componentObject.GetIsPlaced()) {
+                if (componentObject.GetIsPlaced())
+                {
 
                     if (makeGrabbable != null)
                     {
@@ -275,13 +276,13 @@ public class HandMenuManager : MonoBehaviour
 
                     componentObject.SetIsPlaced(true);
 
-                    if(Group == null)
+                    if (Group == null)
                     {
                         Group = new GameObject("Group");
                         Group.transform.position = Vector3.zero;
                         Group.transform.rotation = Quaternion.identity;
                     }
-                   
+
                     // Change the parent of the current selected component
                     currentSelectedComponent.transform.SetParent(Group.transform);
                 }
@@ -291,7 +292,8 @@ public class HandMenuManager : MonoBehaviour
             {
                 manager.ModifyBuildingSequence();
                 modifying = false;
-            }else if (newStep)
+            }
+            else if (newStep)
             {
                 manager.SaveBuildingSequence();
                 newStep = false;
@@ -332,7 +334,7 @@ public class HandMenuManager : MonoBehaviour
                     }
 
                     ComponentObject componentObj = child.GetComponent<ComponentObject>();
-                    if(componentObj != null)
+                    if (componentObj != null)
                         componentObj.enabled = false;
 
                     // Clone child colliders
@@ -346,7 +348,7 @@ public class HandMenuManager : MonoBehaviour
                     }
 
                 }
-                    yield return 0;
+                yield return 0;
 
 
                 // Add Rigidbody if not present
@@ -419,25 +421,17 @@ public class HandMenuManager : MonoBehaviour
         }
     }
 
+    private static readonly float[] Increments = { 0.1f, 0.05f, 0.01f, 1f };
+
     private void UpdateIncrement(int index)
     {
-        switch (index)
+        if (index >= 0 && index < Increments.Length)
         {
-            case 0:
-                increment = 0.1f;
-                break;
-            case 1:
-                increment = 0.05f;
-                break;
-            case 2:
-                increment = 0.01f;
-                break;
-            case 3:
-                increment = 1f;
-                break;
-            default:
-                increment = 0.1f;
-                break;
+            increment = Increments[index];
+        }
+        else
+        {
+            increment = Increments[0];
         }
     }
 }

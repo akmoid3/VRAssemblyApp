@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.XR.Interaction.Toolkit;
 
@@ -28,7 +29,34 @@ public class MakeGrabbable : MonoBehaviour
             Debug.LogError("Manager not found in the scene.");
             return;
         }
+
+        ComponentInizialization();
+       
         StartCoroutine(MakeObjectGrabbable());
+    }
+
+    private void ComponentInizialization()
+    {
+        if (GetComponent<Rigidbody>() == null)
+        {
+            Rigidbody rigidbody = this.AddComponent<Rigidbody>();
+            rigidbody.isKinematic = true;
+        }
+
+        if (GetComponent<XRSimpleInteractable>() == null)
+        {
+            XRSimpleInteractable simple = this.AddComponent<XRSimpleInteractable>();
+            simple.selectEntered.AddListener(OnSelectEnter);
+            simple.selectExited.AddListener(OnSelectExit);
+            simple.hoverEntered.AddListener(OnHoverEnter);
+            simple.hoverExited.AddListener(OnHoverExit);
+        }
+
+        if (GetComponent<MeshCollider>() == null)
+        {
+            MeshCollider collider = this.AddComponent<MeshCollider>();
+            collider.convex = true;
+        }
     }
 
     public IEnumerator MakeObjectGrabbable()

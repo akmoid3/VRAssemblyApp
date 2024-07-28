@@ -83,7 +83,8 @@ public class ComponentPositioner : MonoBehaviour
                     currentX += width + extraSpacing;
 
                     spawnedChildren.Add(child);
-
+                    child.AddComponent<ComponentObject>();
+                    child.AddComponent<MakeGrabbable>();
 
                     // Deactivate if out of bounds
                     if (child.position.x > tableBounds.max.x)
