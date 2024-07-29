@@ -107,6 +107,7 @@ public class MakeGrabbable : MonoBehaviour
 
     public void MakeObjectNonGrabbable()
     {
+
         foreach (var collider in originalColliders)
         {
             collider.enabled = true;
@@ -117,7 +118,7 @@ public class MakeGrabbable : MonoBehaviour
             interactionManager.UnregisterInteractable(grabInteractable as IXRInteractable);
             Destroy(grabInteractable);
         }
-
+         
         // Remove cloned colliders
         var clonedColliders = GetComponents<Collider>();
         foreach (var collider in clonedColliders)
@@ -137,7 +138,10 @@ public class MakeGrabbable : MonoBehaviour
             (interactable as XRBaseInteractable).selectExited.AddListener(OnSelectExit);
             (interactable as XRBaseInteractable).hoverEntered.AddListener(OnHoverEnter);
             (interactable as XRBaseInteractable).hoverExited.AddListener(OnHoverExit);
+            (interactable as XRBaseInteractable).colliders.Clear();
+            (interactable as XRBaseInteractable).colliders.AddRange(originalColliders);
         }
+
 
         originalInteractables.Clear();
         originalColliders.Clear();

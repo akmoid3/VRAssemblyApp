@@ -100,11 +100,15 @@ public class ComponentPositioner : MonoBehaviour
             for (int i = 0; i < childCount; i++)
             {
                 spawnedChildren[i].SetParent(parent.transform);
-
+                if (manager.IsInitializing)
+                {
+                    //StartCoroutine( spawnedChildren[i].GetComponent<MakeGrabbable>().MakeObjectNonGrabbable());
+                }
             }
             Destroy(instantiatedPrefab);
         }
     }
+
 
     private void ScrollComponents()
     {
