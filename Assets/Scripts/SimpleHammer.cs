@@ -11,6 +11,7 @@ public class SimpleHammer : BaseHammer
 
     void Start()
     {
+        base.Start();
         lastPosition = transform.position;
     }
 

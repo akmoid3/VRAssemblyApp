@@ -9,6 +9,7 @@ public class ManualScrewDriver : BaseScrewDriver
 
     void Start()
     {
+        base.Start();
         lastRotation = transform.localRotation; // Use local rotation
     }
 
@@ -57,5 +58,23 @@ public class ManualScrewDriver : BaseScrewDriver
     {
         // Rotate around the local forward axis
         screwDriver.Rotate(transform.forward * currentRotationSpeed * Time.deltaTime);
+    }
+
+    protected override void OnHoverEntered(HoverEnterEventArgs args)
+    {
+        base.OnHoverEntered(args);
+        if (manager != null)
+        {
+            manager.OnHoverEnter(args);
+        }
+    }
+
+    protected override void OnHoverExited(HoverExitEventArgs args)
+    {
+        base.OnHoverExited(args);
+        if (manager != null)
+        {
+            manager.OnHoverExit(args);
+        }
     }
 }

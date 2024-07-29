@@ -13,6 +13,8 @@ public abstract class Fastener : MonoBehaviour
     [SerializeField] protected float headSize = 0.005f;
     [SerializeField] protected float rayLength = 0.15f;
 
+    [SerializeField] protected Transform socketTransform;
+    protected Vector3 initialSocketPosition;
     protected GameObject tool;
     protected Renderer fastenerRenderer;
     protected Color alignedColor = Color.green;
@@ -25,7 +27,7 @@ public abstract class Fastener : MonoBehaviour
 
     protected Collider colliderComponent;
 
-    protected bool isAligned = false;
+    [SerializeField] protected bool isAligned = false;
     protected float fastenerLength;
 
     protected ComponentObject componentObject;
@@ -131,5 +133,12 @@ public abstract class Fastener : MonoBehaviour
         initialZPosition = transform.localPosition;
 
         isAligned = true;
+    }
+
+    public void SetSocketTransform(Transform socket)
+    {
+        socketTransform = socket;
+        initialSocketPosition = socket.localPosition;
+
     }
 }

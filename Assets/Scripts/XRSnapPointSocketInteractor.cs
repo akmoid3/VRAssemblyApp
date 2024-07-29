@@ -71,6 +71,13 @@ namespace UnityEngine.XR.Content.Interaction
             GameObject gameObject = args.interactableObject.transform.gameObject;
             XRGrabInteractable xr = gameObject.GetComponent<XRGrabInteractable>();
             xr.selectMode = InteractableSelectMode.Single;
+
+
+            Fastener fastener = gameObject.GetComponent<Fastener>();
+            if (fastener != null)
+            {
+                fastener.SetSocketTransform(snappoint);
+            }
         }
 
 
@@ -83,6 +90,14 @@ namespace UnityEngine.XR.Content.Interaction
             GameObject gameObject = args.interactableObject.transform.gameObject;
             XRGrabInteractable xr = gameObject.GetComponent<XRGrabInteractable>();
             xr.selectMode = InteractableSelectMode.Multiple;
+
+
+            Fastener fastener = gameObject.GetComponent<Fastener>();
+            if (fastener != null)
+            {
+                fastener.SetSocketTransform(null);
+            }
+
             base.OnSelectExiting(args);
         }
 

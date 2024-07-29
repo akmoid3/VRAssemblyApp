@@ -2,7 +2,7 @@ using UnityEngine;
 
 public class Nail : Fastener
 {
-    private SimpleHammer hammerScript; 
+    private SimpleHammer hammerScript;
     [SerializeField] private float forceScalingFactor = 0.5f;
     [SerializeField] private float minimumImpactForce = 2f;
 
@@ -17,22 +17,31 @@ public class Nail : Fastener
         if (Time.time - lastMoveTime < moveCooldown)
             return;
 
-        if (hammerScript != null && isAligned)
+
+        if ((hammerScript != null && isAligned) || (hammerScript != null && socketTransform))
         {
             float hammerForce = hammerScript.GetImpactForce() * forceScalingFactor;
             Vector3 impactDirection = hammerScript.GetImpactDirection();
 
             if (hammerForce >= minimumImpactForce)
             {
-                
-                float potentialMovement = hammerForce * Time.fixedDeltaTime * forceScalingFactor;
 
-                float currentDistance = Vector3.Distance(transform.localPosition, initialZPosition);
+                float potentialMovement = hammerForce * Time.fixedDeltaTime * forceScalingFactor;
+                float currentDistance;
+                if (socketTransform)
+                {
+                    currentDistance = Vector3.Distance(socketTransform.localPosition, initialSocketPosition);
+                }
+                else
+                {
+                    currentDistance = Vector3.Distance(transform.localPosition, initialZPosition);
+                }
+
 
                 float remainingDistance = distanceToTravel - currentDistance;
 
                 float actualMovement = potentialMovement;
-                
+
 
 
                 float direction = Vector3.Dot(impactDirection, transform.forward);
@@ -46,8 +55,10 @@ public class Nail : Fastener
                         actualMovement = Mathf.Min(potentialMovement, remainingDistance);
                         isStopped = true;
                     }
-
-                    transform.Translate(Vector3.forward * actualMovement);
+                    if(socketTransform)
+                        socketTransform.Translate(Vector3.forward * actualMovement);
+                    else
+                        transform.Translate(Vector3.forward * actualMovement);
 
                     // Check if the nail has reached or exceeded the distanceToTravel
                     if (currentDistance + actualMovement >= distanceToTravel)
@@ -58,7 +69,7 @@ public class Nail : Fastener
 
                     lastMoveTime = Time.time;
 
-                    Debug.Log("Correct direction!" + direction+ " remaining " + remainingDistance);
+                    Debug.Log("Correct direction!" + direction + " remaining " + remainingDistance);
                 }
                 else
                 {

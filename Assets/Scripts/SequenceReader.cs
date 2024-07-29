@@ -50,7 +50,7 @@ public class SequenceReader : MonoBehaviour
 
         // Construct the file path
         string folderPath = "Assets/SavedData";
-        string filePath = System.IO.Path.Combine(folderPath, fileName + ".json");
+        string filePath = System.IO.Path.Combine(folderPath, "tavolo" + ".json");
 
         if (!System.IO.File.Exists(filePath))
         {
@@ -71,7 +71,7 @@ public class SequenceReader : MonoBehaviour
         }
 
         // Load the prefab from the Resources folder
-        GameObject prefab = Resources.Load<GameObject>("Prefabs/" + fileName);
+        GameObject prefab = Resources.Load<GameObject>("Prefabs/" + "tavolo");
         if (prefab == null)
         {
             Debug.LogError($"Prefab not found at path: {"Prefabs/" + fileName}");

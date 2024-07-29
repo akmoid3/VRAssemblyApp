@@ -7,7 +7,7 @@ public class Screw : Fastener
 
     protected override void HandleInteraction()
     {
-        if (screwdriverScript != null && isAligned)
+        if ((screwdriverScript != null && isAligned) || (screwdriverScript != null && socketTransform))
         {
             Vector3 screwdriverDir = screwdriverScript.transform.forward;
             Vector3 screwDir = transform.forward;
@@ -16,12 +16,21 @@ public class Screw : Fastener
             if (dotProduct >= maxAllowedDotProduct)
             {
                 float rotationSpeed = screwdriverScript.GetRotationSpeed();
-                transform.Rotate(Vector3.forward, rotationSpeed * Time.deltaTime * -1.0f);
-
+               
                 float linearMovement = (rotationSpeed * pitch / 360) * Time.deltaTime;
-                transform.Translate(Vector3.forward * linearMovement);
-
-                float distanceTraveled = Mathf.Abs(Vector3.Distance(transform.localPosition, initialZPosition));
+                float distanceTraveled;
+                if (socketTransform)
+                {
+                    socketTransform.Rotate(Vector3.forward, rotationSpeed * Time.deltaTime * -1.0f);
+                    socketTransform.Translate(Vector3.forward * linearMovement);
+                    distanceTraveled = Mathf.Abs(Vector3.Distance(socketTransform.localPosition, initialSocketPosition));
+                }
+                else
+                {
+                    transform.Rotate(Vector3.forward, rotationSpeed * Time.deltaTime * -1.0f);
+                    transform.Translate(Vector3.forward * linearMovement);
+                    distanceTraveled = Mathf.Abs(Vector3.Distance(transform.localPosition, initialZPosition));
+                }
 
                 if (distanceTraveled >= distanceToTravel)
                 {

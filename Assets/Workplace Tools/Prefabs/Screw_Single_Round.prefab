@@ -17,7 +17,6 @@ GameObject:
   - component: {fileID: 1731398390018089557}
   - component: {fileID: 8573840933703042431}
   - component: {fileID: 4780944498908423967}
-  - component: {fileID: 324204652840905203}
   m_Layer: 0
   m_Name: Screw_Single_Round
   m_TagString: Component
@@ -170,6 +169,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8a5b5628d88b9e74498ff457591c2a68, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  componentType: 0
 --- !u!114 &8573840933703042431
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -288,24 +288,3 @@ MonoBehaviour:
   m_OnDeactivate:
     m_PersistentCalls:
       m_Calls: []
---- !u!65 &324204652840905203
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1000012111449378}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 1
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Size: {x: 0.04042874, y: 0.04042874, z: 0.15098171}
-  m_Center: {x: -0.000043364067, y: -0.000059062615, z: 0.04070592}

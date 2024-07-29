@@ -7,6 +7,7 @@ public class HandMenuController : MonoBehaviour
 {
     [SerializeField]
     private GameObject handMenu;
+    [SerializeField] Manager manager;
 
     [SerializeField]
     private InputActionReference toggleReference;
@@ -14,22 +15,20 @@ public class HandMenuController : MonoBehaviour
     private void Awake()
     {
         toggleReference.action.started += Toggle;
+        handMenu.SetActive(false);
     }
-
     private void OnDestroy()
     {
         toggleReference.action.started -= Toggle;
     }
 
-
-    private void Update()
-    {
-        
-    }
-
     private void Toggle(InputAction.CallbackContext context)
     {
-      bool isActive = !handMenu.activeSelf;
-      handMenu.SetActive(isActive);
+        if (manager.GetRecording())
+        {
+            bool isActive = !handMenu.activeSelf;
+            handMenu.SetActive(isActive);
+        }
+           
     }
 }

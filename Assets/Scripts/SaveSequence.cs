@@ -23,6 +23,14 @@ public class SaveSequence : MonoBehaviour
 
     private ObjectData objectData = new ObjectData();
 
+    private void Start()
+    {
+        string directoryPath = Path.Combine(Application.persistentDataPath, "SavedBuildData");
+        if (!Directory.Exists(directoryPath))
+        {
+            Directory.CreateDirectory(directoryPath);
+        }
+    }
     public void ModifyComponent(GameObject component)
     {
         // Gets the last data of the component
@@ -85,7 +93,7 @@ public class SaveSequence : MonoBehaviour
         /* DA USARE PER LA BUILD
         string json = JsonUtility.ToJson(objectData, true);
 
-        string path = Path.Combine(Application.persistentDataPath, "componentsData.json");
+        
         File.WriteAllText(path, json);
 
         Debug.Log($"Components and sequence saved to {path}");
@@ -94,20 +102,15 @@ public class SaveSequence : MonoBehaviour
         // Serialize objectData to JSON
 
         string json = JsonUtility.ToJson(objectData, true);
-
+        string folderPath = "SavedBuildData";
+        string path = Path.Combine(Application.persistentDataPath, folderPath, name + ".json");
         // Define the path to the custom folder within Assets
-        string folderPath = "Assets/SavedData";
-        if (!Directory.Exists(folderPath))
-        {
-            Directory.CreateDirectory(folderPath);
-        }
+       
+       
 
         // Save JSON to a file within the custom folder
-        string filePath = Path.Combine(folderPath, name + ".json");
-        File.WriteAllText(filePath, json);
-
-        // Refresh the Asset Database to show changes in Unity Editor
-        UnityEditor.AssetDatabase.Refresh();
+        //string filePath = Path.Combine(folderPath, folderPath ,name + ".json");
+        File.WriteAllText(path, json);
 
 
     }

@@ -2,6 +2,7 @@ using UnityEngine;
 using System.Collections.Generic;
 using UnityEngine.UIElements;
 using Unity.VisualScripting;
+using System.Collections;
 
 public class ComponentPositioner : MonoBehaviour
 {
@@ -13,8 +14,6 @@ public class ComponentPositioner : MonoBehaviour
     private float extraSpacing = 0.1f;
     [SerializeField]
     private Manager manager;
-    [SerializeField]
-    private bool prefabInstanced = false;
     [SerializeField]
     private float scrollSpeed = 1.0f;
     [SerializeField]
@@ -85,7 +84,7 @@ public class ComponentPositioner : MonoBehaviour
                     spawnedChildren.Add(child);
                     child.AddComponent<ComponentObject>();
                     child.AddComponent<MakeGrabbable>();
-
+                    child.tag = "Component";
                     // Deactivate if out of bounds
                     if (child.position.x > tableBounds.max.x)
                     {
@@ -101,12 +100,12 @@ public class ComponentPositioner : MonoBehaviour
             for (int i = 0; i < childCount; i++)
             {
                 spawnedChildren[i].SetParent(parent.transform);
-            }
 
+            }
             Destroy(instantiatedPrefab);
-            prefabInstanced = true;
         }
     }
+
     private void ScrollComponents()
     {
         Transform rightmostChild = null;
@@ -134,7 +133,7 @@ public class ComponentPositioner : MonoBehaviour
             Vector3 newPosition;
             float width;
             float height;
-            float startPosition = tableBounds.max.x; // Start position for the components
+            float startPosition = tableBounds.max.x;
             float currentX = startPosition;
             float childCount = parent.transform.childCount;
 
@@ -154,7 +153,6 @@ public class ComponentPositioner : MonoBehaviour
             }
         }
 
-        // Optional: Deactivate out-of-bounds children (performance optimization)
         foreach (Transform child in parent.transform)
         {
             if (child.position.x < tableBounds.min.x || child.position.x > tableBounds.max.x)
@@ -169,6 +167,9 @@ public class ComponentPositioner : MonoBehaviour
     }
 
 
-
+    public GameObject getParentModel()
+    {
+        return parent;
+    }
 }
 

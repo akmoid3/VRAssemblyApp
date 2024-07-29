@@ -14,10 +14,10 @@ public class MakeGrabbable : MonoBehaviour
 
     // Fields to be modified in the Inspector
     [Header("XRGrabInteractable Settings")]
-    public bool throwOnDetach = false;
-    public XRBaseInteractable.MovementType movementType = XRBaseInteractable.MovementType.VelocityTracking;
-    public bool useDynamicAttach = true;
-    public InteractableSelectMode selectMode = InteractableSelectMode.Multiple;
+    [SerializeField] private bool throwOnDetach = false;
+    [SerializeField] private XRBaseInteractable.MovementType movementType = XRBaseInteractable.MovementType.VelocityTracking;
+    [SerializeField] private bool useDynamicAttach = true;
+    [SerializeField] private InteractableSelectMode selectMode = InteractableSelectMode.Multiple;
 
     private void Start()
     {
