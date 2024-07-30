@@ -240,7 +240,7 @@ public class HandMenuManager : MonoBehaviour
 
                     if (makeGrabbable != null)
                     {
-                        StartCoroutine( makeGrabbable.MakeObjectGrabbable());
+                        makeGrabbable.MakeObjectGrabbable();
                     }
 
                     componentObject.SetIsPlaced(false);
@@ -271,7 +271,7 @@ public class HandMenuManager : MonoBehaviour
 
                     if (makeGrabbable != null)
                     {
-                       makeGrabbable.MakeObjectNonGrabbable();
+                      makeGrabbable.MakeObjectNonGrabbable();
                     }
 
                     componentObject.SetIsPlaced(true);

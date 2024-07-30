@@ -102,7 +102,7 @@ public class ComponentPositioner : MonoBehaviour
                 spawnedChildren[i].SetParent(parent.transform);
                 if (manager.IsInitializing)
                 {
-                    //StartCoroutine( spawnedChildren[i].GetComponent<MakeGrabbable>().MakeObjectNonGrabbable());
+                    spawnedChildren[i].GetComponent<MakeGrabbable>().MakeObjectNonGrabbable();
                 }
             }
             Destroy(instantiatedPrefab);
