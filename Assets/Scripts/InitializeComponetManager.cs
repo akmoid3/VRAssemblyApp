@@ -6,7 +6,8 @@ using UnityEngine.UI;
 public class InitializeComponentManager : MonoBehaviour
 {
     [SerializeField] private TMP_Dropdown componentDropdown;
-    [SerializeField] private Canvas canvas;
+    [SerializeField] private GameObject canvasInit;
+    [SerializeField] private GameObject canvasMod;
     [SerializeField] private Manager manager;
     [SerializeField] private TextMeshProUGUI componentName;
 
@@ -26,17 +27,18 @@ public class InitializeComponentManager : MonoBehaviour
     {
         if (manager.IsInitializing)
         {
-            canvas.enabled = true;
+            canvasInit.SetActive(true);
             GameObject selectedComponent = manager.GetCurrentSelectedComponent();
             if (selectedComponent != null)
             {
                 componentName.text = selectedComponent.name;
                 UpdateDropdownForSelectedComponent();
             }
+            canvasMod.SetActive(false);
         }
         else
         {
-            canvas.enabled = false;
+            canvasInit.SetActive(false);
         }
     }
 
