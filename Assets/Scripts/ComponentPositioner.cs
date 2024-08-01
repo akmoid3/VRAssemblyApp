@@ -171,7 +171,7 @@ public class ComponentPositioner : MonoBehaviour
     }
 
 
-    public GameObject getParentModel()
+    public GameObject GetParentModel()
     {
         return parent;
     }

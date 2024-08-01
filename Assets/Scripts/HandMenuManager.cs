@@ -46,7 +46,7 @@ public class HandMenuManager : MonoBehaviour
 
     private MakeGrabbable makeGrabbable;
 
-    [SerializeField] private GameObject Group;
+    [SerializeField] private GameObject group;
 
     [SerializeField] private bool isGrabInteractableEnabled = false;
     [SerializeField] private bool modifying = false;
@@ -56,6 +56,9 @@ public class HandMenuManager : MonoBehaviour
 
 
     private List<Button> allButtonsToDeactivate;
+
+    private List<Collider> clonedColliders = new List<Collider>();
+
     private void Start()
     {
         // Initialize the button list
@@ -172,7 +175,7 @@ public class HandMenuManager : MonoBehaviour
 
         }
 
-        if (Group && Group.transform.childCount > 0)
+        if (group && group.transform.childCount > 0)
         {
             groupSelectionButton.gameObject.SetActive(true);
             toggle.gameObject.SetActive(true);
@@ -276,15 +279,15 @@ public class HandMenuManager : MonoBehaviour
 
                     componentObject.SetIsPlaced(true);
 
-                    if (Group == null)
+                    if (group == null)
                     {
-                        Group = new GameObject("Group");
-                        Group.transform.position = Vector3.zero;
-                        Group.transform.rotation = Quaternion.identity;
+                        group = new GameObject("Group");
+                        group.transform.position = Vector3.zero;
+                        group.transform.rotation = Quaternion.identity;
                     }
 
                     // Change the parent of the current selected component
-                    currentSelectedComponent.transform.SetParent(Group.transform);
+                    currentSelectedComponent.transform.SetParent(group.transform);
                 }
             }
 
@@ -308,22 +311,16 @@ public class HandMenuManager : MonoBehaviour
 
     private void GroupSelection()
     {
-        StartCoroutine(GroupSelectionMethod());
-    }
-
-    private IEnumerator GroupSelectionMethod()
-    {
-        if (Group != null)
+        if (group != null)
         {
             isGrabInteractableEnabled = !isGrabInteractableEnabled;
 
             toggle.isOn = isGrabInteractableEnabled;
-            List<Collider> clonedColliders = new List<Collider>();
 
             if (isGrabInteractableEnabled)
             {
                 // Disable all child XRSimpleInteractables
-                foreach (Transform child in Group.transform)
+                foreach (Transform child in group.transform)
                 {
                     XRBaseInteractable childGrabInteractable = child.GetComponent<XRBaseInteractable>();
 
@@ -348,22 +345,21 @@ public class HandMenuManager : MonoBehaviour
                     }
 
                 }
-                yield return 0;
 
 
                 // Add Rigidbody if not present
-                Rigidbody rb = Group.GetComponent<Rigidbody>();
+                Rigidbody rb = group.GetComponent<Rigidbody>();
                 if (rb == null)
                 {
-                    rb = Group.AddComponent<Rigidbody>();
+                    rb = group.AddComponent<Rigidbody>();
                 }
                 rb.isKinematic = true;
 
                 // Add XRGrabInteractable
-                XRGrabInteractable grabInteractable = Group.GetComponent<XRGrabInteractable>();
+                XRGrabInteractable grabInteractable = group.GetComponent<XRGrabInteractable>();
                 if (grabInteractable == null)
                 {
-                    grabInteractable = Group.AddComponent<XRGrabInteractable>();
+                    grabInteractable = group.AddComponent<XRGrabInteractable>();
                 }
                 grabInteractable.enabled = false;
                 grabInteractable.movementType = XRBaseInteractable.MovementType.Kinematic;
@@ -372,19 +368,20 @@ public class HandMenuManager : MonoBehaviour
                 grabInteractable.throwOnDetach = false;
                 grabInteractable.selectEntered.AddListener(manager.OnSelectEnter);
                 grabInteractable.selectExited.AddListener(manager.OnSelectExit);
+                grabInteractable.hoverEntered.AddListener(manager.OnHoverEnter);
+                grabInteractable.hoverExited.AddListener(manager.OnHoverExit);
 
 
                 grabInteractable.colliders.Clear();
                 grabInteractable.colliders.AddRange(clonedColliders);
 
-                yield return 0;
 
                 grabInteractable.enabled = true;
 
             }
             else
             {
-                XRBaseInteractable grabInteractable = Group.GetComponent<XRBaseInteractable>();
+                XRBaseInteractable grabInteractable = group.GetComponent<XRBaseInteractable>();
                 if (grabInteractable != null)
                 {
                     interactionManager.UnregisterInteractable(grabInteractable as IXRInteractable);
@@ -398,7 +395,7 @@ public class HandMenuManager : MonoBehaviour
                 clonedColliders.Clear();
 
                 // Enable child XRSimpleInteractables and restore original colliders
-                foreach (Transform child in Group.transform)
+                foreach (Transform child in group.transform)
                 {
                     XRBaseInteractable childGrabInteractable = child.GetComponent<XRBaseInteractable>();
                     if (childGrabInteractable != null)

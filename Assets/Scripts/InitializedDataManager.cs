@@ -42,7 +42,7 @@ public class InitializedDataManager : MonoBehaviour
     }
     public void SaveComponentsData()
     {
-        model = componentPositioner.getParentModel();
+        model = componentPositioner.GetParentModel();
         if (model == null) return;
 
         string fileName = manager.GetCurrentSelectedPrefabName() + ".json";

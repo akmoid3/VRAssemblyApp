@@ -1,13 +1,14 @@
 using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
+using Unity.XR.CoreUtils.Collections;
 using UnityEngine;
 using UnityEngine.XR.Interaction.Toolkit;
 
 public class MakeGrabbable : MonoBehaviour
 {
-    private List<Collider> originalColliders = new List<Collider>();
-    private List<IXRInteractable> originalInteractables = new List<IXRInteractable>();
+    private readonly List<Collider> originalColliders = new List<Collider>();
+    private readonly List<IXRInteractable> originalInteractables = new List<IXRInteractable>();
     private XRInteractionManager interactionManager;
     private Manager manager;
 
