@@ -12,12 +12,20 @@ public class DropDownManager : MonoBehaviour
     [SerializeField] private Manager manager;
     private Dictionary<string, GameObject> prefabInstances = new Dictionary<string, GameObject>();
     [SerializeField] private ModelLoader loader;
+    [SerializeField] private string directoryName = "Models";
+
     private string persistentDataPath;
     private HashSet<string> currentFiles = new HashSet<string>();
 
     void Start()
     {
         persistentDataPath = Application.persistentDataPath;
+        persistentDataPath = Path.Combine(persistentDataPath, directoryName);
+        // Check if the Models directory exists, if not, create it
+        if (!Directory.Exists(persistentDataPath))
+        {
+            Directory.CreateDirectory(persistentDataPath);
+        }
         LoadModelsIntoDropdown();
         dropdown.onValueChanged.AddListener(delegate { DropdownValueChanged(dropdown); });
 

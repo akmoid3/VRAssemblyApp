@@ -6,27 +6,6 @@ using System.Threading.Tasks;
 
 public class ModelLoader : MonoBehaviour
 {
-    private string filePath;
-    public void LoadGLB()
-    {
-        string[] paths = StandaloneFileBrowser.OpenFilePanel("Open GLB File", "", "glb", false);
-        if (paths.Length > 0)
-        {
-            filePath = paths[0];
-            SaveFileToPersistentDataPath(filePath);
-        }
-    }
-
-    public void LoadOBJ()
-    {
-        string[] paths = StandaloneFileBrowser.OpenFilePanel("Open OBJ File", "", "obj", false);
-        if (paths.Length > 0)
-        {
-            filePath = paths[0];
-            SaveFileToPersistentDataPath(filePath);
-            LoadOBJModel(filePath);
-        }
-    }
 
     public async Task<GameObject> LoadFromFile(string filePath)
     {
@@ -53,6 +32,7 @@ public class ModelLoader : MonoBehaviour
         }
     }
 
+    /* For obj files
     void LoadOBJModel(string objPath)
     {
         string mtlPath = objPath.Replace(".obj", ".mtl");
@@ -105,21 +85,6 @@ public class ModelLoader : MonoBehaviour
             renderer.sharedMaterials = sharedMaterials;
         }
     }
+    */
 
-    private void SaveFileToPersistentDataPath(string sourceFilePath)
-    {
-        // Create a unique file name based on the original file name
-        string fileName = Path.GetFileName(sourceFilePath);
-        string destinationFilePath = Path.Combine(Application.persistentDataPath, fileName);
-
-        // Copy the file to the persistent data path
-        File.Copy(sourceFilePath, destinationFilePath, true);
-
-
-        // Save the file path in PlayerPrefs
-        PlayerPrefs.SetString("SavedModelPath", destinationFilePath);
-        PlayerPrefs.Save();
-
-        Debug.Log($"File saved to: {destinationFilePath}");
-    }
 }
