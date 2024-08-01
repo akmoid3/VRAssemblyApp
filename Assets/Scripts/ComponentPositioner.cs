@@ -63,7 +63,7 @@ public class ComponentPositioner : MonoBehaviour
             Vector3 newPosition;
             float width;
             float height;
-            float startPosition = tableBounds.min.x;
+            float startPosition = tableBounds.min.x + 0.2f;
             float currentX = startPosition;
             float childCount = instantiatedPrefab.transform.childCount;
             // Position the components within the bounds of the table
