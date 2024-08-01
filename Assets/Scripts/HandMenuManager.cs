@@ -368,9 +368,7 @@ public class HandMenuManager : MonoBehaviour
                 grabInteractable.throwOnDetach = false;
                 grabInteractable.selectEntered.AddListener(manager.OnSelectEnter);
                 grabInteractable.selectExited.AddListener(manager.OnSelectExit);
-                grabInteractable.hoverEntered.AddListener(manager.OnHoverEnter);
-                grabInteractable.hoverExited.AddListener(manager.OnHoverExit);
-
+             
 
                 grabInteractable.colliders.Clear();
                 grabInteractable.colliders.AddRange(clonedColliders);
@@ -394,7 +392,7 @@ public class HandMenuManager : MonoBehaviour
                 }
                 clonedColliders.Clear();
 
-                // Enable child XRSimpleInteractables and restore original colliders
+                // Enable child interactable and restore original colliders
                 foreach (Transform child in group.transform)
                 {
                     XRBaseInteractable childGrabInteractable = child.GetComponent<XRBaseInteractable>();
