@@ -22,13 +22,6 @@ public class MakeGrabbable : MonoBehaviour
     private void Awake()
     {
         interactionManager = FindObjectOfType<XRInteractionManager>();
-        manager = FindObjectOfType<Manager>();
-
-        if (manager == null)
-        {
-            Debug.LogError("Manager not found in the scene.");
-            return;
-        }
 
         ComponentInizialization();
 
@@ -37,9 +30,8 @@ public class MakeGrabbable : MonoBehaviour
 
     private void Start()
     {
-        
+        manager = Manager.Instance;
     }
-
     private void ComponentInizialization()
     {
         if (GetComponent<Rigidbody>() == null)

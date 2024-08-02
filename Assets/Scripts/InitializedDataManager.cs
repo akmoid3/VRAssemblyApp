@@ -12,7 +12,7 @@ public class ComponentTypeData
     public ComponentObject.ComponentType componentType;
 }
 
-public class jsonData
+public class JsonData
 {
     public List<ComponentTypeData> components = new List<ComponentTypeData>();
 }
@@ -50,7 +50,7 @@ public class InitializedDataManager : MonoBehaviour
 
         string filePath = Path.Combine(directoryPath, fileName);
 
-        jsonData data = new jsonData();
+        JsonData data = new JsonData();
         // Iterate through the children and save their data
         foreach (Transform child in model.transform)
         {

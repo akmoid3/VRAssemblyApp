@@ -7,9 +7,8 @@ public class ManualScrewDriver : BaseScrewDriver
 {
     private Quaternion lastRotation;
 
-    public override void Start()
+    public void Start()
     {
-        base.Start();
         lastRotation = transform.localRotation;
     }
 

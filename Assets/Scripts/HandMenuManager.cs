@@ -9,7 +9,7 @@ using UnityEngine.XR.Interaction.Toolkit;
 
 public class HandMenuManager : MonoBehaviour
 {
-    [SerializeField] private Manager manager;
+    private Manager manager;
     [SerializeField] private float increment = 0.1f;
 
     [SerializeField] private TMP_Text componentNameText;
@@ -61,6 +61,7 @@ public class HandMenuManager : MonoBehaviour
 
     private void Start()
     {
+        manager = Manager.Instance;
         // Initialize the button list
         allButtonsToDeactivate = new List<Button>
         {

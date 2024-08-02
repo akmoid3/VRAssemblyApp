@@ -11,6 +11,8 @@ public class Manager : MonoBehaviour
     [SerializeField] private string currentPrefabName;
     [SerializeField] private SaveSequence saveSequence;
     [SerializeField] private GameObject currentSelectedComponent;
+    [SerializeField] private GameObject model;
+
     [SerializeField] private bool isRecording = false;
     [SerializeField] private bool isPlayBacking = false;
     [SerializeField] private bool isInitializing = false;
@@ -23,9 +25,26 @@ public class Manager : MonoBehaviour
     [SerializeField] private Color outlineColor = Color.white;
     [SerializeField] private float outlineWidth = 1.0f;
 
+
+    private void Awake()    
+    {
+        if (Instance != null && Instance != this)
+        {
+            Destroy(this);
+        }
+        else
+        {
+            Instance = this;
+        }
+    }
+
+    // Singleton
+    public static Manager Instance { get; private set; }
+
     public bool IsRealeased { get => isRealeased; set => isRealeased = value; }
 
     public bool IsInitializing { get => isInitializing; set => isInitializing = value; }
+    public GameObject Model { get => model; set => model = value; }
 
     public void OnSelectEnter(SelectEnterEventArgs args)
     {

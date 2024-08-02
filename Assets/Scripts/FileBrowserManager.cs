@@ -10,10 +10,9 @@ public class FileBrowserManager : MonoBehaviour
     void Start()
     {
         fileBrowserCanvas.SetActive(false);
-
     }
 
-    public void showDialog()
+    public void ShowDialog()
     {
         fileBrowserCanvas.SetActive(true);
 

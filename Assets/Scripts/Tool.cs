@@ -5,12 +5,7 @@ using UnityEngine.XR.Interaction.Toolkit;
 
 public abstract class Tool : XRGrabInteractable
 {
-    protected Manager manager;
-
-    public virtual void Start()
-    {
-        manager = FindObjectOfType<Manager>();
-    }
+    protected Manager manager = Manager.Instance;
 
     protected override void OnHoverEntered(HoverEnterEventArgs args)
     {

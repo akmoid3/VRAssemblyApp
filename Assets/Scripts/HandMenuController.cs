@@ -7,7 +7,7 @@ public class HandMenuController : MonoBehaviour
 {
     [SerializeField]
     private GameObject handMenu;
-    [SerializeField] Manager manager;
+    private readonly Manager manager = Manager.Instance;
 
     [SerializeField]
     private InputActionReference toggleReference;

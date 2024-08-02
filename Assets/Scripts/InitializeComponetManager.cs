@@ -8,7 +8,7 @@ public class InitializeComponentManager : MonoBehaviour
     [SerializeField] private TMP_Dropdown componentDropdown;
     [SerializeField] private GameObject canvasInit;
     [SerializeField] private GameObject canvasMod;
-    [SerializeField] private Manager manager;
+    [SerializeField] private Manager manager = Manager.Instance;
     [SerializeField] private TextMeshProUGUI componentName;
 
     void Start()

@@ -9,9 +9,8 @@ public class SimpleHammer : BaseHammer
     private Vector3 impactDirection;
 
 
-    public override void Start()
+    public void Start()
     {
-        base.Start();
         lastPosition = transform.position;
     }
 
