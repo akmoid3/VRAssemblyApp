@@ -23,11 +23,7 @@ public class DropDownManager : MonoBehaviour
         }
         dropdown.RefreshShownValue();
 
-        // Show the first model if there are any models loaded
-        if (dropdown.options.Count > 0)
-        {
-            OnDropdownValueChanged(dropdown.value);
-        }
+        OnDropdownValueChanged(dropdown.value);
     }
 
     private void OnDropdownValueChanged(int index)

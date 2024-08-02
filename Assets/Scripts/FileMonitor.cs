@@ -8,7 +8,7 @@ public class FileMonitor : MonoBehaviour
     public delegate void FilesChangedHandler(HashSet<string> newFiles);
     public event FilesChangedHandler OnFilesChanged;
 
-    [SerializeField] private string directoryName = "Models";
+    private string directoryName = "Models";
     private string persistentDataPath;
     private HashSet<string> currentFiles = new HashSet<string>();
 
@@ -17,12 +17,13 @@ public class FileMonitor : MonoBehaviour
 
     public string PersistentDataPath { get => persistentDataPath; private set => persistentDataPath = value; }
 
-    void Start()
+    private void Awake()
     {
         InitializePersistentDataPath();
         EnsureModelDirectoryExists();
         StartCoroutine(CheckForFileChanges());
     }
+
 
     private void InitializePersistentDataPath()
     {

@@ -13,13 +13,9 @@ public class PrefabManager : MonoBehaviour
     public delegate void ModelsLoadedHandler(List<string> modelNames);
     public event ModelsLoadedHandler OnModelsLoaded;
 
-    private void Awake()
-    {
-        fileMonitor.OnFilesChanged += OnFilesChanged;
-    }
-
     private void Start()
     {
+        fileMonitor.OnFilesChanged += OnFilesChanged;
         manager = Manager.Instance;
     }
 
