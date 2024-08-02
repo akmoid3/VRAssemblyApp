@@ -37,15 +37,16 @@ public class InitializedDataManager : MonoBehaviour
 
     public void CanInitialize()
     {
-       bool exist = FileChecker.DoesJsonFileExist(directoryPath, manager.GetCurrentSelectedPrefabName());
+       bool exist = FileChecker.DoesJsonFileExist(directoryPath, manager.Model.name);
        manager.IsInitializing = !exist;
     }
+
     public void SaveComponentsData()
     {
         model = componentPositioner.GetParentModel();
         if (model == null) return;
 
-        string fileName = manager.GetCurrentSelectedPrefabName() + ".json";
+        string fileName = manager.Model.name + ".json";
         if (string.IsNullOrEmpty(fileName)) return;
 
         string filePath = Path.Combine(directoryPath, fileName);

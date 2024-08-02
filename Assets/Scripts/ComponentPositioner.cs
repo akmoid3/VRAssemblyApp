@@ -20,7 +20,6 @@ public class ComponentPositioner : MonoBehaviour
     private KeyCode scrollKey = KeyCode.Space;
     [SerializeField]
     private GameObject parent;
-    [SerializeField] DropDownManager dropDownManager;
 
     private List<Transform> spawnedChildren = new List<Transform>();
     private Bounds tableBounds;
@@ -46,68 +45,67 @@ public class ComponentPositioner : MonoBehaviour
         }
     }
 
-   //public void SpawnComponents()
-   // {
-   //     if (tableRenderer == null)
-   //     {
-   //         Debug.LogError("Table Renderer not assigned!");
-   //         return;
-   //     }
+    public void SpawnComponents()
+    {
+        if (tableRenderer == null)
+        {
+            Debug.LogError("Table Renderer not assigned!");
+            return;
+        }
 
-   //     string prefabName = manager.GetCurrentSelectedPrefabName();
-   //     GameObject prefab = dropDownManager.GetPrefabInstance(prefabName);
+        GameObject prefab = manager.Model;
 
-   //     if (prefab != null)
-   //     {
-   //         GameObject instantiatedPrefab = Instantiate(prefab, transform.position, Quaternion.identity, null);
-   //         Vector3 newPosition;
-   //         float width;
-   //         float height;
-   //         float startPosition = tableBounds.min.x + 0.2f;
-   //         float currentX = startPosition;
-   //         float childCount = instantiatedPrefab.transform.childCount;
-   //         // Position the components within the bounds of the table
-   //         for (int i = 0; i < childCount; i++)
-   //         {
-   //             Transform child = instantiatedPrefab.transform.GetChild(i);
-   //             child.rotation = Quaternion.identity;
-   //             Renderer renderer = child.GetComponent<Renderer>();
-   //             if (renderer != null)
-   //             {
-   //                 Bounds childBounds = renderer.bounds;
-   //                 width = childBounds.size.x;
-   //                 height = childBounds.size.y;
-   //                 newPosition = new Vector3(currentX + width / 2, tableBounds.max.y + height / 2, tableBounds.center.z);
-   //                 child.position = newPosition;
-   //                 currentX += width + extraSpacing;
+        if (prefab != null)
+        {
+            GameObject instantiatedPrefab = Instantiate(prefab, transform.position, Quaternion.identity, null);
+            Vector3 newPosition;
+            float width;
+            float height;
+            float startPosition = tableBounds.min.x + 0.2f;
+            float currentX = startPosition;
+            float childCount = instantiatedPrefab.transform.childCount;
+            // Position the components within the bounds of the table
+            for (int i = 0; i < childCount; i++)
+            {
+                Transform child = instantiatedPrefab.transform.GetChild(i);
+                child.rotation = Quaternion.identity;
+                Renderer renderer = child.GetComponent<Renderer>();
+                if (renderer != null)
+                {
+                    Bounds childBounds = renderer.bounds;
+                    width = childBounds.size.x;
+                    height = childBounds.size.y;
+                    newPosition = new Vector3(currentX + width / 2, tableBounds.max.y + height / 2, tableBounds.center.z);
+                    child.position = newPosition;
+                    currentX += width + extraSpacing;
 
-   //                 spawnedChildren.Add(child);
-   //                 child.AddComponent<ComponentObject>();
-   //                 child.AddComponent<MakeGrabbable>();
-   //                 child.tag = "Component";
-   //                 // Deactivate if out of bounds
-   //                 if (child.position.x > tableBounds.max.x)
-   //                 {
-   //                     child.gameObject.SetActive(false);
-   //                 }
-   //                 else
-   //                 {
-   //                     child.gameObject.SetActive(true);
-   //                 }
-   //             }
-   //         }
+                    spawnedChildren.Add(child);
+                    child.AddComponent<ComponentObject>();
+                    child.AddComponent<MakeGrabbable>();
+                    child.tag = "Component";
+                    // Deactivate if out of bounds
+                    if (child.position.x > tableBounds.max.x)
+                    {
+                        child.gameObject.SetActive(false);
+                    }
+                    else
+                    {
+                        child.gameObject.SetActive(true);
+                    }
+                }
+            }
 
-   //         for (int i = 0; i < childCount; i++)
-   //         {
-   //             spawnedChildren[i].SetParent(parent.transform);
-   //             if (manager.IsInitializing)
-   //             {
-   //                 spawnedChildren[i].GetComponent<MakeGrabbable>().MakeObjectNonGrabbable();
-   //             }
-   //         }
-   //         Destroy(instantiatedPrefab);
-   //     }
-   // }
+            for (int i = 0; i < childCount; i++)
+            {
+                spawnedChildren[i].SetParent(parent.transform);
+                if (manager.IsInitializing)
+                {
+                    spawnedChildren[i].GetComponent<MakeGrabbable>().MakeObjectNonGrabbable();
+                }
+            }
+            Destroy(instantiatedPrefab);
+        }
+    }
 
 
     private void ScrollComponents()

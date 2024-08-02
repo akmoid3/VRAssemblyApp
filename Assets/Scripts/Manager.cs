@@ -8,7 +8,6 @@ using System.Collections;
 
 public class Manager : MonoBehaviour
 {
-    [SerializeField] private string currentPrefabName;
     [SerializeField] private SaveSequence saveSequence;
     [SerializeField] private GameObject currentSelectedComponent;
     [SerializeField] private GameObject model;
@@ -132,16 +131,6 @@ public class Manager : MonoBehaviour
         return isModelConfirmed;
     }
 
-    public void SetCurrentSelectedPrefabName(string name)
-    {
-        currentPrefabName = name;
-    }
-
-    public string GetCurrentSelectedPrefabName()
-    {
-        return currentPrefabName;
-    }
-
     public GameObject GetCurrentSelectedComponent()
     {
         return currentSelectedComponent;
@@ -157,7 +146,7 @@ public class Manager : MonoBehaviour
         if (saveSequence != null)
         {
             saveSequence.SaveComponent(currentSelectedComponent);
-            saveSequence.SaveSequenceToJSON(currentPrefabName);
+            saveSequence.SaveSequenceToJSON(model.name);
         }
         else
         {
@@ -170,7 +159,7 @@ public class Manager : MonoBehaviour
         if (saveSequence != null)
         {
             saveSequence.ModifyComponent(currentSelectedComponent);
-            saveSequence.SaveSequenceToJSON(currentPrefabName);
+            saveSequence.SaveSequenceToJSON(model.name);
         }
         else
         {
@@ -183,7 +172,7 @@ public class Manager : MonoBehaviour
         if (saveSequence != null)
         {
             saveSequence.RemoveComponent(currentSelectedComponent);
-            saveSequence.SaveSequenceToJSON(currentPrefabName);
+            saveSequence.SaveSequenceToJSON(model.name);
         }
         else
         {

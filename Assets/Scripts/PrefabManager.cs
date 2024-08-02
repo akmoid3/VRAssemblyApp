@@ -7,7 +7,7 @@ public class PrefabManager : MonoBehaviour
     [SerializeField] private Transform prefabContainer;
     [SerializeField] private ModelLoader loader;
     [SerializeField] private FileMonitor fileMonitor;
-
+    private Manager manager;
     private Dictionary<string, GameObject> prefabInstances = new Dictionary<string, GameObject>();
 
     public delegate void ModelsLoadedHandler(List<string> modelNames);
@@ -16,6 +16,11 @@ public class PrefabManager : MonoBehaviour
     private void Awake()
     {
         fileMonitor.OnFilesChanged += OnFilesChanged;
+    }
+
+    private void Start()
+    {
+        manager = Manager.Instance;
     }
 
     public void LoadModels()
@@ -48,6 +53,7 @@ public class PrefabManager : MonoBehaviour
                     instance.transform.SetPositionAndRotation(Vector3.zero, Quaternion.identity);
                     instance.transform.SetParent(prefabContainer, false);
                     prefabInstances[modelName] = instance;
+                    manager.Model = instance;
                 }
                 else
                 {
@@ -73,6 +79,17 @@ public class PrefabManager : MonoBehaviour
             if (prefabInstance != null && prefabInstance.activeSelf)
             {
                 prefabInstance.SetActive(false);
+            }
+        }
+    }
+
+    public void DestroyAllPrefabs()
+    {
+        foreach (var prefabInstance in prefabInstances.Values)
+        {
+            if (prefabInstance != null)
+            {
+               Destroy(prefabInstance);
             }
         }
     }

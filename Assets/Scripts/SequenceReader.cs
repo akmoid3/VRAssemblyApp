@@ -41,7 +41,7 @@ public class SequenceReader : MonoBehaviour
             return;
         }
 
-        string fileName = manager.GetCurrentSelectedPrefabName();
+        string fileName = manager.Model.name;
         if (string.IsNullOrEmpty(fileName))
         {
             Debug.LogError("File name is not set in Manager.");
