@@ -8,7 +8,7 @@ public class InitializeComponentManager : MonoBehaviour
     [SerializeField] private TMP_Dropdown componentDropdown;
     [SerializeField] private GameObject canvasInit;
     [SerializeField] private GameObject canvasMod;
-    [SerializeField] private Manager manager = Manager.Instance;
+    [SerializeField] private Manager manager;
     [SerializeField] private TextMeshProUGUI componentName;
 
     void Start()
@@ -18,6 +18,8 @@ public class InitializeComponentManager : MonoBehaviour
 
         // Add listener to handle dropdown value changes
         componentDropdown.onValueChanged.AddListener(OnDropdownValueChanged);
+
+        manager = Manager.Instance;
 
         // Update dropdown to reflect the current component type
         UpdateDropdownForSelectedComponent();

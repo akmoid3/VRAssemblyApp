@@ -12,7 +12,6 @@ public class MakeGrabbable : MonoBehaviour
     private XRInteractionManager interactionManager;
     private Manager manager;
 
-    // Fields to be modified in the Inspector
     [Header("XRGrabInteractable Settings")]
     [SerializeField] private bool throwOnDetach = false;
     [SerializeField] private XRBaseInteractable.MovementType movementType = XRBaseInteractable.MovementType.VelocityTracking;

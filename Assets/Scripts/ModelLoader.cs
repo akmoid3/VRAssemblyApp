@@ -16,11 +16,13 @@ public class ModelLoader : MonoBehaviour
 
         if (success)
         {
-            var gameObject = new GameObject("tempParent");
-            var instantiateSuccess = await gltf.InstantiateMainSceneAsync(gameObject.transform);
+            var tempParent = new GameObject("tempParent");
+            var instantiateSuccess = await gltf.InstantiateMainSceneAsync(tempParent.transform);
+            GameObject gameObject = null;
             if (instantiateSuccess)
             {
-                gameObject = gameObject.transform.GetChild(0).gameObject;
+                gameObject = tempParent.transform.GetChild(0).gameObject;
+                Destroy(tempParent);
             }
             // Return the root GameObject of the loaded model
             return gameObject;
