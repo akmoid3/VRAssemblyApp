@@ -7,11 +7,12 @@ public class ManualScrewDriver : BaseScrewDriver
 {
     private Quaternion lastRotation;
 
-    void Start()
+    public override void Start()
     {
         base.Start();
-        lastRotation = transform.localRotation; // Use local rotation
+        lastRotation = transform.localRotation;
     }
+
 
     public override void ProcessInteractable(XRInteractionUpdateOrder.UpdatePhase updatePhase)
     {
@@ -58,23 +59,5 @@ public class ManualScrewDriver : BaseScrewDriver
     {
         // Rotate around the local forward axis
         screwDriver.Rotate(transform.forward * currentRotationSpeed * Time.deltaTime);
-    }
-
-    protected override void OnHoverEntered(HoverEnterEventArgs args)
-    {
-        base.OnHoverEntered(args);
-        if (manager != null)
-        {
-            manager.OnHoverEnter(args);
-        }
-    }
-
-    protected override void OnHoverExited(HoverExitEventArgs args)
-    {
-        base.OnHoverExited(args);
-        if (manager != null)
-        {
-            manager.OnHoverExit(args);
-        }
     }
 }

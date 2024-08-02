@@ -30,6 +30,7 @@ public class Manager : MonoBehaviour
     public void OnSelectEnter(SelectEnterEventArgs args)
     {
         currentSelectedComponent = args.interactableObject.transform.gameObject;
+        SetComponentReleasedState(currentSelectedComponent, false);
         if (!isInitializing)
             ResetParentIfNotGroup(currentSelectedComponent);
         canHover = false;
