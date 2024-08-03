@@ -49,7 +49,16 @@ public class PrefabManager : MonoBehaviour
                     instance.transform.SetPositionAndRotation(Vector3.zero, Quaternion.identity);
                     instance.transform.SetParent(prefabContainer, false);
                     prefabInstances[modelName] = instance;
-                    manager.Model = instance;
+
+                    GameObject modelClone = Instantiate(instance);
+                    modelClone.name = instance.name;
+
+                    if (manager.Model != null)
+                    {
+                        Destroy(manager.Model);
+                    }
+                    manager.Model = modelClone;
+                    modelClone.SetActive(false);
                 }
                 else
                 {
@@ -68,6 +77,7 @@ public class PrefabManager : MonoBehaviour
         }
     }
 
+
     private void HideAllPrefabs()
     {
         foreach (var prefabInstance in prefabInstances.Values)
@@ -85,8 +95,9 @@ public class PrefabManager : MonoBehaviour
         {
             if (prefabInstance != null)
             {
-               Destroy(prefabInstance);
+                Destroy(prefabInstance);
             }
         }
+        prefabInstances.Clear();
     }
 }

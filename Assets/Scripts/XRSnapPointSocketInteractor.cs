@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using UnityEngine.XR.Interaction.Toolkit;
-using static SnapToPosition;
 
 namespace UnityEngine.XR.Content.Interaction
 {

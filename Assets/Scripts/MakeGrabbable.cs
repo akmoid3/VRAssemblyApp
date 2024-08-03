@@ -1,7 +1,4 @@
-using System.Collections;
 using System.Collections.Generic;
-using Unity.VisualScripting;
-using Unity.XR.CoreUtils.Collections;
 using UnityEngine;
 using UnityEngine.XR.Interaction.Toolkit;
 
@@ -35,14 +32,14 @@ public class MakeGrabbable : MonoBehaviour
     {
         if (GetComponent<Rigidbody>() == null)
         {
-            Rigidbody rigidbody = this.AddComponent<Rigidbody>();
+            Rigidbody rigidbody = this.gameObject.AddComponent<Rigidbody>();
             rigidbody.isKinematic = true;
             rigidbody.collisionDetectionMode = CollisionDetectionMode.Continuous;
         }
 
         if (GetComponent<MeshCollider>() == null)
         {
-            MeshCollider collider = this.AddComponent<MeshCollider>();
+            MeshCollider collider = this.gameObject.AddComponent<MeshCollider>();
             collider.convex = true;
         }
     }

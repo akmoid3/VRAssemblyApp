@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.XR.Interaction.Toolkit;
 
@@ -27,7 +25,7 @@ public class SimpleHammer : BaseHammer
         }
     }
 
-    private void CalculateImpactForce()
+    public void CalculateImpactForce()
     {
         Vector3 currentPosition = transform.position;
         Vector3 deltaPosition = currentPosition - lastPosition;

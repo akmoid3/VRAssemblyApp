@@ -1,6 +1,6 @@
-using UnityEngine;
 using System.Collections.Generic;
 using System.IO;
+using UnityEngine;
 
 public class SaveSequence : MonoBehaviour
 {
@@ -23,9 +23,11 @@ public class SaveSequence : MonoBehaviour
 
     private ObjectData objectData = new ObjectData();
 
+    private string folderName = "SavedBuildData";
+    private string directoryPath;
     private void Start()
     {
-        string directoryPath = Path.Combine(Application.persistentDataPath, "SavedBuildData");
+        directoryPath = Path.Combine(Application.persistentDataPath, folderName);
         if (!Directory.Exists(directoryPath))
         {
             Directory.CreateDirectory(directoryPath);
@@ -102,8 +104,7 @@ public class SaveSequence : MonoBehaviour
         // Serialize objectData to JSON
 
         string json = JsonUtility.ToJson(objectData, true);
-        string folderPath = "SavedBuildData";
-        string path = Path.Combine(Application.persistentDataPath, folderPath, name + ".json");
+        string path = Path.Combine(directoryPath, name + ".json");
         // Define the path to the custom folder within Assets
        
        

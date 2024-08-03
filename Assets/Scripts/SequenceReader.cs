@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using UnityEngine;
 using UnityEngine.XR.Content.Interaction;
 
@@ -26,15 +27,16 @@ public class RootObject
 {
     public List<ComponentData> components;
 }
-
 public class SequenceReader : MonoBehaviour
 {
     [SerializeField] private Manager manager;
     [SerializeField] private Material holographicMaterial;
     [SerializeField] private float distanceThreshold = 0.05f;
     [SerializeField] private float angleThreshold = 10.0f;
+
     public void CreateSnapObjectFromJSON()
     {
+        manager = Manager.Instance;
         if (manager == null)
         {
             Debug.LogError("Manager is not assigned.");
@@ -42,49 +44,47 @@ public class SequenceReader : MonoBehaviour
         }
 
         string fileName = manager.Model.name;
-        if (string.IsNullOrEmpty(fileName))
+        string filePath = Path.Combine(Application.persistentDataPath,"SavedBuildData");
+
+        if (FileChecker.DoesJsonFileExist(filePath, fileName))
         {
-            Debug.LogError("File name is not set in Manager.");
-            return;
+            string json = ReadJson(filePath, fileName);
+            RootObject rootObject = DeserializeJson(json);
+
+            if (rootObject == null || rootObject.components == null)
+            {
+                Debug.LogError("Failed to deserialize JSON data.");
+                return;
+            }
+
+            GameObject prefab = manager.Model;
+            if (prefab == null)
+            {
+                Debug.LogError($"Prefab not found at path: Prefabs/{fileName}");
+                return;
+            }
+
+            GameObject parent = CreateSnapParentObject(prefab, rootObject);
+            Destroy(prefab);
+            InitializeSnapParent(parent);
         }
+    }
 
-        // Construct the file path
-        string folderPath = "Assets/SavedData";
-        string filePath = System.IO.Path.Combine(folderPath, "tavolo" + ".json");
+    private string ReadJson(string filePath, string fileName)
+    {
+        string fullPath = Path.Combine(filePath, fileName + ".json");
+        return File.ReadAllText(fullPath);
+    }
 
-        if (!System.IO.File.Exists(filePath))
-        {
-            Debug.LogError($"JSON file not found at path: {filePath}");
-            return;
-        }
+    private RootObject DeserializeJson(string json)
+    {
+        return JsonUtility.FromJson<RootObject>(json);
+    }
 
-        // Read the JSON
-        string json = System.IO.File.ReadAllText(filePath);
-
-        // Deserialize JSON data
-        RootObject rootObject = JsonUtility.FromJson<RootObject>(json);
-
-        if (rootObject == null || rootObject.components == null)
-        {
-            Debug.LogError("Failed to deserialize JSON data.");
-            return;
-        }
-
-        // Load the prefab from the Resources folder
-        GameObject prefab = Resources.Load<GameObject>("Prefabs/" + "tavolo");
-        if (prefab == null)
-        {
-            Debug.LogError($"Prefab not found at path: {"Prefabs/" + fileName}");
-            return;
-        }
-
-        // Instantiate the prefab to use its child components
-        GameObject prefabInstance = Instantiate(prefab);
-
-        // Create the parent object of the snap
+    private GameObject CreateSnapParentObject(GameObject prefab, RootObject rootObject)
+    {
         GameObject parent = new GameObject("SnapParentObject");
-       
-        // Create objects based on the deserialized data
+
         foreach (var component in rootObject.components)
         {
             if (string.IsNullOrEmpty(component.componentName))
@@ -93,53 +93,56 @@ public class SequenceReader : MonoBehaviour
                 continue;
             }
 
-            // Instantiate a new empty GameObject for the component
             GameObject obj = new GameObject(component.componentName);
-
-            // Set position and rotation
-            if (component.position != null)
-            {
-                obj.transform.localPosition = new Vector3(component.position.x, component.position.y, component.position.z);
-            }
-
-            if (component.rotation != null)
-            {
-                obj.transform.localRotation = new Quaternion(component.rotation.x, component.rotation.y, component.rotation.z, component.rotation.w);
-            }
-
-            // Set the object as a child of the parent
+            SetTransform(obj, component);
             obj.transform.SetParent(parent.transform);
-
-            // Find the corresponding child in the prefab instance
-            Transform prefabChild = prefabInstance.transform.Find(component.componentName);
-            if (prefabChild != null)
-            {
-                // Copy the MeshFilter and set OlographicMaterial
-                MeshFilter prefabMeshFilter = prefabChild.GetComponent<MeshFilter>();
-                MeshRenderer prefabMeshRenderer = prefabChild.GetComponent<MeshRenderer>();
-
-                if (prefabMeshFilter != null)
-                {
-                    MeshFilter meshFilter = obj.AddComponent<MeshFilter>();
-                    meshFilter.sharedMesh = prefabMeshFilter.sharedMesh;
-                }
-
-                if (prefabMeshRenderer != null)
-                {
-                    MeshRenderer meshRenderer = obj.AddComponent<MeshRenderer>();
-                    meshRenderer.sharedMaterial = holographicMaterial;
-                }
-            }
-            else
-            {
-                Debug.LogWarning($"Child with name {component.componentName} not found in prefab.");
-            }
-
-            
+            CopyMeshAndMaterial(prefab, obj, component.componentName);
         }
 
-        Destroy(prefabInstance);
+        return parent;
+    }
 
+    private void SetTransform(GameObject obj, ComponentData component)
+    {
+        if (component.position != null)
+        {
+            obj.transform.localPosition = new Vector3(component.position.x, component.position.y, component.position.z);
+        }
+
+        if (component.rotation != null)
+        {
+            obj.transform.localRotation = new Quaternion(component.rotation.x, component.rotation.y, component.rotation.z, component.rotation.w);
+        }
+    }
+
+    private void CopyMeshAndMaterial(GameObject prefabInstance, GameObject obj, string componentName)
+    {
+        Transform prefabChild = prefabInstance.transform.Find(componentName);
+        if (prefabChild != null)
+        {
+            MeshFilter prefabMeshFilter = prefabChild.GetComponent<MeshFilter>();
+            MeshRenderer prefabMeshRenderer = prefabChild.GetComponent<MeshRenderer>();
+
+            if (prefabMeshFilter != null)
+            {
+                MeshFilter meshFilter = obj.AddComponent<MeshFilter>();
+                meshFilter.sharedMesh = prefabMeshFilter.sharedMesh;
+            }
+
+            if (prefabMeshRenderer != null)
+            {
+                MeshRenderer meshRenderer = obj.AddComponent<MeshRenderer>();
+                meshRenderer.sharedMaterial = holographicMaterial;
+            }
+        }
+        else
+        {
+            Debug.LogWarning($"Child with name {componentName} not found in prefab.");
+        }
+    }
+
+    private void InitializeSnapParent(GameObject parent)
+    {
         XRSnapPointSocketInteractor socket = parent.AddComponent<XRSnapPointSocketInteractor>();
         socket.DistanceThreshold = distanceThreshold;
         socket.AngleThreshold = angleThreshold;

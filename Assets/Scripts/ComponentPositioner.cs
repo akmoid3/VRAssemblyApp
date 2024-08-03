@@ -1,15 +1,12 @@
-using UnityEngine;
 using System.Collections.Generic;
-using UnityEngine.UIElements;
-using Unity.VisualScripting;
-using System.Collections;
+using UnityEngine;
 
 public class ComponentPositioner : MonoBehaviour
 {
     [SerializeField]
     private MeshRenderer tableRenderer;
     [SerializeField]
-    private Object tableRoll;
+    private GameObject tableRoll;
     [SerializeField]
     private float extraSpacing = 0.1f;
 
@@ -80,8 +77,8 @@ public class ComponentPositioner : MonoBehaviour
                     currentX += width + extraSpacing;
 
                     spawnedChildren.Add(child);
-                    child.AddComponent<ComponentObject>();
-                    child.AddComponent<MakeGrabbable>();
+                    child.gameObject.AddComponent<ComponentObject>();
+                    child.gameObject.AddComponent<MakeGrabbable>();
                     child.tag = "Component";
                     // Deactivate if out of bounds
                     if (child.position.x > tableBounds.max.x)

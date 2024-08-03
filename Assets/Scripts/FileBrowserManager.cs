@@ -1,7 +1,6 @@
-using UnityEngine;
-using System.Collections;
-using System.IO;
 using SimpleFileBrowser;
+using System.IO;
+using UnityEngine;
 
 public class FileBrowserManager : MonoBehaviour
 {

@@ -1,13 +1,11 @@
 using UnityEngine;
-using UnityEngine.XR;
-using System.Collections.Generic;
 using UnityEngine.InputSystem;
 
 public class HandMenuController : MonoBehaviour
 {
     [SerializeField]
     private GameObject handMenu;
-    private readonly Manager manager = Manager.Instance;
+    private Manager manager;
 
     [SerializeField]
     private InputActionReference toggleReference;
@@ -16,6 +14,10 @@ public class HandMenuController : MonoBehaviour
     {
         toggleReference.action.started += Toggle;
         handMenu.SetActive(false);
+    }
+    private void Start()
+    {
+        manager = Manager.Instance;
     }
     private void OnDestroy()
     {
