@@ -27,7 +27,7 @@ public class FileBrowserTests
         {
             Directory.CreateDirectory(testDirectory);
         }
-        
+
 
         testFilePath = Path.Combine(Application.persistentDataPath, "test.glb");
         File.WriteAllText(testFilePath, "test content");
@@ -40,6 +40,10 @@ public class FileBrowserTests
         {
             File.Delete(testFilePath);
         }
+
+        if (File.Exists(Path.Combine(Application.persistentDataPath, "Models", "test.glb")))
+            File.Delete(Path.Combine(Application.persistentDataPath, "Models", "test.glb"));
+
         if (Directory.Exists(Path.Combine(Application.persistentDataPath, "NewModels")))
         {
             Directory.Delete(Path.Combine(Application.persistentDataPath, "NewModels"), true);
