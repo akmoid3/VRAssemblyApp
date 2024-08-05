@@ -74,6 +74,15 @@ public class PrefabManager : MonoBehaviour
         if (instance != null)
         {
             instance.SetActive(true);
+            GameObject modelClone = Instantiate(instance);
+            modelClone.name = instance.name;
+
+            if (manager.Model != null)
+            {
+                Destroy(manager.Model);
+            }
+            manager.Model = modelClone;
+            modelClone.SetActive(false);
         }
     }
 

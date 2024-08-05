@@ -5,6 +5,8 @@ using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.TestTools;
 using TMPro;
+using UnityEngine.UI;
+using System;
 
 public class InitializeComponentTests
 {
@@ -34,14 +36,19 @@ public class InitializeComponentTests
         managerGameObject = new GameObject("Manager");
         Manager manager = managerGameObject.AddComponent<Manager>();
 
-        initializeComponentManager.GetType().GetField("manager", BindingFlags.NonPublic | BindingFlags.Instance).SetValue(initializeComponentManager, manager);
+        // Create and setup the finishedButton
+        GameObject buttonGameObject = new GameObject("FinishedButton");
+        Button finishedButton = buttonGameObject.AddComponent<Button>();
+        initializeComponentManager.GetType().GetField("finishedButton", BindingFlags.NonPublic | BindingFlags.Instance).SetValue(initializeComponentManager, finishedButton);
+
+
     }
 
     [TearDown]
     public void TearDown()
     {
-        Object.DestroyImmediate(testGameObject);
-        Object.DestroyImmediate(managerGameObject);
+        GameObject.DestroyImmediate(testGameObject);
+        GameObject.DestroyImmediate(managerGameObject);
     }
 
     [UnityTest]
@@ -58,7 +65,7 @@ public class InitializeComponentTests
     public IEnumerator InitializeSelectedComponent_ValidComponent_AddsCorrectScript()
     {
         GameObject selectedComponent = new GameObject("SelectedComponent");
-        selectedComponent.AddComponent<MeshRenderer>(); 
+        selectedComponent.AddComponent<MeshRenderer>();
         ComponentObject componentObject = selectedComponent.AddComponent<ComponentObject>();
         componentObject.SetComponentType(ComponentObject.ComponentType.Screw);
 
@@ -73,7 +80,7 @@ public class InitializeComponentTests
     public IEnumerator InitializeSelectedComponent_ChangesComponentType_RemovesOldScript()
     {
         GameObject selectedComponent = new GameObject("SelectedComponent");
-        selectedComponent.AddComponent<MeshRenderer>(); 
+        selectedComponent.AddComponent<MeshRenderer>();
         ComponentObject componentObject = selectedComponent.AddComponent<ComponentObject>();
         componentObject.SetComponentType(ComponentObject.ComponentType.Screw);
         selectedComponent.AddComponent<Screw>();
@@ -108,7 +115,7 @@ public class InitializeComponentTests
     public IEnumerator InitializeSelectedComponent_RemovesAllExistingScripts()
     {
         GameObject selectedComponent = new GameObject("SelectedComponent");
-        selectedComponent.AddComponent<MeshRenderer>(); 
+        selectedComponent.AddComponent<MeshRenderer>();
         ComponentObject componentObject = selectedComponent.AddComponent<ComponentObject>();
         componentObject.SetComponentType(ComponentObject.ComponentType.Screw);
         selectedComponent.AddComponent<Screw>();

@@ -21,6 +21,7 @@ public class ComponentPositioner : MonoBehaviour
     private List<Transform> spawnedChildren = new List<Transform>();
     private Bounds tableBounds;
 
+
     void Start()
     {
         tableRenderer = tableRoll.GetComponent<MeshRenderer>();
@@ -91,6 +92,8 @@ public class ComponentPositioner : MonoBehaviour
                     }
                 }
             }
+
+            Manager.Instance.Components = spawnedChildren;
 
             for (int i = 0; i < childCount; i++)
             {
@@ -165,10 +168,5 @@ public class ComponentPositioner : MonoBehaviour
         }
     }
 
-
-    public GameObject GetParentModel()
-    {
-        return parent;
-    }
 }
 

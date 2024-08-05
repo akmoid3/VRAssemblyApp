@@ -17,9 +17,8 @@ public class JsonData
 
 public class InitializedDataManager : MonoBehaviour
 {
-    [SerializeField] Manager manager;
     [SerializeField] InitializeComponentManager initializeComponentManager;
-    [SerializeField] GameObject model;
+    [SerializeField] List<Transform> components;
     [SerializeField] ComponentPositioner componentPositioner;
 
     private string directoryPath;
@@ -33,25 +32,19 @@ public class InitializedDataManager : MonoBehaviour
         }
     }
 
-    public void CanInitialize()
-    {
-       bool exist = FileChecker.DoesJsonFileExist(directoryPath, manager.Model.name);
-       manager.IsInitializing = !exist;
-    }
-
     public void SaveComponentsData()
     {
-        model = componentPositioner.GetParentModel();
-        if (model == null) return;
+        components = Manager.Instance.Components;
+        if (components == null) return;
 
-        string fileName = manager.Model.name + ".json";
+        string fileName = Manager.Instance.Model.name + ".json";
         if (string.IsNullOrEmpty(fileName)) return;
 
         string filePath = Path.Combine(directoryPath, fileName);
 
         JsonData data = new JsonData();
         // Iterate through the children and save their data
-        foreach (Transform child in model.transform)
+        foreach (Transform child in components)
         {
             ComponentObject componentObject = child.GetComponent<ComponentObject>();
 
@@ -71,10 +64,38 @@ public class InitializedDataManager : MonoBehaviour
         File.WriteAllText(filePath, json);
     }
 
-
-    private Transform FindChildByName(Transform parent, string name)
+    public void LoadComponentsData()
     {
-        foreach (Transform child in parent)
+        components = Manager.Instance.Components;
+        if (components == null) return;
+
+        string fileName = Manager.Instance.Model.name + ".json";
+        if (string.IsNullOrEmpty(fileName)) return;
+
+        string filePath = Path.Combine(directoryPath, fileName);
+        if (!File.Exists(filePath)) return;
+
+        string json = File.ReadAllText(filePath);
+        JsonData data = JsonUtility.FromJson<JsonData>(json);
+
+        foreach (ComponentTypeData componentData in data.components)
+        {
+            Transform child = FindChildByName(components, componentData.componentName);
+            if (child != null)
+            {
+                ComponentObject componentObject = child.GetComponent<ComponentObject>();
+                if (componentObject == null)
+                {
+                    componentObject = child.gameObject.AddComponent<ComponentObject>();
+                }
+                componentObject.SetComponentType(componentData.componentType);
+            }
+        }
+    }
+
+    private Transform FindChildByName(List<Transform> components, string name)
+    {
+        foreach (Transform child in components)
         {
             if (child.name == name)
             {

@@ -1,14 +1,36 @@
+using System;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class InitializeComponentManager : MonoBehaviour
 {
     [SerializeField] private TMP_Dropdown componentDropdown;
     [SerializeField] private GameObject canvasInit;
-    [SerializeField] private GameObject canvasMod;
-    [SerializeField] private Manager manager;
+    [SerializeField] private Button finishedButton;
     [SerializeField] private TextMeshProUGUI componentName;
+
+    private void Awake()
+    {
+        Manager.OnStateChanged += SetPanelActive;
+        finishedButton.onClick.AddListener(OnFinishedButtonClick);
+    }
+
+    private void OnFinishedButtonClick()
+    {
+        Manager.Instance.UpdateState(State.SelectingMode);
+    }
+
+    private void OnDestroy()
+    {
+        Manager.OnStateChanged -= SetPanelActive;
+        finishedButton.onClick.RemoveListener(OnFinishedButtonClick);
+    }
+    private void SetPanelActive(State state)
+    {
+        canvasInit.SetActive(state == State.Initialize);
+    }
 
     void Start()
     {
@@ -18,29 +40,20 @@ public class InitializeComponentManager : MonoBehaviour
         // Add listener to handle dropdown value changes
         componentDropdown.onValueChanged.AddListener(OnDropdownValueChanged);
 
-        manager = Manager.Instance;
-
         // Update dropdown to reflect the current component type
         UpdateDropdownForSelectedComponent();
     }
 
     private void Update()
     {
-        if (manager.IsInitializing)
+
+        GameObject selectedComponent = Manager.Instance.GetCurrentSelectedComponent();
+        if (selectedComponent != null)
         {
-            canvasInit.SetActive(true);
-            GameObject selectedComponent = manager.GetCurrentSelectedComponent();
-            if (selectedComponent != null)
-            {
-                componentName.text = selectedComponent.name;
-                UpdateDropdownForSelectedComponent();
-            }
-            canvasMod.SetActive(false);
+            componentName.text = selectedComponent.name;
+            UpdateDropdownForSelectedComponent();
         }
-        else
-        {
-            canvasInit.SetActive(false);
-        }
+
     }
 
     void PopulateDropdown()
@@ -64,7 +77,7 @@ public class InitializeComponentManager : MonoBehaviour
         // Update selected component type based on dropdown selection
         ComponentObject.ComponentType selectedType = (ComponentObject.ComponentType)index;
 
-        GameObject selectedComponent = manager.GetCurrentSelectedComponent();
+        GameObject selectedComponent = Manager.Instance.GetCurrentSelectedComponent();
         if (selectedComponent != null)
         {
             ComponentObject componentObject = selectedComponent.GetComponent<ComponentObject>();
@@ -118,7 +131,7 @@ public class InitializeComponentManager : MonoBehaviour
 
     void UpdateDropdownForSelectedComponent()
     {
-        GameObject selectedComponent = manager.GetCurrentSelectedComponent();
+        GameObject selectedComponent = Manager.Instance.GetCurrentSelectedComponent();
 
         if (selectedComponent != null)
         {

@@ -20,8 +20,6 @@ public class MakeGrabbable : MonoBehaviour
         interactionManager = FindObjectOfType<XRInteractionManager>();
 
         ComponentInizialization();
-
-        MakeObjectGrabbable();
     }
 
     private void Start()
@@ -36,6 +34,12 @@ public class MakeGrabbable : MonoBehaviour
             rigidbody.isKinematic = true;
             rigidbody.collisionDetectionMode = CollisionDetectionMode.Continuous;
         }
+
+        if(GetComponent<XRSimpleInteractable>())
+            Destroy(GetComponent<XRSimpleInteractable>());
+
+        if (GetComponent<XRGrabInteractable>())
+            Destroy(GetComponent<XRGrabInteractable>());
 
         if (GetComponent<MeshCollider>() == null)
         {

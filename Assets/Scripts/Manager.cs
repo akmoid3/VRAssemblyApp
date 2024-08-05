@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.XR.Interaction.Toolkit;
@@ -17,10 +18,15 @@ public class Manager : MonoBehaviour
     [SerializeField] private bool isRealeased = false;
     [SerializeField] private bool canHover = true;
     [SerializeField] private List<GameObject> sequenceOrderList = new List<GameObject>();
+    [SerializeField] private List<Transform> components = new List<Transform>();
+
 
     [SerializeField] private Color outlineColor = Color.white;
     [SerializeField] private float outlineWidth = 1.0f;
 
+
+    [SerializeField] private State state;
+    public static event Action<State> OnStateChanged;
 
     private void Awake()    
     {
@@ -34,6 +40,11 @@ public class Manager : MonoBehaviour
         }
     }
 
+    private void Start()
+    {
+        UpdateState(State.ChoosingModel);
+    }
+
     // Singleton
     public static Manager Instance { get; private set; }
 
@@ -41,6 +52,7 @@ public class Manager : MonoBehaviour
 
     public bool IsInitializing { get => isInitializing; set => isInitializing = value; }
     public GameObject Model { get => model; set => model = value; }
+    public List<Transform> Components { get => components; set => components = value; }
 
     public void OnSelectEnter(SelectEnterEventArgs args)
     {
@@ -177,4 +189,63 @@ public class Manager : MonoBehaviour
         }
     }
 
+
+    public void UpdateState(State newState)
+    {
+        state = newState;
+
+        switch (newState)
+        {
+            case State.ChoosingModel:
+                break;
+            case State.Initialize:
+                MakeComponentsNonGrabbable();
+                break;
+            case State.Record:
+                MakeComponentsGrabbable();
+                break;
+            case State.PlayBack:
+                MakeComponentsGrabbable();
+                break;
+            case State.Finish:
+                break;
+            case State.SelectingMode:
+
+                break;
+            default:
+                break;
+        }
+
+        OnStateChanged?.Invoke(newState);
+    }
+
+
+    private void MakeComponentsGrabbable()
+    {
+        foreach (Transform component in components) {
+           MakeGrabbable makeGrabbable = component.GetComponent<MakeGrabbable>();
+            makeGrabbable.MakeObjectGrabbable();
+        }
+    }
+
+
+    private void MakeComponentsNonGrabbable()
+    {
+        foreach (Transform component in components)
+        {
+            MakeGrabbable makeGrabbable = component.GetComponent<MakeGrabbable>();
+            makeGrabbable.MakeObjectNonGrabbable();
+        }
+    }
+
+}
+
+public enum State
+{
+    ChoosingModel,
+    SelectingMode,
+    Initialize,
+    Record,
+    PlayBack,
+    Finish
 }

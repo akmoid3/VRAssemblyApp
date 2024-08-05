@@ -45,10 +45,11 @@ public class ComponentPositionerTests
         componentPositioner.SpawnComponents();
         yield return null;
 
+        GameObject gameObject = GameObject.Find("Parent");
         // Assert
-        Assert.IsNotNull(componentPositioner.GetParentModel());
+        Assert.IsNotNull(gameObject);
         var spawnedChildren = (List<Transform>)componentPositioner.GetType().GetField("spawnedChildren", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance).GetValue(componentPositioner);
-        Assert.AreEqual(componentPositioner.GetParentModel().transform.childCount, spawnedChildren.Count);
+        Assert.AreEqual(gameObject.transform.childCount, spawnedChildren.Count);
     }
 
 }

@@ -70,7 +70,7 @@ namespace UnityEngine.XR.Content.Interaction
             GameObject gameObject = args.interactableObject.transform.gameObject;
             XRGrabInteractable xr = gameObject.GetComponent<XRGrabInteractable>();
             xr.selectMode = InteractableSelectMode.Single;
-
+            snappoint.GetComponent<MeshRenderer>().enabled = false;
 
             Fastener fastener = gameObject.GetComponent<Fastener>();
             if (fastener != null)
@@ -89,6 +89,7 @@ namespace UnityEngine.XR.Content.Interaction
             GameObject gameObject = args.interactableObject.transform.gameObject;
             XRGrabInteractable xr = gameObject.GetComponent<XRGrabInteractable>();
             xr.selectMode = InteractableSelectMode.Multiple;
+            snappoint.GetComponent<MeshRenderer>().enabled = true;
 
 
             Fastener fastener = gameObject.GetComponent<Fastener>();
