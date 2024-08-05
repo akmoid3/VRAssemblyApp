@@ -10,11 +10,6 @@ public class Manager : MonoBehaviour
     [SerializeField] private GameObject currentSelectedComponent;
     [SerializeField] private GameObject model;
 
-    [SerializeField] private bool isRecording = false;
-    [SerializeField] private bool isPlayBacking = false;
-    [SerializeField] private bool isInitializing = false;
-    [SerializeField] private bool isModelConfirmed = false;
-    [SerializeField] private bool finishedRecording = false;
     [SerializeField] private bool isRealeased = false;
     [SerializeField] private bool canHover = true;
     [SerializeField] private List<GameObject> sequenceOrderList = new List<GameObject>();
@@ -50,22 +45,24 @@ public class Manager : MonoBehaviour
 
     public bool IsRealeased { get => isRealeased; set => isRealeased = value; }
 
-    public bool IsInitializing { get => isInitializing; set => isInitializing = value; }
     public GameObject Model { get => model; set => model = value; }
     public List<Transform> Components { get => components; set => components = value; }
+
+    public State State { get => state; private set => state = value; }
 
     public void OnSelectEnter(SelectEnterEventArgs args)
     {
         currentSelectedComponent = args.interactableObject.transform.gameObject;
         SetComponentReleasedState(currentSelectedComponent, false);
-        if (!isInitializing)
+        if (state != State.Initialize)
             ResetParentIfNotGroup(currentSelectedComponent);
         canHover = false;
     }
 
+
     public void OnSelectExit(SelectExitEventArgs args)
     {
-        if (!isInitializing)
+        if (state != State.Initialize)
             ResetParentIfNotGroup(currentSelectedComponent);
         SetComponentReleasedState(currentSelectedComponent, true);
         canHover = true;
@@ -114,31 +111,6 @@ public class Manager : MonoBehaviour
     }
 
 
-    public void SetRecording(bool recording)
-    {
-        isRecording = recording;
-    }
-
-    public bool GetRecording()
-    {
-        return isRecording;
-    }
-
-    public void SetPlayBacking(bool playBacking)
-    {
-        isPlayBacking = playBacking;
-    }
-
-    public bool GetPlayBacking()
-    {
-        return isPlayBacking;
-    }
-
-
-    public bool GtModelConfirmed()
-    {
-        return isModelConfirmed;
-    }
 
     public GameObject GetCurrentSelectedComponent()
     {

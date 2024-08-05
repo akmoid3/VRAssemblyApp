@@ -5,7 +5,6 @@ public class HandMenuController : MonoBehaviour
 {
     [SerializeField]
     private GameObject handMenu;
-    private Manager manager;
 
     [SerializeField]
     private InputActionReference toggleReference;
@@ -15,10 +14,7 @@ public class HandMenuController : MonoBehaviour
         toggleReference.action.started += Toggle;
         handMenu.SetActive(false);
     }
-    private void Start()
-    {
-        manager = Manager.Instance;
-    }
+  
     private void OnDestroy()
     {
         toggleReference.action.started -= Toggle;
@@ -26,7 +22,7 @@ public class HandMenuController : MonoBehaviour
 
     private void Toggle(InputAction.CallbackContext context)
     {
-        if (manager.GetRecording())
+        if (Manager.Instance.State == State.Record)
         {
             bool isActive = !handMenu.activeSelf;
             handMenu.SetActive(isActive);
