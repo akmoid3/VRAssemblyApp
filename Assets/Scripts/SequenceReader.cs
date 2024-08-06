@@ -31,6 +31,7 @@ public class SequenceReader : MonoBehaviour
 {
     [SerializeField] private Manager manager;
     [SerializeField] private Material holographicMaterial;
+
     [SerializeField] private float distanceThreshold = 0.05f;
     [SerializeField] private float angleThreshold = 10.0f;
 
@@ -67,6 +68,9 @@ public class SequenceReader : MonoBehaviour
             GameObject parent = CreateSnapParentObject(prefab, rootObject);
             Destroy(prefab);
             InitializeSnapParent(parent);
+
+            // Initialize the sequence in the manager
+            manager.InitializeSequence(rootObject.components);
         }
     }
 
@@ -144,10 +148,13 @@ public class SequenceReader : MonoBehaviour
     private void InitializeSnapParent(GameObject parent)
     {
         XRSnapPointSocketInteractor socket = parent.AddComponent<XRSnapPointSocketInteractor>();
+        socket.enabled = false;
         socket.DistanceThreshold = distanceThreshold;
         socket.AngleThreshold = angleThreshold;
         BoxCollider collider = parent.AddComponent<BoxCollider>();
         collider.isTrigger = true;
         collider.size = new Vector3(10.0f, 10.0f, 10.0f);
+        socket.enabled = true;
+
     }
 }

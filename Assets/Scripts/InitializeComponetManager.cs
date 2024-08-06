@@ -85,49 +85,10 @@ public class InitializeComponentManager : MonoBehaviour
             if (componentObject != null)
             {
                 componentObject.SetComponentType(selectedType);
-                InitializeSelectedComponent(selectedComponent);
             }
         }
     }
 
-    public void InitializeSelectedComponent(GameObject selectedComponent)
-    {
-        if (selectedComponent == null)
-        {
-            Debug.LogError("No component selected.");
-            return;
-        }
-
-        // Get the ComponentObject script
-        ComponentObject componentObject = selectedComponent.GetComponent<ComponentObject>();
-
-        // Remove existing components of type Screw or Nail
-        RemoveExistingScripts<Screw>(selectedComponent);
-        RemoveExistingScripts<Nail>(selectedComponent);
-        selectedComponent.tag = "Untagged";
-        // Add the selected component script
-        switch (componentObject.GetComponentType())
-        {
-            case ComponentObject.ComponentType.Screw:
-                selectedComponent.AddComponent<Screw>();
-                break;
-            case ComponentObject.ComponentType.Nail:
-                selectedComponent.AddComponent<Nail>();
-                break;
-            case ComponentObject.ComponentType.None:
-                selectedComponent.tag = "Component";
-                break;
-        }
-    }
-
-    void RemoveExistingScripts<T>(GameObject target) where T : Component
-    {
-        T[] existingScripts = target.GetComponents<T>();
-        foreach (T script in existingScripts)
-        {
-            Destroy(script);
-        }
-    }
 
     void UpdateDropdownForSelectedComponent()
     {

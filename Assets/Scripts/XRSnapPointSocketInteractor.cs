@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine.XR.Interaction.Toolkit;
 
@@ -26,7 +27,9 @@ namespace UnityEngine.XR.Content.Interaction
 
         bool hasEmptySnappoint => usedSnappoints.Count < snappoints.Count;
 
-         // Getter and Setter for distanceThreshold
+        public static event Action OnComponentPlaced;
+
+        // Getter and Setter for distanceThreshold
         public float DistanceThreshold
         {
             get => distanceThreshold;
@@ -60,9 +63,21 @@ namespace UnityEngine.XR.Content.Interaction
 
 
         /// <inheritdoc />
-        protected override void OnSelectEntering(SelectEnterEventArgs args)
+        protected override void OnSelectEntered(SelectEnterEventArgs args)
         {
-            base.OnSelectEntering(args);
+           
+            base.OnSelectEntered(args);
+
+            // Check if the interactable is the correct one for the current step
+            var manager = Manager.Instance;
+            if (manager != null)
+            {
+                var expectedComponentName = manager.AssemblySequence[manager.CurrentStep].componentName;
+                if (args.interactableObject.transform.name != expectedComponentName)
+                {
+                    return;
+                }
+            }
 
             var snappoint = GetAttachTransform(args.interactableObject);
             usedSnappoints.Add(snappoint);
@@ -77,6 +92,8 @@ namespace UnityEngine.XR.Content.Interaction
             {
                 fastener.SetSocketTransform(snappoint);
             }
+
+            OnComponentPlaced?.Invoke();
         }
 
 
@@ -105,10 +122,10 @@ namespace UnityEngine.XR.Content.Interaction
         /// <inheritdoc />
         public override bool CanSelect(IXRSelectInteractable interactable)
         {
+            
             var attachTransform = GetAttachTransform(interactable);
             if (attachTransform != null)
             {
-
                 return IsSelecting(interactable)
                        || (hasEmptySnappoint && !interactable.isSelected && !usedSnappoints.Contains(attachTransform));
             }
@@ -118,12 +135,24 @@ namespace UnityEngine.XR.Content.Interaction
         /// <inheritdoc />
         public override bool CanHover(IXRHoverInteractable interactable)
         {
+            // Check if the interactable is the correct one for the current step
+            var manager = Manager.Instance;
+            if (manager != null && manager.GetCurrentSelectedComponent() != null)
+            {
+                var expectedComponentName = manager.AssemblySequence[manager.CurrentStep].componentName;
+                if (interactable.transform.name != expectedComponentName)
+                {
+                    return false;
+                }
+            }
+
             var attachTransform = GetAttachTransform(interactable);
-            if(attachTransform != null)
+            if (attachTransform != null)
             {
                 return base.CanHover(interactable)
-                  && !usedSnappoints.Contains(attachTransform);
-            }else return false;
+                       && !usedSnappoints.Contains(attachTransform);
+            }
+            else return false;
         }
 
         /// <inheritdoc />

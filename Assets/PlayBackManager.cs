@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
@@ -9,7 +10,9 @@ public class PlayBackManager : MonoBehaviour
 {
     [SerializeField] private GameObject playBackPanel;
     [SerializeField] private Button finishButton;
-    [SerializeField] private TextMeshProUGUI timerText; 
+    [SerializeField] private TextMeshProUGUI timerText;
+    [SerializeField] private TextMeshProUGUI errorCountText;
+
 
     private float elapsedTime = 0f; 
     private bool isPlayingBack = false; 
@@ -17,12 +20,19 @@ public class PlayBackManager : MonoBehaviour
     private void Awake()
     {
         Manager.OnStateChanged += SetPanelActive;
+        Manager.OnErrorCountChanged += IncrementErrorCount;
         finishButton.onClick.AddListener(OnFinishClicked);
+    }
+
+    private void IncrementErrorCount(int n)
+    {
+        errorCountText.text = n.ToString();
     }
 
     private void OnDestroy()
     {
         Manager.OnStateChanged -= SetPanelActive;
+        Manager.OnErrorCountChanged -= IncrementErrorCount;
         finishButton.onClick.RemoveListener(OnFinishClicked);
     }
 

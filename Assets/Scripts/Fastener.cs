@@ -9,8 +9,8 @@ public abstract class Fastener : MonoBehaviour
     [SerializeField] protected bool isCollidingWithComponent = false;
 
     [SerializeField] protected bool canStop = false;
-    [SerializeField] protected bool isStopped = false; // Flag if the fastener should stop moving
-    [SerializeField] protected float headSize = 0.005f;
+    [SerializeField] protected bool isStopped = false;
+    [SerializeField] protected float headSize = 0.003f;
     [SerializeField] protected float rayLength = 0.15f;
 
     [SerializeField] protected Transform socketTransform;
@@ -22,8 +22,8 @@ public abstract class Fastener : MonoBehaviour
 
     protected Color defaultColor = Color.white;
 
-    protected Vector3 initialZPosition; // Initial position of the fastener along the Z-axis
-    protected float distanceToTravel; // Depth to stop the fastener
+    protected Vector3 initialZPosition;
+    protected float distanceToTravel;
 
     protected Collider colliderComponent;
 
@@ -31,6 +31,11 @@ public abstract class Fastener : MonoBehaviour
     protected float fastenerLength;
 
     protected ComponentObject componentObject;
+
+    public bool IsAligned { get => isAligned; set => isAligned = value; }
+    public bool IsStopped { get => isStopped; set => isStopped = value; }
+    public bool CanStop { get => canStop; set => canStop = value; }
+
     public GameObject getTool()
     {
         return tool;
@@ -46,14 +51,14 @@ public abstract class Fastener : MonoBehaviour
         distanceToTravel = fastenerLength - headSize;
     }
 
-    protected virtual void Update()
+    protected virtual void FixedUpdate()
     {
         if (isCollidingWithTool && !isStopped)
         {
             HandleInteraction();
         }
 
-        if (!canStop && !isStopped)
+        if (!canStop && !isStopped && !IsAligned)
             PerformComponentRaycast();
     }
 
@@ -87,7 +92,10 @@ public abstract class Fastener : MonoBehaviour
         isCollidingWithComponent = false;
 
         RaycastHit hit;
-        if (Physics.Raycast(transform.position, transform.forward, out hit, rayLength))
+        Vector3 rayOrigin = transform.position;
+        Vector3 rayDirection = transform.forward;
+
+        if (Physics.Raycast(rayOrigin, rayDirection, out hit, rayLength))
         {
             if (hit.collider.CompareTag("Component"))
             {
@@ -99,16 +107,20 @@ public abstract class Fastener : MonoBehaviour
                 componentObject = GetComponent<ComponentObject>();
                 if (dotProduct >= alignmentDotProductThreshold)
                 {
+                    Debug.Log("Colliding with component: " + hit.collider.name);
                     fastenerRenderer.material.color = alignedColor;
-                    if (componentObject && componentObject.IsReleased)
+                    if (componentObject && componentObject.IsReleased && !isAligned)
                         AlignWithComponent(hit.point, normalAtContact);
                 }
                 else
                 {
                     fastenerRenderer.material.color = notAlignedColor;
+                    isStopped = false;
+                    canStop = false;
                     isAligned = false;
                 }
             }
+
         }
         else
         {
@@ -117,15 +129,38 @@ public abstract class Fastener : MonoBehaviour
             isCollidingWithComponent = false;
             isAligned = false;
             fastenerRenderer.material.color = defaultColor;
-
         }
     }
-
     protected void AlignWithComponent(Vector3 contactPoint, Vector3 contactNormal)
     {
         Quaternion targetRotation = Quaternion.LookRotation(-contactNormal);
         Vector3 directionToMove = -transform.forward;
-        Vector3 targetPosition = contactPoint + directionToMove * fastenerLength / 2.0f;
+
+        Vector3 boundsCenter = fastenerRenderer.bounds.center;
+
+        Vector3 pivotPoint = transform.position;
+
+        Vector3 targetPosition;
+
+        bool isPivotBeforeCenter = Vector3.Dot(transform.forward, boundsCenter - pivotPoint) > 0;
+
+        bool isPivotAfterCenter = Vector3.Dot(transform.forward, boundsCenter - pivotPoint) < 0;
+
+        if (isPivotBeforeCenter)
+        {
+            targetPosition = contactPoint + directionToMove * (fastenerLength / 2.0f + Vector3.Distance(boundsCenter, pivotPoint));
+        }
+        else if (isPivotAfterCenter)
+        {
+            targetPosition = contactPoint + directionToMove * (fastenerLength / 2.0f - Vector3.Distance(boundsCenter, pivotPoint));
+
+
+        }
+        else
+        {
+            targetPosition = contactPoint + directionToMove * (fastenerLength / 2.0f);
+        }
+
 
         transform.SetPositionAndRotation(targetPosition, targetRotation);
 
@@ -134,6 +169,7 @@ public abstract class Fastener : MonoBehaviour
 
         isAligned = true;
     }
+
 
     public void SetSocketTransform(Transform socket)
     {
