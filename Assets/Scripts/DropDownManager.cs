@@ -7,7 +7,7 @@ public class DropDownManager : MonoBehaviour
     [SerializeField] private TMP_Dropdown dropdown;
     [SerializeField] private PrefabManager prefabManager;
 
-    void Start()
+    public void Start()
     {
         prefabManager.OnModelsLoaded += LoadModelsIntoDropdown;
         dropdown.onValueChanged.AddListener(OnDropdownValueChanged);
