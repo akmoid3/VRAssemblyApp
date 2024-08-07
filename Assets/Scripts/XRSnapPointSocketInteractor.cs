@@ -83,8 +83,6 @@ namespace UnityEngine.XR.Content.Interaction
             usedSnappoints.Add(snappoint);
             snappointByInteractable.Add(args.interactableObject, snappoint);
             GameObject gameObject = args.interactableObject.transform.gameObject;
-            XRGrabInteractable xr = gameObject.GetComponent<XRGrabInteractable>();
-            xr.selectMode = InteractableSelectMode.Single;
             snappoint.GetComponent<MeshRenderer>().enabled = false;
 
             Fastener fastener = gameObject.GetComponent<Fastener>();
@@ -92,44 +90,46 @@ namespace UnityEngine.XR.Content.Interaction
             {
                 fastener.SetSocketTransform(snappoint);
             }
-
             OnComponentPlaced?.Invoke();
+            
         }
 
 
         /// <inheritdoc />
         protected override void OnSelectExiting(SelectExitEventArgs args)
         {
-            var snappoint = snappointByInteractable[args.interactableObject];
-            usedSnappoints.Remove(snappoint);
-            snappointByInteractable.Remove(args.interactableObject);
-            GameObject gameObject = args.interactableObject.transform.gameObject;
-            XRGrabInteractable xr = gameObject.GetComponent<XRGrabInteractable>();
-            xr.selectMode = InteractableSelectMode.Multiple;
-            snappoint.GetComponent<MeshRenderer>().enabled = true;
+            //var snappoint = snappointByInteractable[args.interactableObject];
+            //usedSnappoints.Remove(snappoint);
+            //snappointByInteractable.Remove(args.interactableObject);
+            //GameObject gameObject = args.interactableObject.transform.gameObject;
+            //XRGrabInteractable xr = gameObject.GetComponent<XRGrabInteractable>();
+            //xr.selectMode = InteractableSelectMode.Multiple;
+            //snappoint.GetComponent<MeshRenderer>().enabled = true;
 
 
-            Fastener fastener = gameObject.GetComponent<Fastener>();
-            if (fastener != null)
-            {
-                fastener.SetSocketTransform(null);
-            }
+            //Fastener fastener = gameObject.GetComponent<Fastener>();
+            //if (fastener != null)
+            //{
+            //    fastener.SetSocketTransform(null);
+            //}
 
             base.OnSelectExiting(args);
         }
 
 
-        /// <inheritdoc />
         public override bool CanSelect(IXRSelectInteractable interactable)
         {
-            
+         
             var attachTransform = GetAttachTransform(interactable);
             if (attachTransform != null)
             {
                 return IsSelecting(interactable)
                        || (hasEmptySnappoint && !interactable.isSelected && !usedSnappoints.Contains(attachTransform));
             }
-            else return false;
+            else
+            {
+                return false;
+            }
         }
 
         /// <inheritdoc />

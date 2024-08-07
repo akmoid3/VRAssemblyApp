@@ -137,6 +137,7 @@ public class SequenceReader : MonoBehaviour
             {
                 MeshRenderer meshRenderer = obj.AddComponent<MeshRenderer>();
                 meshRenderer.sharedMaterial = holographicMaterial;
+                meshRenderer.enabled = false;
             }
         }
         else

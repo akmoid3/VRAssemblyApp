@@ -1,3 +1,4 @@
+using Codice.Client.Common.GameUI;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
@@ -29,8 +30,13 @@ public class Manager : MonoBehaviour
     [SerializeField] private int currentStep;
     [SerializeField] private int errorCount;
     [SerializeField] private bool canIncrement = false;
+    [SerializeField] private int hintCount;
 
     public static event Action<int> OnErrorCountChanged;
+    public static event Action<int> OnHintCountChanged;
+
+
+    XRSnapPointSocketInteractor interactor;
 
     private void Awake()
     {
@@ -103,7 +109,7 @@ public class Manager : MonoBehaviour
 
     public void OnSelectExit(SelectExitEventArgs args)
     {
-        if(args.interactorObject as XRBaseControllerInteractor)
+        if (args.interactorObject as XRBaseControllerInteractor)
         {
             if (state != State.Initialize)
                 ResetParentIfNotGroup(currentSelectedComponent);
@@ -221,9 +227,14 @@ public class Manager : MonoBehaviour
                 MakeComponentsNonGrabbable();
                 break;
             case State.Record:
+                InitializeComponentsType();
+                MakeComponentsGrabbable();
+                break;
             case State.PlayBack:
                 InitializeComponentsType();
                 MakeComponentsGrabbable();
+                interactor = FindObjectOfType<XRSnapPointSocketInteractor>();
+                PlaceInitialComponent();
                 break;
             case State.Finish:
                 break;
@@ -292,7 +303,8 @@ public class Manager : MonoBehaviour
 
     private void ValidateComponent(GameObject component)
     {
-        if (currentStep >= assemblySequence.Count)
+        var nextStep = currentStep + 1;
+        if (nextStep >= assemblySequence.Count)
         {
             Debug.LogError("All steps are already completed.");
             UpdateState(State.Finish);
@@ -311,8 +323,69 @@ public class Manager : MonoBehaviour
             OnErrorCountChanged?.Invoke(errorCount);
         }
 
-        
+
     }
+    private void PlaceInitialComponent()
+    {
+        if (assemblySequence != null && assemblySequence.Count > 0)
+        {
+            // Get the name of the first component to be placed
+            var firstComponentName = assemblySequence[0].componentName;
+
+            // Find the first component in the list of components
+            var firstComponent = components.Find(c => c.name == firstComponentName);
+            if (firstComponent != null)
+            {
+                // Find the XRSnapPointSocketInteractor in the scene
+                if (interactor != null)
+                {
+                    // Find the snappoint with the same name as the first component
+                    Transform correctSnappoint = null;
+                    foreach (Transform child in interactor.transform)
+                    {
+                        if (child.name == firstComponentName)
+                        {
+                            correctSnappoint = child;
+                            break;
+                        }
+                    }
+
+                    if (correctSnappoint != null)
+                    {
+                        // Set the position and rotation of the component to match the snappoint
+                        firstComponent.position = correctSnappoint.position;
+                        firstComponent.rotation = correctSnappoint.rotation;
+                    }
+                }
+            }
+
+        }
+    }
+
+    public void ShowHint()
+    {
+        var currentComponentName = assemblySequence[currentStep].componentName;
+
+        if (interactor != null)
+        {
+            // Find the snappoint with the same name as the first component
+            Transform correctSnappoint = null;
+            foreach (Transform child in interactor.transform)
+            {
+                if (child.name == currentComponentName)
+                {
+                    correctSnappoint = child;
+                    break;
+                }
+            }
+
+            if (correctSnappoint != null)
+            {
+               correctSnappoint.GetComponent<MeshRenderer>().enabled = true;
+            }
+        }
+    }
+
 }
 
 public enum State
