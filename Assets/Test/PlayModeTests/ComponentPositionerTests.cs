@@ -39,7 +39,7 @@ public class ComponentPositionerTests
     }
 
     [UnityTest]
-    public IEnumerator TestSpawnComponents()
+    public IEnumerator SpawnComponents_AddComponentsToTheParentObject()
     {
         // Act
         componentPositioner.SpawnComponents();

@@ -12,6 +12,7 @@ public class PlayBackManager : MonoBehaviour
     [SerializeField] private Button finishButton;
     [SerializeField] private TextMeshProUGUI timerText;
     [SerializeField] private TextMeshProUGUI errorCountText;
+    [SerializeField] private TextMeshProUGUI hintCountText;
 
 
     private float elapsedTime = 0f; 
@@ -21,6 +22,8 @@ public class PlayBackManager : MonoBehaviour
     {
         Manager.OnStateChanged += SetPanelActive;
         Manager.OnErrorCountChanged += IncrementErrorCount;
+        Manager.OnHintCountChanged += IncrementHintCount;
+
         finishButton.onClick.AddListener(OnFinishClicked);
     }
 
@@ -29,10 +32,16 @@ public class PlayBackManager : MonoBehaviour
         errorCountText.text = n.ToString();
     }
 
+    private void IncrementHintCount(int n)
+    {
+        hintCountText.text = n.ToString();
+    }
+
     private void OnDestroy()
     {
         Manager.OnStateChanged -= SetPanelActive;
         Manager.OnErrorCountChanged -= IncrementErrorCount;
+        Manager.OnHintCountChanged -= IncrementHintCount;
         finishButton.onClick.RemoveListener(OnFinishClicked);
     }
 
@@ -53,10 +62,15 @@ public class PlayBackManager : MonoBehaviour
         {
             elapsedTime = 0f; // Reset timer when playback starts
         }
+        else
+        {
+           Manager.Instance.FinishTime = timerText.text;
+        }
     }
 
     private void OnFinishClicked()
     {
+
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
 

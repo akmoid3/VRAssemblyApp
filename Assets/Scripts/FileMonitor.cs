@@ -1,12 +1,21 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
 
-public class FileMonitor : MonoBehaviour
+public interface IFileMonitor
 {
-    public delegate void FilesChangedHandler(HashSet<string> newFiles);
-    public event FilesChangedHandler OnFilesChanged;
+    string PersistentDataPath { get; set; }
+
+    event Action<HashSet<string>> OnFilesChanged;
+
+    void StartMonitoring();
+}
+
+public class FileMonitor : MonoBehaviour, IFileMonitor
+{
+    public event Action<HashSet<string>> OnFilesChanged; // Implementazione dell'evento
 
     private string directoryName = "Models";
     private string persistentDataPath;
@@ -15,15 +24,19 @@ public class FileMonitor : MonoBehaviour
     private const string ModelFileExtension = "*.glb";
     private const float FileCheckInterval = 0.5f;
 
-    public string PersistentDataPath { get => persistentDataPath; private set => persistentDataPath = value; }
+    public string PersistentDataPath { get => persistentDataPath; set => persistentDataPath = value; }
 
     private void Awake()
     {
         InitializePersistentDataPath();
         EnsureModelDirectoryExists();
-        StartCoroutine(CheckForFileChanges());
+        StartMonitoring();
     }
 
+    public void StartMonitoring()
+    {
+        StartCoroutine(CheckForFileChanges());
+    }
 
     private void InitializePersistentDataPath()
     {
@@ -42,16 +55,21 @@ public class FileMonitor : MonoBehaviour
     {
         while (true)
         {
-            string[] files = Directory.GetFiles(persistentDataPath, ModelFileExtension);
-            HashSet<string> newFiles = new HashSet<string>(files);
-
-            if (!newFiles.SetEquals(currentFiles))
-            {
-                currentFiles = newFiles;
-                OnFilesChanged?.Invoke(newFiles);
-            }
+            ForceCheckForFileChanges();
 
             yield return new WaitForSeconds(FileCheckInterval);
+        }
+    }
+
+    public void ForceCheckForFileChanges()
+    {
+        string[] files = Directory.GetFiles(persistentDataPath, ModelFileExtension);
+        HashSet<string> newFiles = new HashSet<string>(files);
+
+        if (!newFiles.SetEquals(currentFiles))
+        {
+            currentFiles = newFiles;
+            OnFilesChanged?.Invoke(newFiles);
         }
     }
 }

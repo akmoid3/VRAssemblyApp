@@ -17,65 +17,89 @@ public class Nail : Fastener
         if (Time.time - lastMoveTime < moveCooldown)
             return;
 
-
-        if ((hammerScript != null && isAligned) || (hammerScript != null && socketTransform))
+        if (Manager.Instance.State == State.PlayBack)
         {
-            float hammerForce = hammerScript.GetImpactForce() * forceScalingFactor;
-            Vector3 impactDirection = hammerScript.GetImpactDirection();
+            if (socketTransform != null)
+                HandleSocketTransformInteraction();
+        }
+        else if (hammerScript != null && isAligned)
+        {
+            HandleNormalInteraction();
+        }
+    }
 
-            if (hammerForce >= minimumImpactForce)
+    private void HandleSocketTransformInteraction()
+    {
+        float hammerForce = hammerScript.GetImpactForce() * forceScalingFactor;
+        Vector3 impactDirection = hammerScript.GetImpactDirection();
+
+        if (hammerForce >= minimumImpactForce)
+        {
+            float potentialMovement = hammerForce * Time.fixedDeltaTime * forceScalingFactor;
+            float currentDistance = Vector3.Distance(socketTransform.position, initialSocketPosition);
+            float remainingDistance = distanceToTravel - currentDistance;
+
+            float direction = Vector3.Dot(impactDirection, transform.forward);
+
+            // Check if the impact direction matches the alignment
+            if (direction >= 0.8f)
             {
+                float actualMovement = Mathf.Min(potentialMovement, remainingDistance);
 
-                float potentialMovement = hammerForce * Time.fixedDeltaTime * forceScalingFactor;
-                float currentDistance;
-                if (socketTransform)
+                // Move the socketTransform based on the impact
+                socketTransform.Translate(Vector3.forward * actualMovement);
+
+                // Check if the nail has reached or exceeded the distanceToTravel
+                if (currentDistance + actualMovement >= distanceToTravel)
                 {
-                    currentDistance = Vector3.Distance(socketTransform.localPosition, initialSocketPosition);
-                }
-                else
-                {
-                    currentDistance = Vector3.Distance(transform.localPosition, initialZPosition);
-                }
-
-
-                float remainingDistance = distanceToTravel - currentDistance;
-
-                float actualMovement = potentialMovement;
-
-
-
-                float direction = Vector3.Dot(impactDirection, transform.forward);
-
-                // Check if the impact direction matches the alignment
-                if (direction >= 0.8f)
-                {
-                    // Ensure the nail doesn't move beyond the distanceToTravel
-                    if (potentialMovement > remainingDistance)
-                    {
-                        actualMovement = Mathf.Min(potentialMovement, remainingDistance);
-                        isStopped = true;
-                    }
-                    if(socketTransform)
-                        socketTransform.Translate(Vector3.forward * actualMovement);
-                    else
-                        transform.Translate(Vector3.forward * actualMovement);
-
-                    // Check if the nail has reached or exceeded the distanceToTravel
-                    if (currentDistance + actualMovement >= distanceToTravel)
-                    {
-                        isStopped = true;
-                        fastenerRenderer.material.color = defaultColor;
-                    }
-
-                    lastMoveTime = Time.time;
-
-                    Debug.Log("Correct direction!" + direction + " remaining " + remainingDistance);
-                }
-                else
-                {
-                    Debug.Log("Incorrect direction!" + direction);
+                    isStopped = true;
+                    fastenerRenderer.material.color = defaultColor;
                 }
 
+                lastMoveTime = Time.time;
+                Debug.Log("Correct direction!" + direction + " remaining " + remainingDistance);
+            }
+            else
+            {
+                Debug.Log("Incorrect direction!" + direction);
+            }
+        }
+    }
+
+    private void HandleNormalInteraction()
+    {
+        float hammerForce = hammerScript.GetImpactForce() * forceScalingFactor;
+        Vector3 impactDirection = hammerScript.GetImpactDirection();
+
+        if (hammerForce >= minimumImpactForce)
+        {
+            float potentialMovement = hammerForce * Time.fixedDeltaTime * forceScalingFactor;
+            float currentDistance = Vector3.Distance(transform.localPosition, initialZPosition);
+            float remainingDistance = distanceToTravel - currentDistance;
+
+            float direction = Vector3.Dot(impactDirection, transform.forward);
+
+            // Check if the impact direction matches the alignment
+            if (direction >= 0.8f)
+            {
+                float actualMovement = Mathf.Min(potentialMovement, remainingDistance);
+
+                // Move the transform based on the impact
+                transform.Translate(Vector3.forward * actualMovement);
+
+                // Check if the nail has reached or exceeded the distanceToTravel
+                if (currentDistance + actualMovement >= distanceToTravel)
+                {
+                    isStopped = true;
+                    fastenerRenderer.material.color = defaultColor;
+                }
+
+                lastMoveTime = Time.time;
+                Debug.Log("Correct direction!" + direction + " remaining " + remainingDistance);
+            }
+            else
+            {
+                Debug.Log("Incorrect direction!" + direction);
             }
         }
     }

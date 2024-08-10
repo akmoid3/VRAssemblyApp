@@ -1,5 +1,10 @@
+using Codice.Client.Common.GameUI;
+using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.XR.Interaction.Toolkit;
+using static SnapToPosition;
 
 public class SnapToPosition : MonoBehaviour
 {
@@ -7,8 +12,14 @@ public class SnapToPosition : MonoBehaviour
     public float snapAngle = 5f;
     private List<SnapPoint> snapPoints;
     private HashSet<GameObject> snappedObjects = new HashSet<GameObject>(); // Track snapped objects
-    public SequenceRecorder recorder; // Reference to the BuildSequenceRecorder
+    public static event Action OnComponentPlaced;
+    private XRInteractionManager interactionManager;
 
+    private void Awake()
+    {
+        interactionManager = FindObjectOfType<XRInteractionManager>();
+
+    }
     private void Start()
     {
         snapPoints = new List<SnapPoint>();
@@ -27,16 +38,8 @@ public class SnapToPosition : MonoBehaviour
         Debug.Log($"Initialized {snapPoints.Count} snap points.");
     }
 
-    private void OnTriggerEnter(Collider other)
-    {
-        if (other.GetComponent<Rigidbody>().isKinematic)
-            other.GetComponent<Rigidbody>().isKinematic = false;
-    }
-
     private void OnTriggerStay(Collider other)
     {
-        Debug.Log($"Object in trigger: {other.name}");
-
 
         // Check if the object has already been snapped
         if (snappedObjects.Contains(other.gameObject))
@@ -45,53 +48,100 @@ public class SnapToPosition : MonoBehaviour
         CheckSnap(other);
     }
 
-    private void OnTriggerExit(Collider other)
-    {
-        Debug.Log($"Object exited trigger: {other.name}");
-
-        // Remove the object from the snapped objects set
-        snappedObjects.Remove(other.gameObject);
-
-        if (other.GetComponent<Rigidbody>().isKinematic)
-            other.GetComponent<Rigidbody>().isKinematic = false;
-        EnableAllSnapPoints();
-    }
-
     private void CheckSnap(Collider other)
     {
-        foreach (var snapPoint in snapPoints)
+        if((Manager.Instance.AssemblySequence[Manager.Instance.CurrentStep].componentName == other.name))
         {
-            if (other.name == snapPoint.componentName)
+            foreach (var snapPoint in snapPoints)
             {
-                float distance = Vector3.Distance(other.transform.position, snapPoint.snapTransform.position);
-                float angle = Quaternion.Angle(other.transform.rotation, snapPoint.snapTransform.rotation);
-
-                if (distance < snapDistance && angle < snapAngle)
+                if (other.name == snapPoint.componentName)
                 {
-                    Debug.Log("Snapping");
-                    other.transform.position = snapPoint.snapTransform.position;
-                    other.transform.rotation = snapPoint.snapTransform.rotation;
-                    //other.attachedRigidbody.position = (snapPoint.snapTransform.position);
-                    //other.attachedRigidbody.rotation = (snapPoint.snapTransform.rotation);
-                    other.GetComponent<Rigidbody>().isKinematic = true;
 
-                    // Disable the MeshRenderer
-                    if (snapPoint.meshRenderer != null)
+                    float distance = Vector3.Distance(other.transform.position, snapPoint.snapTransform.position);
+                    float angle = Quaternion.Angle(other.transform.rotation, snapPoint.snapTransform.rotation);
+
+                    Fastener fastener = other.GetComponent<Fastener>();
+
+
+                    if (fastener != null)
                     {
-                        snapPoint.meshRenderer.enabled = false;
+                        fastener.SetSocketTransform(snapPoint.snapTransform);
                     }
 
-                    // Record the snapped component's name
-                    recorder.RecordAction(other.name);
+                    if ((distance < snapDistance && angle < snapAngle) || (fastener && distance < snapDistance))
+                    {
+                        other.attachedRigidbody.isKinematic = false;
 
-                    // Add the object to the snapped objects set
-                    snappedObjects.Add(other.gameObject);
+                        snapPoint.meshRenderer.enabled = true;
 
-                    break;
+                     
+
+
+                        other.transform.SetPositionAndRotation(snapPoint.snapTransform.position, snapPoint.snapTransform.rotation);
+
+                        other.GetComponent<Rigidbody>().isKinematic = true;
+                        IXRInteractable xrInteractable = other.GetComponent<IXRInteractable>();
+                        if (xrInteractable != null)
+                        {
+                            interactionManager.RegisterInteractable(xrInteractable);
+                            Destroy(xrInteractable as MonoBehaviour);
+                        }
+
+                        // Add the object to the snapped objects set
+                        snappedObjects.Add(other.gameObject);
+
+                        snapPoint.meshRenderer.enabled = false;
+
+                        other.transform.SetParent(snapPoint.snapTransform);
+
+                        AddGrabbable(other);
+
+                        OnComponentPlaced?.Invoke();
+
+                        break;
+                    }
+
                 }
             }
+            
         }
+
+        
+       
     }
+
+    private void AddGrabbable(Collider collider)
+    {
+        XRGrabInteractable xrGrabInteractable = GetComponent<XRGrabInteractable>();
+
+        if (xrGrabInteractable)
+        {
+            // Unregister the interactable from the interaction manager
+            interactionManager.UnregisterInteractable(xrGrabInteractable as IXRInteractable);
+
+            // Reconfigure the existing component instead of destroying it
+            xrGrabInteractable.throwOnDetach = false;
+            xrGrabInteractable.useDynamicAttach = true;
+            xrGrabInteractable.selectMode = InteractableSelectMode.Multiple;
+            xrGrabInteractable.colliders.Add(collider);
+            // Re-register the interactable
+            interactionManager.RegisterInteractable(xrGrabInteractable as IXRInteractable);
+        }
+        else
+        {
+            // If no interactable is present, add one
+            xrGrabInteractable = gameObject.AddComponent<XRGrabInteractable>();
+            xrGrabInteractable.throwOnDetach = false;
+            xrGrabInteractable.useDynamicAttach = true;
+            xrGrabInteractable.selectMode = InteractableSelectMode.Multiple;
+
+            // Register the newly added interactable
+            interactionManager.RegisterInteractable(xrGrabInteractable as IXRInteractable);
+        }
+
+        xrGrabInteractable.enabled = true;
+    }
+
 
     private bool AreAllSnapPointsFilled()
     {
@@ -105,29 +155,14 @@ public class SnapToPosition : MonoBehaviour
         return true; // All snap points are filled
     }
 
-    private void SaveSequence()
-    {
-        recorder.SaveSequenceToJson("Assets/BuildSequence.json"); // Save the sequence to JSON
-        Debug.Log("Sequence saved.");
-    }
-
     private void EnableAllSnapPoints()
     {
         foreach (var snapPoint in snapPoints)
         {
             if (snapPoint.meshRenderer != null)
-            {
+            {  
                 snapPoint.meshRenderer.enabled = true;
             }
-        }
-    }
-
-    private void Update()
-    {
-        // Check if all snap points are complete
-        if (recorder.isRecording && AreAllSnapPointsFilled())
-        {
-            SaveSequence();
         }
     }
 

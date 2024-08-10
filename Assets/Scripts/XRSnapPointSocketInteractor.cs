@@ -84,14 +84,17 @@ namespace UnityEngine.XR.Content.Interaction
             snappointByInteractable.Add(args.interactableObject, snappoint);
             GameObject gameObject = args.interactableObject.transform.gameObject;
             snappoint.GetComponent<MeshRenderer>().enabled = false;
-
+            gameObject.transform.SetParent(snappoint, false);
             Fastener fastener = gameObject.GetComponent<Fastener>();
+
+
             if (fastener != null)
             {
                 fastener.SetSocketTransform(snappoint);
             }
+
             OnComponentPlaced?.Invoke();
-            
+
         }
 
 

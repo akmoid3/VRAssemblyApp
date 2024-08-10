@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
 using UnityEngine.XR.Content.Interaction;
+using UnityEngine.XR.Interaction.Toolkit;
 
 [Serializable]
 public class ComponentData
@@ -31,7 +32,7 @@ public class SequenceReader : MonoBehaviour
 {
     [SerializeField] private Manager manager;
     [SerializeField] private Material holographicMaterial;
-
+    [SerializeField] private GameObject buildingPosition;
     [SerializeField] private float distanceThreshold = 0.05f;
     [SerializeField] private float angleThreshold = 10.0f;
 
@@ -88,7 +89,7 @@ public class SequenceReader : MonoBehaviour
     private GameObject CreateSnapParentObject(GameObject prefab, RootObject rootObject)
     {
         GameObject parent = new GameObject("SnapParentObject");
-
+        parent.transform.SetPositionAndRotation(buildingPosition.transform.position, Quaternion.identity);
         foreach (var component in rootObject.components)
         {
             if (string.IsNullOrEmpty(component.componentName))
@@ -148,14 +149,12 @@ public class SequenceReader : MonoBehaviour
 
     private void InitializeSnapParent(GameObject parent)
     {
-        XRSnapPointSocketInteractor socket = parent.AddComponent<XRSnapPointSocketInteractor>();
-        socket.enabled = false;
-        socket.DistanceThreshold = distanceThreshold;
-        socket.AngleThreshold = angleThreshold;
+        SnapToPosition socket = parent.AddComponent<SnapToPosition>();
         BoxCollider collider = parent.AddComponent<BoxCollider>();
         collider.isTrigger = true;
-        collider.size = new Vector3(10.0f, 10.0f, 10.0f);
+        collider.size = new Vector3(5.0f, 5.0f, 5.0f);
         socket.enabled = true;
-
+        Rigidbody rb = parent.AddComponent<Rigidbody>();
+        rb.isKinematic = true;
     }
 }

@@ -7,7 +7,19 @@ public class Screw : Fastener
 
     protected override void HandleInteraction()
     {
-        if ((screwdriverScript != null && isAligned) || (screwdriverScript != null && socketTransform != null))
+        if (Manager.Instance.State == State.PlayBack)
+        {
+            HandlePlayBackInteraction();
+        }
+        else if (screwdriverScript != null && isAligned)
+        {
+            HandleNormalInteraction();
+        }
+    }
+
+    private void HandlePlayBackInteraction()
+    {
+        if (screwdriverScript != null && socketTransform != null)
         {
             Vector3 screwdriverDir = screwdriverScript.transform.forward;
             Vector3 screwDir = transform.forward;
@@ -16,21 +28,52 @@ public class Screw : Fastener
             if (dotProduct >= maxAllowedDotProduct)
             {
                 float rotationSpeed = screwdriverScript.GetRotationSpeed();
-
                 float linearMovement = (rotationSpeed * pitch / 360) * Time.deltaTime;
-                float distanceTraveled;
-                if (socketTransform)
+
+                socketTransform.Rotate(Vector3.forward, rotationSpeed * Time.deltaTime * -1.0f);
+                socketTransform.Translate(Vector3.forward * linearMovement);
+
+                float distanceTraveled = Mathf.Abs(Vector3.Distance(socketTransform.position, initialSocketPosition));
+
+                if (distanceTraveled >= distanceToTravel)
                 {
-                    socketTransform.Rotate(Vector3.forward, rotationSpeed * Time.deltaTime * -1.0f);
-                    socketTransform.Translate(Vector3.forward * linearMovement);
-                    distanceTraveled = Mathf.Abs(Vector3.Distance(socketTransform.localPosition, initialSocketPosition));
+                    isStopped = true;
+                    fastenerRenderer.material.color = defaultColor;
                 }
-                else
+            }
+        }
+    }
+
+    private void HandleNormalInteraction()
+    {
+        Vector3 screwdriverDir = screwdriverScript.transform.forward;
+        Vector3 screwDir = transform.forward;
+        float dotProduct = Vector3.Dot(screwdriverDir.normalized, screwDir.normalized);
+
+        if (dotProduct >= maxAllowedDotProduct)
+        {
+            float rotationSpeed = screwdriverScript.GetRotationSpeed();
+            float linearMovement = (rotationSpeed * pitch / 360) * Time.deltaTime;
+
+            if (socketTransform != null)
+            {
+                socketTransform.Rotate(Vector3.forward, rotationSpeed * Time.deltaTime * -1.0f);
+                socketTransform.Translate(Vector3.forward * linearMovement);
+
+                float distanceTraveled = Mathf.Abs(Vector3.Distance(socketTransform.localPosition, initialSocketPosition));
+
+                if (distanceTraveled >= distanceToTravel)
                 {
-                    transform.Rotate(Vector3.forward, rotationSpeed * Time.deltaTime * -1.0f);
-                    transform.Translate(Vector3.forward * linearMovement);
-                    distanceTraveled = Mathf.Abs(Vector3.Distance(transform.localPosition, initialZPosition));
+                    isStopped = true;
+                    fastenerRenderer.material.color = defaultColor;
                 }
+            }
+            else
+            {
+                transform.Rotate(Vector3.forward, rotationSpeed * Time.deltaTime * -1.0f);
+                transform.Translate(Vector3.forward * linearMovement);
+
+                float distanceTraveled = Mathf.Abs(Vector3.Distance(transform.localPosition, initialZPosition));
 
                 if (distanceTraveled >= distanceToTravel)
                 {

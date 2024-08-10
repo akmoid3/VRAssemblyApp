@@ -1,5 +1,6 @@
 using Codice.Client.Common.GameUI;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.XR.Content.Interaction;
@@ -31,12 +32,15 @@ public class Manager : MonoBehaviour
     [SerializeField] private int errorCount;
     [SerializeField] private bool canIncrement = false;
     [SerializeField] private int hintCount;
+    [SerializeField] private string finishTime;
 
     public static event Action<int> OnErrorCountChanged;
     public static event Action<int> OnHintCountChanged;
+    private Dictionary<int, bool> hintShownForStep = new Dictionary<int, bool>();
 
-
-    XRSnapPointSocketInteractor interactor;
+    //XRSnapPointSocketInteractor interactor;
+    SnapToPosition interactor;
+    [SerializeField] private float timeForFirstPlacement = 1.0f;
 
     private void Awake()
     {
@@ -50,12 +54,12 @@ public class Manager : MonoBehaviour
             Instance = this;
         }
 
-        XRSnapPointSocketInteractor.OnComponentPlaced += IncrementCurrentStep;
+        SnapToPosition.OnComponentPlaced += IncrementCurrentStep;
     }
 
     private void OnDestroy()
     {
-        XRSnapPointSocketInteractor.OnComponentPlaced -= IncrementCurrentStep;
+        SnapToPosition.OnComponentPlaced -= IncrementCurrentStep;
     }
     private void IncrementCurrentStep()
     {
@@ -78,6 +82,10 @@ public class Manager : MonoBehaviour
     public State State { get => state; private set => state = value; }
     public List<ComponentData> AssemblySequence { get => assemblySequence; set => assemblySequence = value; }
     public int CurrentStep { get => currentStep; set => currentStep = value; }
+    public string FinishTime { get => finishTime; set => finishTime = value; }
+    public int HintCount { get => hintCount; set => hintCount = value; }
+    public int ErrorCount { get => errorCount; set => errorCount = value; }
+    public GameObject CurrentSelectedComponent { get => currentSelectedComponent; set => currentSelectedComponent = value; }
 
     public void InitializeSequence(List<ComponentData> sequence)
     {
@@ -111,7 +119,7 @@ public class Manager : MonoBehaviour
     {
         if (args.interactorObject as XRBaseControllerInteractor)
         {
-            if (state != State.Initialize)
+            if (state != State.Initialize && state != State.PlayBack)
                 ResetParentIfNotGroup(currentSelectedComponent);
             SetComponentReleasedState(currentSelectedComponent, true);
             canHover = true;
@@ -233,7 +241,7 @@ public class Manager : MonoBehaviour
             case State.PlayBack:
                 InitializeComponentsType();
                 MakeComponentsGrabbable();
-                interactor = FindObjectOfType<XRSnapPointSocketInteractor>();
+                interactor = FindObjectOfType<SnapToPosition>();
                 PlaceInitialComponent();
                 break;
             case State.Finish:
@@ -306,7 +314,6 @@ public class Manager : MonoBehaviour
         var nextStep = currentStep + 1;
         if (nextStep >= assemblySequence.Count)
         {
-            Debug.LogError("All steps are already completed.");
             UpdateState(State.Finish);
             return;
         }
@@ -314,11 +321,9 @@ public class Manager : MonoBehaviour
         ComponentData expectedComponent = assemblySequence[currentStep];
         if (component.name == expectedComponent.componentName)
         {
-            Debug.Log("Correct component placed: " + component.name);
         }
         else
         {
-            Debug.LogError("Incorrect component. Expected: " + expectedComponent.componentName + ", but got: " + component.name);
             errorCount++;
             OnErrorCountChanged?.Invoke(errorCount);
         }
@@ -334,41 +339,73 @@ public class Manager : MonoBehaviour
 
             // Find the first component in the list of components
             var firstComponent = components.Find(c => c.name == firstComponentName);
-            if (firstComponent != null)
+            if (firstComponent != null && interactor != null)
             {
-                // Find the XRSnapPointSocketInteractor in the scene
-                if (interactor != null)
+                // Find the snappoint with the same name as the first component
+                Transform correctSnappoint = null;
+                foreach (Transform child in interactor.transform)
                 {
-                    // Find the snappoint with the same name as the first component
-                    Transform correctSnappoint = null;
-                    foreach (Transform child in interactor.transform)
+                    if (child.name == firstComponentName)
                     {
-                        if (child.name == firstComponentName)
-                        {
-                            correctSnappoint = child;
-                            break;
-                        }
-                    }
-
-                    if (correctSnappoint != null)
-                    {
-                        // Set the position and rotation of the component to match the snappoint
-                        firstComponent.position = correctSnappoint.position;
-                        firstComponent.rotation = correctSnappoint.rotation;
+                        correctSnappoint = child;
+                        break;
                     }
                 }
-            }
 
+                if (correctSnappoint != null)
+                {
+                    // Start the coroutine to smoothly move the component into place
+                    StartCoroutine(SmoothMoveComponent(firstComponent, correctSnappoint.position, correctSnappoint.rotation, timeForFirstPlacement));
+                }
+            }
         }
+    }
+
+    private IEnumerator SmoothMoveComponent(Transform component, Vector3 targetPosition, Quaternion targetRotation, float duration)
+    {
+        Vector3 initialPosition = component.position;
+        Quaternion initialRotation = component.rotation;
+        float elapsedTime = 0;
+
+        while (elapsedTime < duration)
+        {
+            // Calculate the percentage of time passed
+            float t = elapsedTime / duration;
+
+            // Smoothly interpolate position and rotation
+            component.position = Vector3.Lerp(initialPosition, targetPosition, t);
+            component.rotation = Quaternion.Slerp(initialRotation, targetRotation, t);
+
+            // Increment the elapsed time
+            elapsedTime += Time.deltaTime;
+
+            // Wait until the next frame
+            yield return null;
+        }
+
+        // Ensure the final position and rotation are set correctly
+        component.position = targetPosition;
+        component.rotation = targetRotation;
     }
 
     public void ShowHint()
     {
         var currentComponentName = assemblySequence[currentStep].componentName;
 
+        // Check if the hint for the current step has already been shown
+        if (hintShownForStep.ContainsKey(currentStep) && hintShownForStep[currentStep])
+        {
+            return;
+        }
+
+        // Increment the hint count and mark the hint as shown for the current step
+        hintCount++;
+        hintShownForStep[currentStep] = true;
+        OnHintCountChanged?.Invoke(hintCount);
+
         if (interactor != null)
         {
-            // Find the snappoint with the same name as the first component
+            // Find the snappoint with the same name as the current component
             Transform correctSnappoint = null;
             foreach (Transform child in interactor.transform)
             {
@@ -381,7 +418,7 @@ public class Manager : MonoBehaviour
 
             if (correctSnappoint != null)
             {
-               correctSnappoint.GetComponent<MeshRenderer>().enabled = true;
+                correctSnappoint.GetComponent<MeshRenderer>().enabled = true;
             }
         }
     }

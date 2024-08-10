@@ -1,17 +1,23 @@
+using System;
 using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
+using UnityEngine.Scripting;
 
 public class PrefabManager : MonoBehaviour
 {
     [SerializeField] private Transform prefabContainer;
-    [SerializeField] private ModelLoader loader;
-    [SerializeField] private FileMonitor fileMonitor;
+    [SerializeField] private IModelLoader loader;
+    [SerializeField] private IFileMonitor fileMonitor;
     private Manager manager;
     private Dictionary<string, GameObject> prefabInstances = new Dictionary<string, GameObject>();
+    public event Action<List<string>> OnModelsLoaded;
 
-    public delegate void ModelsLoadedHandler(List<string> modelNames);
-    public event ModelsLoadedHandler OnModelsLoaded;
+    private void Awake()
+    {
+        loader = FindObjectOfType<ModelLoader>();
+        fileMonitor = FindObjectOfType<FileMonitor>();
+    }
 
     private void Start()
     {
@@ -37,6 +43,12 @@ public class PrefabManager : MonoBehaviour
     public async void ShowModel(string modelName)
     {
         HideAllPrefabs();
+
+        if (string.IsNullOrEmpty(fileMonitor?.PersistentDataPath))
+        {
+            Debug.LogError("PersistentDataPath is null or empty.");
+            return;
+        }
 
         if (!prefabInstances.TryGetValue(modelName, out GameObject instance))
         {

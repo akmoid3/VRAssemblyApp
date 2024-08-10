@@ -58,8 +58,9 @@ public abstract class Fastener : MonoBehaviour
             HandleInteraction();
         }
 
-        if (!canStop && !isStopped && !IsAligned)
+        if (!canStop && !isStopped && !IsAligned && Manager.Instance.State == State.Record)
             PerformComponentRaycast();
+
     }
 
     protected abstract void HandleInteraction();

@@ -50,7 +50,7 @@ public class SaveSequenceTests
     }
 
     [UnityTest]
-    public IEnumerator TestAddComponent()
+    public IEnumerator SaveComponent_CreatesExpectedJsonFile()
     {
         GameObject component = new GameObject("Component1");
         saveSequence.SaveComponent(component);
@@ -90,7 +90,7 @@ public class SaveSequenceTests
     }
 
     [UnityTest]
-    public IEnumerator TestModifyComponent()
+    public IEnumerator ModifyComponent_UpdatesJsonFileCorrectly()
     {
         // Create and save the initial component
         GameObject component = new GameObject("Component1");
@@ -140,7 +140,7 @@ public class SaveSequenceTests
 
 
     [UnityTest]
-    public IEnumerator TestRemoveComponent()
+    public IEnumerator RemoveComponent_ResultsInEmptyJsonFile()
     {
         GameObject component = new GameObject("Component1");
         saveSequence.SaveComponent(component);
@@ -165,7 +165,7 @@ public class SaveSequenceTests
     }
 
     [UnityTest]
-    public IEnumerator TestSaveSequenceToJSON()
+    public IEnumerator SaveSequenceToJson_CreatesExpectedFile()
     {
         GameObject component = new GameObject("Component1");
         saveSequence.SaveComponent(component);
