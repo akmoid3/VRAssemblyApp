@@ -35,7 +35,6 @@ public class SnapToPosition : MonoBehaviour
             snapPoints.Add(snapPoint);
         }
 
-        Debug.Log($"Initialized {snapPoints.Count} snap points.");
     }
 
     private void OnTriggerStay(Collider other)
@@ -50,7 +49,7 @@ public class SnapToPosition : MonoBehaviour
 
     private void CheckSnap(Collider other)
     {
-        if((Manager.Instance.AssemblySequence[Manager.Instance.CurrentStep].componentName == other.name))
+        if(Manager.Instance.State == State.PlayBack && (Manager.Instance.AssemblySequence[Manager.Instance.CurrentStep].componentName == other.name))
         {
             foreach (var snapPoint in snapPoints)
             {
@@ -62,7 +61,6 @@ public class SnapToPosition : MonoBehaviour
 
                     Fastener fastener = other.GetComponent<Fastener>();
 
-
                     if (fastener != null)
                     {
                         fastener.SetSocketTransform(snapPoint.snapTransform);
@@ -73,9 +71,6 @@ public class SnapToPosition : MonoBehaviour
                         other.attachedRigidbody.isKinematic = false;
 
                         snapPoint.meshRenderer.enabled = true;
-
-                     
-
 
                         other.transform.SetPositionAndRotation(snapPoint.snapTransform.position, snapPoint.snapTransform.rotation);
 
@@ -97,6 +92,8 @@ public class SnapToPosition : MonoBehaviour
                         AddGrabbable(other);
 
                         OnComponentPlaced?.Invoke();
+
+                        
 
                         break;
                     }

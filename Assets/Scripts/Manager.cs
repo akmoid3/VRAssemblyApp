@@ -36,6 +36,8 @@ public class Manager : MonoBehaviour
 
     public static event Action<int> OnErrorCountChanged;
     public static event Action<int> OnHintCountChanged;
+    public static event Action<int> OnStepChanged;
+
     private Dictionary<int, bool> hintShownForStep = new Dictionary<int, bool>();
 
     //XRSnapPointSocketInteractor interactor;
@@ -64,11 +66,36 @@ public class Manager : MonoBehaviour
     private void IncrementCurrentStep()
     {
         currentStep++;
+        OnStepChanged?.Invoke(currentStep);
     }
 
     private void Start()
     {
         UpdateState(State.ChoosingModel);
+    }
+
+    private void Update()
+    {
+        if (state == State.PlayBack)
+        {
+            ComponentData componentData = assemblySequence[currentStep];
+            if (componentData != null)
+            {
+                foreach(var component in components){
+                    if(component.name == componentData.componentName)
+                    {
+                        Fastener fastener = component.GetComponent<Fastener>();
+                        if (fastener != null && fastener.IsStopped)
+                        {
+                            IncrementCurrentStep();
+
+                            ValidateComponent(component.gameObject);
+                        }
+                    }
+                }
+            }
+
+        }
     }
 
     // Singleton
@@ -109,11 +136,9 @@ public class Manager : MonoBehaviour
                 currentSelectedComponent.GetComponent<Fastener>().IsAligned = false;
                 currentSelectedComponent.GetComponent<Fastener>().CanStop = false;
                 currentSelectedComponent.GetComponent<Fastener>().IsStopped = false;
-
             }
         }
     }
-
 
     public void OnSelectExit(SelectExitEventArgs args)
     {
@@ -251,7 +276,6 @@ public class Manager : MonoBehaviour
             default:
                 break;
         }
-
         OnStateChanged?.Invoke(newState);
     }
 
@@ -297,7 +321,6 @@ public class Manager : MonoBehaviour
                     break;
             }
         }
-
     }
 
     void RemoveExistingScripts<T>(GameObject target) where T : Component
@@ -319,17 +342,13 @@ public class Manager : MonoBehaviour
         }
 
         ComponentData expectedComponent = assemblySequence[currentStep];
-        if (component.name == expectedComponent.componentName)
-        {
-        }
-        else
+        if (component.name != expectedComponent.componentName)
         {
             errorCount++;
             OnErrorCountChanged?.Invoke(errorCount);
         }
-
-
     }
+
     private void PlaceInitialComponent()
     {
         if (assemblySequence != null && assemblySequence.Count > 0)
@@ -342,15 +361,7 @@ public class Manager : MonoBehaviour
             if (firstComponent != null && interactor != null)
             {
                 // Find the snappoint with the same name as the first component
-                Transform correctSnappoint = null;
-                foreach (Transform child in interactor.transform)
-                {
-                    if (child.name == firstComponentName)
-                    {
-                        correctSnappoint = child;
-                        break;
-                    }
-                }
+                Transform correctSnappoint = interactor.transform.GetChild(0);
 
                 if (correctSnappoint != null)
                 {
@@ -406,15 +417,7 @@ public class Manager : MonoBehaviour
         if (interactor != null)
         {
             // Find the snappoint with the same name as the current component
-            Transform correctSnappoint = null;
-            foreach (Transform child in interactor.transform)
-            {
-                if (child.name == currentComponentName)
-                {
-                    correctSnappoint = child;
-                    break;
-                }
-            }
+            Transform correctSnappoint = interactor.transform.GetChild(CurrentStep);
 
             if (correctSnappoint != null)
             {

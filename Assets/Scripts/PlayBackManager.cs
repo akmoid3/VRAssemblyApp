@@ -13,16 +13,17 @@ public class PlayBackManager : MonoBehaviour
     [SerializeField] private TextMeshProUGUI timerText;
     [SerializeField] private TextMeshProUGUI errorCountText;
     [SerializeField] private TextMeshProUGUI hintCountText;
+    [SerializeField] private TextMeshProUGUI stepsText;
 
-
-    private float elapsedTime = 0f; 
-    private bool isPlayingBack = false; 
+    private float elapsedTime = 0f;
+    private bool isPlayingBack = false;
 
     private void Awake()
     {
         Manager.OnStateChanged += SetPanelActive;
         Manager.OnErrorCountChanged += IncrementErrorCount;
         Manager.OnHintCountChanged += IncrementHintCount;
+        Manager.OnStepChanged += IncrementStepCount;
 
         finishButton.onClick.AddListener(OnFinishClicked);
     }
@@ -36,12 +37,18 @@ public class PlayBackManager : MonoBehaviour
     {
         hintCountText.text = n.ToString();
     }
-
+    private void IncrementStepCount(int n)
+    {
+        int totalSteps = Manager.Instance.AssemblySequence.Count;
+        stepsText.text = $"{n}/{totalSteps}";
+    }
     private void OnDestroy()
     {
         Manager.OnStateChanged -= SetPanelActive;
         Manager.OnErrorCountChanged -= IncrementErrorCount;
         Manager.OnHintCountChanged -= IncrementHintCount;
+        Manager.OnStepChanged -= IncrementStepCount;
+
         finishButton.onClick.RemoveListener(OnFinishClicked);
     }
 
@@ -62,15 +69,14 @@ public class PlayBackManager : MonoBehaviour
         {
             elapsedTime = 0f; // Reset timer when playback starts
         }
-        else
+        else if (state == State.Finish)
         {
-           Manager.Instance.FinishTime = timerText.text;
+            Manager.Instance.FinishTime = timerText.text;
         }
     }
 
     private void OnFinishClicked()
     {
-
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
 

@@ -6,10 +6,9 @@ public class Nail : Fastener
     [SerializeField] private float forceScalingFactor = 0.5f;
     [SerializeField] private float minimumImpactForce = 2f;
 
-    [SerializeField] private float moveCooldown = 0.5f; // Cooldown duration in seconds
+    [SerializeField] private float moveCooldown = 0.5f;
 
     private float lastMoveTime = 0f;
-
 
     protected override void HandleInteraction()
     {
@@ -57,12 +56,8 @@ public class Nail : Fastener
                 }
 
                 lastMoveTime = Time.time;
-                Debug.Log("Correct direction!" + direction + " remaining " + remainingDistance);
             }
-            else
-            {
-                Debug.Log("Incorrect direction!" + direction);
-            }
+           
         }
     }
 
@@ -95,12 +90,8 @@ public class Nail : Fastener
                 }
 
                 lastMoveTime = Time.time;
-                Debug.Log("Correct direction!" + direction + " remaining " + remainingDistance);
             }
-            else
-            {
-                Debug.Log("Incorrect direction!" + direction);
-            }
+            
         }
     }
 

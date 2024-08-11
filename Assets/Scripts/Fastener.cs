@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 public abstract class Fastener : MonoBehaviour
@@ -31,7 +32,6 @@ public abstract class Fastener : MonoBehaviour
     protected float fastenerLength;
 
     protected ComponentObject componentObject;
-
     public bool IsAligned { get => isAligned; set => isAligned = value; }
     public bool IsStopped { get => isStopped; set => isStopped = value; }
     public bool CanStop { get => canStop; set => canStop = value; }
@@ -108,7 +108,6 @@ public abstract class Fastener : MonoBehaviour
                 componentObject = GetComponent<ComponentObject>();
                 if (dotProduct >= alignmentDotProductThreshold)
                 {
-                    Debug.Log("Colliding with component: " + hit.collider.name);
                     fastenerRenderer.material.color = alignedColor;
                     if (componentObject && componentObject.IsReleased && !isAligned)
                         AlignWithComponent(hit.point, normalAtContact);
@@ -178,4 +177,6 @@ public abstract class Fastener : MonoBehaviour
         if (socketTransform != null)
             initialSocketPosition = socket.position;
     }
+
+   
 }

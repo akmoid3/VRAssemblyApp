@@ -13,15 +13,17 @@ public class FinishManager : MonoBehaviour
     [SerializeField] private TextMeshProUGUI errorCountText;
     [SerializeField] private TextMeshProUGUI hintCountText;
 
-
     private void Awake()
     {
         Manager.OnStateChanged += SetPanelActive;
         finishButton.onClick.AddListener(OnFinishClicked);
     }
 
- 
-
+    private void Update()
+    {
+        if (Manager.Instance.State == State.Finish && timerText.text == "00:00")
+            timerText.text = Manager.Instance.FinishTime;
+    }
     private void OnDestroy()
     {
         Manager.OnStateChanged -= SetPanelActive;
@@ -35,8 +37,6 @@ public class FinishManager : MonoBehaviour
         {
             errorCountText.text = Manager.Instance.ErrorCount.ToString();
             hintCountText.text = Manager.Instance.HintCount.ToString();
-            timerText.text = Manager.Instance.FinishTime;
-
         }
     }
 
@@ -45,5 +45,4 @@ public class FinishManager : MonoBehaviour
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
 
- 
 }
