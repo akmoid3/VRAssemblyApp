@@ -35,7 +35,7 @@ public class Nail : Fastener
         if (hammerForce >= minimumImpactForce)
         {
             float potentialMovement = hammerForce * Time.fixedDeltaTime * forceScalingFactor;
-            float currentDistance = Vector3.Distance(socketTransform.position, initialSocketPosition);
+            float currentDistance = Vector3.Distance(socketTransform.localPosition, initialSocketPosition);
             float remainingDistance = distanceToTravel - currentDistance;
 
             float direction = Vector3.Dot(impactDirection, transform.forward);

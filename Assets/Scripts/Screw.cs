@@ -33,7 +33,7 @@ public class Screw : Fastener
                 socketTransform.Rotate(Vector3.forward, rotationSpeed * Time.deltaTime * -1.0f);
                 socketTransform.Translate(Vector3.forward * linearMovement);
 
-                float distanceTraveled = Mathf.Abs(Vector3.Distance(socketTransform.position, initialSocketPosition));
+                float distanceTraveled = Mathf.Abs(Vector3.Distance(socketTransform.localPosition, initialSocketPosition));
 
                 if (distanceTraveled >= distanceToTravel)
                 {

@@ -87,9 +87,8 @@ public class Manager : MonoBehaviour
                         Fastener fastener = component.GetComponent<Fastener>();
                         if (fastener != null && fastener.IsStopped)
                         {
-                            IncrementCurrentStep();
-
                             ValidateComponent(component.gameObject);
+                            IncrementCurrentStep();
                         }
                     }
                 }

@@ -175,7 +175,7 @@ public abstract class Fastener : MonoBehaviour
     {
         socketTransform = socket;
         if (socketTransform != null)
-            initialSocketPosition = socket.position;
+            initialSocketPosition = socket.localPosition;
     }
 
    
