@@ -1,10 +1,7 @@
-using Codice.Client.Common.GameUI;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.XR.Interaction.Toolkit;
-using static SnapToPosition;
 
 public class SnapToPosition : MonoBehaviour
 {

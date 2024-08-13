@@ -5,11 +5,12 @@ public class SimpleHammer : BaseHammer
 {
     private Vector3 lastPosition;
     private Vector3 impactDirection;
-
+    private AudioSource audioSource;
 
     public void Start()
     {
         lastPosition = transform.position;
+        audioSource = GetComponent<AudioSource>();
     }
 
     public override void ProcessInteractable(XRInteractionUpdateOrder.UpdatePhase updatePhase)
@@ -49,5 +50,13 @@ public class SimpleHammer : BaseHammer
     public Vector3 GetImpactDirection()
     {
         return impactDirection;
+    }
+
+    public void PlayHammerSound()
+    {
+        if (audioSource != null)
+        {
+            audioSource.Play();
+        }
     }
 }

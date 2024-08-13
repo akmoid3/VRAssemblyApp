@@ -2613,6 +2613,15 @@
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
+                },
+                {
+                    "name": "Scroll",
+                    "type": "Button",
+                    "id": "8db924ad-cbf9-409d-bef0-ebd6a9005f8d",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
                 }
             ],
             "bindings": [
@@ -2624,6 +2633,17 @@
                     "processors": "",
                     "groups": "Generic XR Controller",
                     "action": "Toggle",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "d66fcb45-e10a-462d-9b27-c3a705fc26c8",
+                    "path": "<XRController>{RightHand}/{PrimaryButton}",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Generic XR Controller",
+                    "action": "Scroll",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

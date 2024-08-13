@@ -34,6 +34,7 @@ public class Nail : Fastener
 
         if (hammerForce >= minimumImpactForce)
         {
+
             float potentialMovement = hammerForce * Time.fixedDeltaTime * forceScalingFactor;
             float currentDistance = Vector3.Distance(socketTransform.localPosition, initialSocketPosition);
             float remainingDistance = distanceToTravel - currentDistance;
@@ -47,6 +48,8 @@ public class Nail : Fastener
 
                 // Move the socketTransform based on the impact
                 socketTransform.Translate(Vector3.forward * actualMovement);
+
+                hammerScript.PlayHammerSound();
 
                 // Check if the nail has reached or exceeded the distanceToTravel
                 if (currentDistance + actualMovement >= distanceToTravel)
@@ -68,6 +71,8 @@ public class Nail : Fastener
 
         if (hammerForce >= minimumImpactForce)
         {
+
+
             float potentialMovement = hammerForce * Time.fixedDeltaTime * forceScalingFactor;
             float currentDistance = Vector3.Distance(transform.localPosition, initialZPosition);
             float remainingDistance = distanceToTravel - currentDistance;
@@ -81,6 +86,8 @@ public class Nail : Fastener
 
                 // Move the transform based on the impact
                 transform.Translate(Vector3.forward * actualMovement);
+
+                hammerScript.PlayHammerSound();
 
                 // Check if the nail has reached or exceeded the distanceToTravel
                 if (currentDistance + actualMovement >= distanceToTravel)
@@ -98,6 +105,7 @@ public class Nail : Fastener
     protected override void OnToolCollisionEnter(Collider other)
     {
         hammerScript = other.GetComponentInParent<SimpleHammer>();
+
     }
 
     protected override void OnToolCollisionExit(Collider other)
