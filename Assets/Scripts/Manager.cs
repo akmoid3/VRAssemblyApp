@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using UnityEditor.EditorTools;
 using UnityEngine;
 using UnityEngine.XR.Interaction.Toolkit;
 
@@ -42,6 +43,8 @@ public class Manager : MonoBehaviour
     [SerializeField] private float timeForFirstPlacement = 1.0f;
     [SerializeField] private Transform showSolutionPosition;
 
+    [SerializeField] private ToolManager toolManager; // Assign in Inspector
+
     private void Awake()
     {
         if (Instance != null && Instance != this)
@@ -67,6 +70,12 @@ public class Manager : MonoBehaviour
         OnStepChanged?.Invoke(currentStep);
     }
 
+    public void IncrementCurrentError()
+    {
+        errorCount++;
+        OnErrorCountChanged?.Invoke(errorCount);
+    }
+
     private void Start()
     {
         UpdateState(State.ChoosingModel);
@@ -83,6 +92,10 @@ public class Manager : MonoBehaviour
                     if(component.name == componentData.componentName)
                     {
                         Fastener fastener = component.GetComponent<Fastener>();
+                        if (componentData.toolName != "null")
+                        {
+                            fastener.CorrectToolName = componentData.toolName;
+                        }
                         if (fastener != null && fastener.IsStopped)
                         {
                             ValidateComponent(component.gameObject);
@@ -341,8 +354,7 @@ public class Manager : MonoBehaviour
         ComponentData expectedComponent = assemblySequence[currentStep];
         if (component.name != expectedComponent.componentName)
         {
-            errorCount++;
-            OnErrorCountChanged?.Invoke(errorCount);
+            IncrementCurrentError();
         }
     }
 
@@ -453,36 +465,32 @@ public class Manager : MonoBehaviour
         if (assemblySequence == null || assemblySequence.Count == 0)
             yield break;
 
-        // Track whether the first component has been placed
         bool isFirstComponent = true;
 
         foreach (var componentData in assemblySequence)
         {
-            // Find the original component in the list of components
             var originalComponent = components.Find(c => c.name == componentData.componentName);
             if (originalComponent != null)
             {
                 GameObject componentClone;
 
-                // Check if this component has already been instantiated
                 if (instantiatedComponents.ContainsKey(componentData.componentName))
                 {
-                    // Use the cached clone
                     componentClone = instantiatedComponents[componentData.componentName];
                 }
                 else
                 {
-                    // Instantiate a new clone and add it to the dictionary
                     componentClone = Instantiate(originalComponent.gameObject);
                     instantiatedComponents[componentData.componentName] = componentClone;
                 }
 
-                // Find the snappoint with the same name as the component (in the cloned interactor)
                 Transform correctSnappoint = interactorClone.transform.GetChild(assemblySequence.IndexOf(componentData));
 
                 if (correctSnappoint != null)
                 {
-                    // If it's the first component, move it instantly
+                    // Attach the tool to the component and get the tool instance
+                    var toolInstance = toolManager.AttachToolToComponent(componentClone, componentData.toolName);
+
                     if (isFirstComponent)
                     {
                         componentClone.transform.position = correctSnappoint.position;
@@ -491,19 +499,31 @@ public class Manager : MonoBehaviour
                     }
                     else
                     {
-                        // Smoothly move the component into place with delay
                         yield return StartCoroutine(SmoothMoveComponent(componentClone.transform, correctSnappoint.position, correctSnappoint.rotation, timeForFirstPlacement));
-
-                        // Optionally, add a delay between each component placement
                         yield return new WaitForSeconds(delayBetweenComponents);
+                    }
+
+                    // Optionally, you might want to hide the tool after moving the component
+                    if (toolInstance != null)
+                    {
+                        // Example delay to see the tool in action before hiding
+                        yield return new WaitForSeconds(1.0f);
+                        toolManager.HideToolOnComponent(componentClone);
                     }
                 }
             }
         }
 
         yield return new WaitForSeconds(3.0f);
+
+        // Hide all remaining tools
+        toolManager.HideAllTools();
+
         CleanupPreviousClones();
     }
+
+
+
 
     private void CleanupPreviousClones()
     {

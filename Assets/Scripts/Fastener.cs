@@ -31,9 +31,12 @@ public abstract class Fastener : MonoBehaviour
     protected float fastenerLength;
 
     protected ComponentObject componentObject;
+
+    private string correctToolName;
     public bool IsAligned { get => isAligned; set => isAligned = value; }
     public bool IsStopped { get => isStopped; set => isStopped = value; }
     public bool CanStop { get => canStop; set => canStop = value; }
+    public string CorrectToolName { get => correctToolName; set => correctToolName = value; }
 
     public GameObject getTool()
     {
