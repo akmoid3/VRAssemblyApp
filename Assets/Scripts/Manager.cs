@@ -38,9 +38,9 @@ public class Manager : MonoBehaviour
 
     private Dictionary<int, bool> hintShownForStep = new Dictionary<int, bool>();
 
-    //XRSnapPointSocketInteractor interactor;
     SnapToPosition interactor;
     [SerializeField] private float timeForFirstPlacement = 1.0f;
+    [SerializeField] private Transform showSolutionPosition;
 
     private void Awake()
     {
@@ -396,6 +396,137 @@ public class Manager : MonoBehaviour
         component.rotation = targetRotation;
     }
 
+    private Dictionary<string, GameObject> instantiatedComponents = new Dictionary<string, GameObject>();
+    private GameObject interactorClone; // Store a reference to the interactor clone
+
+    public void PlaceAllComponentsGradually(float delayBetweenComponents)
+    {
+        // Clean up any previous clones before starting again
+        CleanupPreviousClones();
+
+        // Create a new GameObject to serve as the interactor clone
+        interactorClone = new GameObject(interactor.name);
+        interactorClone.transform.position = showSolutionPosition.position;
+        interactorClone.transform.rotation = showSolutionPosition.rotation;
+
+        // Manually clone only the first-level children of the original interactor
+        foreach (Transform child in interactor.transform)
+        {
+            GameObject childClone = Instantiate(child.gameObject);
+            childClone.transform.SetParent(interactorClone.transform, false);
+
+            // Remove the MeshRenderer component from the cloned child
+            MeshRenderer meshRenderer = childClone.GetComponent<MeshRenderer>();
+            if (meshRenderer != null)
+            {
+                Destroy(meshRenderer);
+            }
+
+            // Ensure childClone does not carry over any deeper children
+            foreach (Transform grandchild in childClone.transform)
+            {
+                Destroy(grandchild.gameObject); // Remove nested children
+            }
+        }
+
+        // Start the coroutine to place the components gradually
+        StartCoroutine(PlaceAllComponentsGraduallyCoroutine(delayBetweenComponents, interactorClone));
+    }
+
+    private void RemoveAllComponentsExceptTransform(GameObject gameObject)
+    {
+        // Get all components attached to the GameObject
+        var components = gameObject.GetComponents<Component>();
+
+        // Loop through each component and destroy it, except for the Transform component
+        foreach (var component in components)
+        {
+            if (!(component is Transform))
+            {
+                Destroy(component);
+            }
+        }
+    }
+
+    private IEnumerator PlaceAllComponentsGraduallyCoroutine(float delayBetweenComponents, GameObject interactorClone)
+    {
+        if (assemblySequence == null || assemblySequence.Count == 0)
+            yield break;
+
+        // Track whether the first component has been placed
+        bool isFirstComponent = true;
+
+        foreach (var componentData in assemblySequence)
+        {
+            // Find the original component in the list of components
+            var originalComponent = components.Find(c => c.name == componentData.componentName);
+            if (originalComponent != null)
+            {
+                GameObject componentClone;
+
+                // Check if this component has already been instantiated
+                if (instantiatedComponents.ContainsKey(componentData.componentName))
+                {
+                    // Use the cached clone
+                    componentClone = instantiatedComponents[componentData.componentName];
+                }
+                else
+                {
+                    // Instantiate a new clone and add it to the dictionary
+                    componentClone = Instantiate(originalComponent.gameObject);
+                    instantiatedComponents[componentData.componentName] = componentClone;
+                }
+
+                // Find the snappoint with the same name as the component (in the cloned interactor)
+                Transform correctSnappoint = interactorClone.transform.GetChild(assemblySequence.IndexOf(componentData));
+
+                if (correctSnappoint != null)
+                {
+                    // If it's the first component, move it instantly
+                    if (isFirstComponent)
+                    {
+                        componentClone.transform.position = correctSnappoint.position;
+                        componentClone.transform.rotation = correctSnappoint.rotation;
+                        isFirstComponent = false;
+                    }
+                    else
+                    {
+                        // Smoothly move the component into place with delay
+                        yield return StartCoroutine(SmoothMoveComponent(componentClone.transform, correctSnappoint.position, correctSnappoint.rotation, timeForFirstPlacement));
+
+                        // Optionally, add a delay between each component placement
+                        yield return new WaitForSeconds(delayBetweenComponents);
+                    }
+                }
+            }
+        }
+
+        yield return new WaitForSeconds(3.0f);
+        CleanupPreviousClones();
+    }
+
+    private void CleanupPreviousClones()
+    {
+        // Destroy the interactor clone if it exists
+        if (interactorClone != null)
+        {
+            Destroy(interactorClone);
+        }
+
+        // Destroy all component clones stored in the dictionary
+        foreach (var componentClone in instantiatedComponents.Values)
+        {
+            if (componentClone != null)
+            {
+                Destroy(componentClone);
+            }
+        }
+
+        // Clear the dictionary for the next run
+        instantiatedComponents.Clear();
+    }
+
+
     public void ShowHint()
     {
         var currentComponentName = assemblySequence[currentStep].componentName;
@@ -422,6 +553,8 @@ public class Manager : MonoBehaviour
             }
         }
     }
+
+
 
 }
 

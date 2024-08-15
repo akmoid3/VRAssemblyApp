@@ -7,6 +7,7 @@ public class PlayBackManager : MonoBehaviour
 {
     [SerializeField] private GameObject playBackPanel;
     [SerializeField] private Button finishButton;
+    [SerializeField] private Button showSolutionButton;
     [SerializeField] private TextMeshProUGUI timerText;
     [SerializeField] private TextMeshProUGUI errorCountText;
     [SerializeField] private TextMeshProUGUI hintCountText;
@@ -22,6 +23,7 @@ public class PlayBackManager : MonoBehaviour
         Manager.OnHintCountChanged += IncrementHintCount;
         Manager.OnStepChanged += IncrementStepCount;
 
+        showSolutionButton.onClick.AddListener(OnShowSolutionClicked);
         finishButton.onClick.AddListener(OnFinishClicked);
     }
 
@@ -46,6 +48,7 @@ public class PlayBackManager : MonoBehaviour
         Manager.OnHintCountChanged -= IncrementHintCount;
         Manager.OnStepChanged -= IncrementStepCount;
 
+        showSolutionButton.onClick.RemoveListener(OnShowSolutionClicked);
         finishButton.onClick.RemoveListener(OnFinishClicked);
     }
 
@@ -84,4 +87,11 @@ public class PlayBackManager : MonoBehaviour
         int seconds = Mathf.FloorToInt(elapsedTime % 60f);
         timerText.text = string.Format("{0:D2}:{1:D2}", minutes, seconds);
     }
+
+    private void OnShowSolutionClicked()
+    {
+        // Call the method to place all components gradually
+        Manager.Instance.PlaceAllComponentsGradually(0.75f);
+    }
+
 }

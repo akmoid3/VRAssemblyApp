@@ -44,7 +44,7 @@ public class SequenceReader : MonoBehaviour
         }
 
         string fileName = manager.Model.name;
-        string filePath = Path.Combine(Application.persistentDataPath,"SavedBuildData");
+        string filePath = Path.Combine(Application.persistentDataPath, "SavedBuildData");
 
         if (FileChecker.DoesJsonFileExist(filePath, fileName))
         {
@@ -88,6 +88,10 @@ public class SequenceReader : MonoBehaviour
     {
         GameObject parent = new GameObject("SnapParentObject");
         parent.transform.SetPositionAndRotation(buildingPosition.transform.position, Quaternion.identity);
+
+        // List to hold the positions of all child objects for calculating the center
+        List<Vector3> childPositions = new List<Vector3>();
+
         foreach (var component in rootObject.components)
         {
             if (string.IsNullOrEmpty(component.componentName))
@@ -100,9 +104,33 @@ public class SequenceReader : MonoBehaviour
             SetTransform(obj, component);
             obj.transform.SetParent(parent.transform);
             CopyMeshAndMaterial(prefab, obj, component.componentName);
+
+            // Add the child's position to the list
+            childPositions.Add(obj.transform.localPosition);
+        }
+
+        // Calculate the center of all child objects
+        Vector3 center = CalculateCenter(childPositions);
+
+        // Adjust each child's position to center them around the parent
+        foreach (Transform child in parent.transform)
+        {
+            child.localPosition -= center;
         }
 
         return parent;
+    }
+
+    private Vector3 CalculateCenter(List<Vector3> positions)
+    {
+        if (positions.Count == 0) return Vector3.zero;
+
+        Vector3 sum = Vector3.zero;
+        foreach (var pos in positions)
+        {
+            sum += pos;
+        }
+        return sum / positions.Count;
     }
 
     private void SetTransform(GameObject obj, ComponentData component)

@@ -9,6 +9,8 @@ public class HandMenuManager : MonoBehaviour
     private Manager manager;
     [SerializeField] private float increment = 0.1f;
 
+    [SerializeField] private GameObject handMenuPanel;
+
     [SerializeField] private TMP_Text componentNameText;
     [SerializeField] private TMP_Text positionXText;
     [SerializeField] private TMP_Text positionYText;
@@ -36,8 +38,8 @@ public class HandMenuManager : MonoBehaviour
     [SerializeField] private Button addStepButton;
     [SerializeField] private Button groupSelectionButton;
     [SerializeField] private Button removeButton;
-    [SerializeField] private Toggle toggle;
 
+    [SerializeField] private Button groupSelectionButton2;
 
     [SerializeField] private TMP_Dropdown incrementDropdown;
 
@@ -49,6 +51,8 @@ public class HandMenuManager : MonoBehaviour
     [SerializeField] private bool modifying = false;
     [SerializeField] private bool newStep = false;
 
+    [SerializeField] private GameObject groupPanel;
+
     private XRInteractionManager interactionManager;
 
 
@@ -58,6 +62,8 @@ public class HandMenuManager : MonoBehaviour
 
     private void Start()
     {
+        groupPanel.SetActive(false);
+        handMenuPanel.SetActive(true);
         manager = Manager.Instance;
         // Initialize the button list
         allButtonsToDeactivate = new List<Button>
@@ -91,7 +97,8 @@ public class HandMenuManager : MonoBehaviour
         addStepButton.onClick.AddListener(() => NewStep());
 
         groupSelectionButton.onClick.AddListener(() => GroupSelection());
-        toggle.isOn = isGrabInteractableEnabled;
+
+        groupSelectionButton2.onClick.AddListener(() => GroupSelection());
 
         saveComponentButton.onClick.AddListener(() => SaveComponent());
 
@@ -107,7 +114,6 @@ public class HandMenuManager : MonoBehaviour
         GameObject currentSelectedComponent = manager.GetCurrentSelectedComponent();
         if (currentSelectedComponent != null)
         {
-
             Vector3 position = currentSelectedComponent.transform.position;
             Vector3 rotation = currentSelectedComponent.transform.eulerAngles;
 
@@ -121,6 +127,7 @@ public class HandMenuManager : MonoBehaviour
 
             if (currentSelectedComponent.name != "Group")
             {
+               
                 ComponentObject componentObject = currentSelectedComponent.GetComponent<ComponentObject>();
 
                 if (componentObject)
@@ -132,7 +139,6 @@ public class HandMenuManager : MonoBehaviour
                         removeButton.gameObject.SetActive(true);
 
                         SetTransformsButtonsActive(false);
-
                     }
                     else
                     {
@@ -144,17 +150,7 @@ public class HandMenuManager : MonoBehaviour
                     }
                 }
             }
-            else
-            {
-                modifyButton.gameObject.SetActive(false);
-                addStepButton.gameObject.SetActive(false);
-                removeButton.gameObject.SetActive(false);
-
-                SetTransformsButtonsActive(true);
-            }
-
-
-
+         
         }
         else
         {
@@ -169,24 +165,16 @@ public class HandMenuManager : MonoBehaviour
             addStepButton.gameObject.SetActive(false);
             removeButton.gameObject.SetActive(false);
             SetTransformsButtonsActive(false);
-
-
         }
 
         if (group && group.transform.childCount > 0)
         {
             groupSelectionButton.gameObject.SetActive(true);
-            toggle.gameObject.SetActive(true);
         }
         else
         {
             groupSelectionButton.gameObject.SetActive(false);
-            toggle.gameObject.SetActive(false);
         }
-
-
-
-
     }
 
     private void Modifying()
@@ -254,8 +242,8 @@ public class HandMenuManager : MonoBehaviour
     {
         ModifyComponent();
         manager.RemoveComponentFromSequence();
-
     }
+
     private void SaveComponent()
     {
         GameObject currentSelectedComponent = manager.GetCurrentSelectedComponent();
@@ -313,10 +301,12 @@ public class HandMenuManager : MonoBehaviour
         {
             isGrabInteractableEnabled = !isGrabInteractableEnabled;
 
-            toggle.isOn = isGrabInteractableEnabled;
+            groupPanel.SetActive(isGrabInteractableEnabled);
+            handMenuPanel.SetActive(!isGrabInteractableEnabled);
 
             if (isGrabInteractableEnabled)
             {
+               
                 // Disable all child XRSimpleInteractables
                 foreach (Transform child in group.transform)
                 {
@@ -341,7 +331,6 @@ public class HandMenuManager : MonoBehaviour
                         clonedColliders.Add(clonedCollider);
                         col.enabled = false; // Disable the original collider
                     }
-
                 }
 
 
@@ -377,6 +366,7 @@ public class HandMenuManager : MonoBehaviour
             }
             else
             {
+
                 XRBaseInteractable grabInteractable = group.GetComponent<XRBaseInteractable>();
                 if (grabInteractable != null)
                 {

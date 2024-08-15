@@ -4,6 +4,7 @@ public class Screw : Fastener
 {
     private BaseScrewDriver screwdriverScript;
     [SerializeField] protected float pitch = 0.1f;
+    private bool isScrewing = false;
 
     protected override void HandleInteraction()
     {
@@ -30,6 +31,20 @@ public class Screw : Fastener
                 float rotationSpeed = screwdriverScript.GetRotationSpeed();
                 float linearMovement = (rotationSpeed * pitch / 360) * Time.deltaTime;
 
+                if (!isScrewing && linearMovement > 0.0f)
+                {
+                    ScrewAudioManager.Instance.PlayScrewSound();
+                    isScrewing = true;
+                }
+                else
+                {
+                    StopScrewSound();
+                }
+
+                // Update pitch based on linear movement
+                float pitchAudio = Mathf.Clamp(linearMovement * 10.0f, 0.5f, 2.0f);
+                ScrewAudioManager.Instance.SetPitch(pitchAudio);
+
                 socketTransform.Rotate(Vector3.forward, rotationSpeed * Time.deltaTime * -1.0f);
                 socketTransform.Translate(Vector3.forward * linearMovement);
 
@@ -39,6 +54,7 @@ public class Screw : Fastener
                 {
                     isStopped = true;
                     fastenerRenderer.material.color = defaultColor;
+                    StopScrewSound();
                 }
             }
         }
@@ -55,31 +71,30 @@ public class Screw : Fastener
             float rotationSpeed = screwdriverScript.GetRotationSpeed();
             float linearMovement = (rotationSpeed * pitch / 360) * Time.deltaTime;
 
-            if (socketTransform != null)
+            if (!isScrewing && linearMovement > 0.0f)
             {
-                socketTransform.Rotate(Vector3.forward, rotationSpeed * Time.deltaTime * -1.0f);
-                socketTransform.Translate(Vector3.forward * linearMovement);
-
-                float distanceTraveled = Mathf.Abs(Vector3.Distance(socketTransform.localPosition, initialSocketPosition));
-
-                if (distanceTraveled >= distanceToTravel)
-                {
-                    isStopped = true;
-                    fastenerRenderer.material.color = defaultColor;
-                }
+                ScrewAudioManager.Instance.PlayScrewSound();
+                isScrewing = true;
             }
             else
             {
-                transform.Rotate(Vector3.forward, rotationSpeed * Time.deltaTime * -1.0f);
-                transform.Translate(Vector3.forward * linearMovement);
+                StopScrewSound();
+            }
 
-                float distanceTraveled = Mathf.Abs(Vector3.Distance(transform.localPosition, initialZPosition));
+            // Update pitch based on linear movement
+            float pitchAudio = Mathf.Clamp(linearMovement * 10.0f, 0.5f, 2.0f);
+            ScrewAudioManager.Instance.SetPitch(pitchAudio);
 
-                if (distanceTraveled >= distanceToTravel)
-                {
-                    isStopped = true;
-                    fastenerRenderer.material.color = defaultColor;
-                }
+            transform.Rotate(Vector3.forward, rotationSpeed * Time.deltaTime * -1.0f);
+            transform.Translate(Vector3.forward * linearMovement);
+
+            float distanceTraveled = Mathf.Abs(Vector3.Distance(transform.localPosition, initialZPosition));
+
+            if (distanceTraveled >= distanceToTravel)
+            {
+                isStopped = true;
+                fastenerRenderer.material.color = defaultColor;
+                StopScrewSound();
             }
         }
     }
@@ -92,5 +107,12 @@ public class Screw : Fastener
     protected override void OnToolCollisionExit(Collider other)
     {
         screwdriverScript = null;
+        StopScrewSound(); // Stop sound when screwdriver leaves
+    }
+
+    private void StopScrewSound()
+    {
+        ScrewAudioManager.Instance.StopScrewSound();
+        isScrewing = false;
     }
 }
