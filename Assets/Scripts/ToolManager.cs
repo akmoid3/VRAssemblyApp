@@ -5,6 +5,7 @@ public class ToolManager : MonoBehaviour
 {
     [SerializeField] private GameObject hammerPrefab;
     [SerializeField] private GameObject drillPrefab;
+    [SerializeField] private GameObject screwDriver;
 
     private Dictionary<string, GameObject> toolPrefabs;
     private Dictionary<GameObject, GameObject> toolInstances = new Dictionary<GameObject, GameObject>();
@@ -13,8 +14,10 @@ public class ToolManager : MonoBehaviour
     {
         toolPrefabs = new Dictionary<string, GameObject>
         {
-            { "Hammer", hammerPrefab },
-            { "Drill", drillPrefab }
+            { hammerPrefab.name, hammerPrefab },
+            { drillPrefab.name, drillPrefab },
+            { screwDriver.name, screwDriver }
+
         };
     }
 
