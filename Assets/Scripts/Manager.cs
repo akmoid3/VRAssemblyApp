@@ -1,7 +1,6 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using UnityEditor.EditorTools;
 using UnityEngine;
 using UnityEngine.XR.Interaction.Toolkit;
 
@@ -44,6 +43,23 @@ public class Manager : MonoBehaviour
     [SerializeField] private Transform showSolutionPosition;
 
     [SerializeField] private ToolManager toolManager; // Assign in Inspector
+
+
+    // Singleton
+    public static Manager Instance { get; private set; }
+
+    public bool IsRealeased { get => isRealeased; set => isRealeased = value; }
+
+    public GameObject Model { get => model; set => model = value; }
+    public List<Transform> Components { get => components; set => components = value; }
+
+    public State State { get => state; private set => state = value; }
+    public List<ComponentData> AssemblySequence { get => assemblySequence; set => assemblySequence = value; }
+    public int CurrentStep { get => currentStep; set => currentStep = value; }
+    public string FinishTime { get => finishTime; set => finishTime = value; }
+    public int HintCount { get => hintCount; set => hintCount = value; }
+    public int ErrorCount { get => errorCount; set => errorCount = value; }
+    public GameObject CurrentSelectedComponent { get => currentSelectedComponent; set => currentSelectedComponent = value; }
 
     private void Awake()
     {
@@ -88,8 +104,9 @@ public class Manager : MonoBehaviour
             ComponentData componentData = assemblySequence[currentStep];
             if (componentData != null)
             {
-                foreach(var component in components){
-                    if(component.name == componentData.componentName)
+                foreach (var component in components)
+                {
+                    if (component.name == componentData.componentName)
                     {
                         Fastener fastener = component.GetComponent<Fastener>();
                         if (componentData.toolName != "null")
@@ -98,6 +115,16 @@ public class Manager : MonoBehaviour
                         }
                         if (fastener != null && fastener.IsStopped)
                         {
+                            if (interactor != null)
+                            {
+                                // Find the snappoint with the same name as the current component
+                                Transform correctSnappoint = interactor.transform.GetChild(CurrentStep);
+
+                                if (correctSnappoint != null)
+                                {
+                                    correctSnappoint.GetComponent<MeshRenderer>().enabled = false;
+                                }
+                            }
                             ValidateComponent(component.gameObject);
                             IncrementCurrentStep();
                         }
@@ -108,21 +135,7 @@ public class Manager : MonoBehaviour
         }
     }
 
-    // Singleton
-    public static Manager Instance { get; private set; }
 
-    public bool IsRealeased { get => isRealeased; set => isRealeased = value; }
-
-    public GameObject Model { get => model; set => model = value; }
-    public List<Transform> Components { get => components; set => components = value; }
-
-    public State State { get => state; private set => state = value; }
-    public List<ComponentData> AssemblySequence { get => assemblySequence; set => assemblySequence = value; }
-    public int CurrentStep { get => currentStep; set => currentStep = value; }
-    public string FinishTime { get => finishTime; set => finishTime = value; }
-    public int HintCount { get => hintCount; set => hintCount = value; }
-    public int ErrorCount { get => errorCount; set => errorCount = value; }
-    public GameObject CurrentSelectedComponent { get => currentSelectedComponent; set => currentSelectedComponent = value; }
 
     public void InitializeSequence(List<ComponentData> sequence)
     {
@@ -410,6 +423,8 @@ public class Manager : MonoBehaviour
 
     private Dictionary<string, GameObject> instantiatedComponents = new Dictionary<string, GameObject>();
     private GameObject interactorClone; // Store a reference to the interactor clone
+    [SerializeField] private Material highlightMaterial;
+    private Dictionary<int, bool> secondHintShownForStep = new Dictionary<int, bool>();
 
     public void PlaceAllComponentsGradually(float delayBetweenComponents)
     {
@@ -503,10 +518,8 @@ public class Manager : MonoBehaviour
                         yield return new WaitForSeconds(delayBetweenComponents);
                     }
 
-                    // Optionally, you might want to hide the tool after moving the component
                     if (toolInstance != null)
                     {
-                        // Example delay to see the tool in action before hiding
                         yield return new WaitForSeconds(1.0f);
                         toolManager.HideToolOnComponent(componentClone);
                     }
@@ -547,13 +560,38 @@ public class Manager : MonoBehaviour
     }
 
 
+    private bool isWaiting;
+
     public void ShowHint()
     {
+        if (isWaiting)
+        {
+            // If we are waiting, do nothing and return immediately
+            return;
+        }
+
         var currentComponentName = assemblySequence[currentStep].componentName;
 
         // Check if the hint for the current step has already been shown
         if (hintShownForStep.ContainsKey(currentStep) && hintShownForStep[currentStep])
         {
+            // Check if the second type of hint has been shown for this step
+            if (!secondHintShownForStep.ContainsKey(currentStep) || !secondHintShownForStep[currentStep])
+            {
+                // Increment the hint count for the second hint and mark it as shown
+                hintCount++;
+                secondHintShownForStep[currentStep] = true;
+                OnHintCountChanged?.Invoke(hintCount);
+            }
+
+            foreach (var component in components)
+            {
+                if (component.name == currentComponentName)
+                {
+                    StartCoroutine(HandleHintCooldown(component.gameObject));
+                }
+            }
+
             return;
         }
 
@@ -565,7 +603,7 @@ public class Manager : MonoBehaviour
         if (interactor != null)
         {
             // Find the snappoint with the same name as the current component
-            Transform correctSnappoint = interactor.transform.GetChild(CurrentStep);
+            Transform correctSnappoint = interactor.transform.GetChild(currentStep);
 
             if (correctSnappoint != null)
             {
@@ -574,11 +612,59 @@ public class Manager : MonoBehaviour
         }
     }
 
+    private IEnumerator HandleHintCooldown(GameObject component)
+    {
+        isWaiting = true;
 
+        // Start the color change sequence
+        yield return StartCoroutine(ChangeColorTemporarily(component));
 
+        yield return new WaitForSeconds(1f);
+
+        
+        isWaiting = false;
+    }
+
+    private IEnumerator ChangeColorTemporarily(GameObject component)
+    {
+        MeshRenderer meshRenderer = component.GetComponent<MeshRenderer>();
+        if (meshRenderer != null)
+        {
+            // Store the original materials
+            Material[] originalMaterials = meshRenderer.materials;
+
+            // Create a temporary array with the highlight material replacing the original
+            Material[] tempMaterials = new Material[originalMaterials.Length];
+            for (int i = 0; i < tempMaterials.Length; i++)
+            {
+                tempMaterials[i] = highlightMaterial;
+            }
+
+            // Set the highlight materials
+            meshRenderer.materials = tempMaterials;
+
+            // Wait for 0.5 seconds
+            yield return new WaitForSeconds(0.5f);
+
+            // Revert back to the original materials
+            meshRenderer.materials = originalMaterials;
+
+            // Wait for 0.25 seconds
+            yield return new WaitForSeconds(0.25f);
+
+            // Set the highlight materials again
+            meshRenderer.materials = tempMaterials;
+
+            // Wait for another 0.5 seconds
+            yield return new WaitForSeconds(0.5f);
+
+            // Revert back to the original materials again
+            meshRenderer.materials = originalMaterials;
+        }
+    }
 }
 
-public enum State
+    public enum State
 {
     ChoosingModel,
     SelectingMode,

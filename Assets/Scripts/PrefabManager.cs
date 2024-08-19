@@ -120,4 +120,10 @@ public class PrefabManager : MonoBehaviour
         }
         prefabInstances.Clear();
     }
+
+
+    private void OnDestroy()
+    {
+        DestroyAllPrefabs();
+    }
 }
