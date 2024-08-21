@@ -29,21 +29,14 @@ public class ComponentPositioner : MonoBehaviour
     private AudioClip loopScrollClip;
 
     private bool isScrolling = false;
+    private bool isScrollingLeft = false; // Tracks whether we are scrolling left or right
 
-    [SerializeField]
-    private InputActionReference scrollInputReference;
+    private bool buttonRightPressed = false;
+    private bool buttonLeftPressed = false;
 
-    private void Awake()
-    {
-        scrollInputReference.action.started += OnScrollInputStarted;
-        scrollInputReference.action.canceled += OnScrollInputCanceled;
-    }
 
-    private void OnDestroy()
-    {
-        scrollInputReference.action.started -= OnScrollInputStarted;
-        scrollInputReference.action.canceled -= OnScrollInputCanceled;
-    }
+    public bool ButtonRightPressed { get => buttonRightPressed; set => buttonRightPressed = value; }
+    public bool ButtonLeftPressed { get => buttonLeftPressed; set => buttonLeftPressed = value; }
 
     void Start()
     {
@@ -66,9 +59,31 @@ public class ComponentPositioner : MonoBehaviour
 
     void Update()
     {
+        if (buttonLeftPressed) 
+        {
+            isScrollingLeft = true;
+            StartScrolling();
+        }
+        else if (buttonRightPressed)
+        {
+            isScrollingLeft = false;
+            StartScrolling();
+        }
+        else
+        {
+            StopScrolling();
+        }
+
         if (isScrolling)
         {
-            ScrollComponents();
+            if (isScrollingLeft)
+            {
+                ScrollLeft();
+            }
+            else
+            {
+                ScrollRight();
+            }
         }
     }
 
@@ -139,12 +154,12 @@ public class ComponentPositioner : MonoBehaviour
         }
     }
 
-    private void ScrollComponents()
+    private void ScrollLeft()
     {
         Transform rightmostChild = null;
         float rightmostX = float.MinValue;
 
-        // Scroll all children and find the rightmost child
+        // Scroll all children to the left and find the rightmost child
         foreach (Transform child in parent.transform)
         {
             Vector3 position = child.position;
@@ -160,7 +175,7 @@ public class ComponentPositioner : MonoBehaviour
             }
         }
 
-        // Check if the rightmost child is out of the left bounds
+        // If the rightmost child goes out of bounds, reposition it to the right
         if (rightmostChild != null && rightmostChild.position.x < tableBounds.min.x - rightmostChild.GetComponent<Renderer>().bounds.size.x / 2)
         {
             float startPosition = tableBounds.max.x;
@@ -201,21 +216,72 @@ public class ComponentPositioner : MonoBehaviour
         }
     }
 
-    private void OnScrollInputStarted(InputAction.CallbackContext context)
+    private void ScrollRight()
     {
-        StartScrolling();
-    }
+        Transform leftmostChild = null;
+        float leftmostX = float.MaxValue;
 
-    private void OnScrollInputCanceled(InputAction.CallbackContext context)
-    {
-        StopScrolling();
+        // Scroll all children to the right and find the leftmost child
+        foreach (Transform child in parent.transform)
+        {
+            Vector3 position = child.position;
+            position.x += scrollSpeed * Time.deltaTime;
+            child.position = position;
+
+            // Find the leftmost child
+            float childLeftX = position.x - child.GetComponent<Renderer>().bounds.size.x / 2;
+            if (childLeftX < leftmostX)
+            {
+                leftmostX = childLeftX;
+                leftmostChild = child;
+            }
+        }
+
+        // If the leftmost child goes out of bounds, reposition it to the left
+        if (leftmostChild != null && leftmostChild.position.x > tableBounds.max.x + leftmostChild.GetComponent<Renderer>().bounds.size.x / 2)
+        {
+            float startPosition = tableBounds.min.x;
+            float currentX = startPosition;
+            int childCount = parent.transform.childCount;
+
+            for (int i = childCount - 1; i >= 0; i--)
+            {
+                Transform child = parent.transform.GetChild(i);
+                Renderer renderer = child.GetComponent<Renderer>();
+                if (renderer != null)
+                {
+                    Bounds childBounds = renderer.bounds;
+                    Vector3 pivotOffset = child.position - childBounds.center;
+
+                    float width = childBounds.size.x;
+                    float height = childBounds.size.y;
+                    Vector3 newPosition = new Vector3(currentX - width / 2, tableBounds.max.y + height / 2, tableBounds.center.z);
+
+                    newPosition += pivotOffset;
+                    child.position = newPosition;
+                    currentX -= width + extraSpacing;
+                }
+            }
+        }
+
+        // Activate or deactivate children based on their position relative to the table bounds
+        foreach (Transform child in parent.transform)
+        {
+            if (child.position.x < tableBounds.min.x || child.position.x > tableBounds.max.x)
+            {
+                child.gameObject.SetActive(false);
+            }
+            else
+            {
+                child.gameObject.SetActive(true);
+            }
+        }
     }
 
     private void StartScrolling()
     {
-        if (audioSource != null)
+        if (audioSource != null && !audioSource.isPlaying)
         {
-            audioSource.Stop();  // Ensure no other audio is playing
             audioSource.clip = startScrollClip;
             audioSource.Play();
 
