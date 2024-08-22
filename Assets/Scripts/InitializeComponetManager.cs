@@ -6,6 +6,7 @@ using UnityEngine.UI;
 public class InitializeComponentManager : MonoBehaviour
 {
     [SerializeField] private TMP_Dropdown componentDropdown;
+    [SerializeField] private TMP_Dropdown groupDropdown;
     [SerializeField] private GameObject canvasInit;
     [SerializeField] private Button finishedButton;
     [SerializeField] private TextMeshProUGUI componentName;
@@ -26,6 +27,7 @@ public class InitializeComponentManager : MonoBehaviour
         Manager.OnStateChanged -= SetPanelActive;
         finishedButton.onClick.RemoveListener(OnFinishedButtonClick);
     }
+
     private void SetPanelActive(State state)
     {
         canvasInit.SetActive(state == State.Initialize);
@@ -34,28 +36,28 @@ public class InitializeComponentManager : MonoBehaviour
     void Start()
     {
         // Populate the dropdown options
-        PopulateDropdown();
+        PopulateComponentDropdown();
+        PopulateGroupDropdown();  // Populate the new group dropdown
 
-        // Add listener to handle dropdown value changes
-        componentDropdown.onValueChanged.AddListener(OnDropdownValueChanged);
+        // Add listeners to handle dropdown value changes
+        componentDropdown.onValueChanged.AddListener(OnComponentDropdownValueChanged);
+        groupDropdown.onValueChanged.AddListener(OnGroupDropdownValueChanged);  // New group dropdown listener
 
-        // Update dropdown to reflect the current component type
-        UpdateDropdownForSelectedComponent();
+        // Update dropdowns to reflect the current component's type and group
+        UpdateDropdownsForSelectedComponent();
     }
 
     private void Update()
     {
-
         GameObject selectedComponent = Manager.Instance.GetCurrentSelectedComponent();
         if (selectedComponent != null)
         {
             componentName.text = selectedComponent.name;
-            UpdateDropdownForSelectedComponent();
+            UpdateDropdownsForSelectedComponent();
         }
-
     }
 
-    void PopulateDropdown()
+    void PopulateComponentDropdown()
     {
         // Clear existing options
         componentDropdown.ClearOptions();
@@ -71,7 +73,23 @@ public class InitializeComponentManager : MonoBehaviour
         componentDropdown.AddOptions(options);
     }
 
-    void OnDropdownValueChanged(int index)
+    void PopulateGroupDropdown()
+    {
+        // Clear existing options
+        groupDropdown.ClearOptions();
+
+        // Create a new list of options
+        List<string> options = new List<string>();
+        foreach (ComponentObject.Group group in System.Enum.GetValues(typeof(ComponentObject.Group)))
+        {
+            options.Add(group.ToString());
+        }
+
+        // Add options to the dropdown
+        groupDropdown.AddOptions(options);
+    }
+
+    void OnComponentDropdownValueChanged(int index)
     {
         // Update selected component type based on dropdown selection
         ComponentObject.ComponentType selectedType = (ComponentObject.ComponentType)index;
@@ -88,8 +106,24 @@ public class InitializeComponentManager : MonoBehaviour
         }
     }
 
+    void OnGroupDropdownValueChanged(int index)
+    {
+        // Update selected component group based on dropdown selection
+        ComponentObject.Group selectedGroup = (ComponentObject.Group)index;
 
-    void UpdateDropdownForSelectedComponent()
+        GameObject selectedComponent = Manager.Instance.GetCurrentSelectedComponent();
+        if (selectedComponent != null)
+        {
+            ComponentObject componentObject = selectedComponent.GetComponent<ComponentObject>();
+
+            if (componentObject != null)
+            {
+                componentObject.SetGroup(selectedGroup);
+            }
+        }
+    }
+
+    void UpdateDropdownsForSelectedComponent()
     {
         GameObject selectedComponent = Manager.Instance.GetCurrentSelectedComponent();
 
@@ -99,8 +133,9 @@ public class InitializeComponentManager : MonoBehaviour
 
             if (componentObject != null)
             {
-                // Update the dropdown value to reflect the current component type
+                // Update the dropdown values to reflect the current component type and group
                 componentDropdown.value = (int)componentObject.GetComponentType();
+                groupDropdown.value = (int)componentObject.GetGroup();
             }
         }
     }

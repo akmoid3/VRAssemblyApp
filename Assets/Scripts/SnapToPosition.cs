@@ -27,7 +27,8 @@ public class SnapToPosition : MonoBehaviour
             {
                 snapTransform = child,
                 componentName = child.name.Replace("SnapPoint", ""),
-                meshRenderer = child.GetComponent<MeshRenderer>()
+                meshRenderer = child.GetComponent<MeshRenderer>(),
+                componentObject = child.GetComponent<ComponentObject>()
             };
             snapPoints.Add(snapPoint);
         }
@@ -41,67 +42,71 @@ public class SnapToPosition : MonoBehaviour
         if (snappedObjects.Contains(other.gameObject))
             return;
 
-        CheckSnap(other);
+        if (Manager.Instance.State == State.PlayBack)
+        {
+            CheckSnap(other);
+        }
     }
 
     private void CheckSnap(Collider other)
     {
-        if(Manager.Instance.State == State.PlayBack && (Manager.Instance.AssemblySequence[Manager.Instance.CurrentStep].componentName == other.name))
-        {
+        
             foreach (var snapPoint in snapPoints)
             {
-                if (other.name == snapPoint.componentName)
+                ComponentObject componentObject = other.GetComponent<ComponentObject>();
+                if (componentObject != null)
                 {
 
-                    float distance = Vector3.Distance(other.transform.position, snapPoint.snapTransform.position);
-                    float angle = Quaternion.Angle(other.transform.rotation, snapPoint.snapTransform.rotation);
-
-                    Fastener fastener = other.GetComponent<Fastener>();
-
-                    if (fastener != null)
+                    if (other.name == snapPoint.componentName || (componentObject.GetGroup() != ComponentObject.Group.None && componentObject.GetGroup() == snapPoint.componentObject.GetGroup()))
                     {
-                        fastener.SetSocketTransform(snapPoint.snapTransform);
-                    }
 
-                    if ((distance < snapDistance && angle < snapAngle) || (fastener && distance < snapDistance))
-                    {
-                        other.attachedRigidbody.isKinematic = false;
+                        float distance = Vector3.Distance(other.transform.position, snapPoint.snapTransform.position);
+                        float angle = Quaternion.Angle(other.transform.rotation, snapPoint.snapTransform.rotation);
 
-                        snapPoint.meshRenderer.enabled = true;
+                        Fastener fastener = other.GetComponent<Fastener>();
 
-                        other.transform.SetPositionAndRotation(snapPoint.snapTransform.position, snapPoint.snapTransform.rotation);
-
-                        other.GetComponent<Rigidbody>().isKinematic = true;
-                        IXRInteractable xrInteractable = other.GetComponent<IXRInteractable>();
-                        if (xrInteractable != null)
+                        if (fastener != null)
                         {
-                            interactionManager.RegisterInteractable(xrInteractable);
-                            Destroy(xrInteractable as MonoBehaviour);
+                            fastener.SetSocketTransform(snapPoint.snapTransform);
                         }
 
-                        // Add the object to the snapped objects set
-                        snappedObjects.Add(other.gameObject);
+                        if ((distance < snapDistance && angle < snapAngle) || (fastener && distance < snapDistance))
+                        {
+                            other.attachedRigidbody.isKinematic = false;
 
-                        snapPoint.meshRenderer.enabled = false;
+                            snapPoint.meshRenderer.enabled = true;
 
-                        other.transform.SetParent(snapPoint.snapTransform);
+                            other.transform.SetPositionAndRotation(snapPoint.snapTransform.position, snapPoint.snapTransform.rotation);
 
-                        AddGrabbable(other);
+                            other.GetComponent<Rigidbody>().isKinematic = true;
+                            IXRInteractable xrInteractable = other.GetComponent<IXRInteractable>();
+                            if (xrInteractable != null)
+                            {
+                                interactionManager.RegisterInteractable(xrInteractable);
+                                Destroy(xrInteractable as MonoBehaviour);
+                            }
 
-                        OnComponentPlaced?.Invoke();
+                            // Add the object to the snapped objects set
+                            snappedObjects.Add(other.gameObject);
 
-                        
+                            snapPoint.meshRenderer.enabled = false;
 
-                        break;
+                            other.transform.SetParent(snapPoint.snapTransform);
+
+                            AddGrabbable(other);
+
+                            OnComponentPlaced?.Invoke();
+
+
+
+                            break;
+                        }
                     }
-
                 }
-            }
-            
         }
 
-        
-       
+
+
     }
 
     private void AddGrabbable(Collider collider)
@@ -117,6 +122,7 @@ public class SnapToPosition : MonoBehaviour
             xrGrabInteractable.throwOnDetach = false;
             xrGrabInteractable.useDynamicAttach = true;
             xrGrabInteractable.selectMode = InteractableSelectMode.Multiple;
+            xrGrabInteractable.movementType = XRBaseInteractable.MovementType.VelocityTracking;
             xrGrabInteractable.colliders.Add(collider);
             // Re-register the interactable
             interactionManager.RegisterInteractable(xrGrabInteractable as IXRInteractable);
@@ -128,6 +134,7 @@ public class SnapToPosition : MonoBehaviour
             xrGrabInteractable.throwOnDetach = false;
             xrGrabInteractable.useDynamicAttach = true;
             xrGrabInteractable.selectMode = InteractableSelectMode.Multiple;
+            xrGrabInteractable.movementType = XRBaseInteractable.MovementType.VelocityTracking;
 
             // Register the newly added interactable
             interactionManager.RegisterInteractable(xrGrabInteractable as IXRInteractable);
@@ -154,7 +161,7 @@ public class SnapToPosition : MonoBehaviour
         foreach (var snapPoint in snapPoints)
         {
             if (snapPoint.meshRenderer != null)
-            {  
+            {
                 snapPoint.meshRenderer.enabled = true;
             }
         }
@@ -166,5 +173,7 @@ public class SnapToPosition : MonoBehaviour
         public Transform snapTransform;
         public string componentName;
         public MeshRenderer meshRenderer;
+        public ComponentObject componentObject;
+
     }
 }

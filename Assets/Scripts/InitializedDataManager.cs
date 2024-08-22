@@ -8,6 +8,7 @@ public class ComponentTypeData
 {
     public string componentName;
     public ComponentObject.ComponentType componentType;
+    public ComponentObject.Group componentGroup;
 }
 
 public class JsonData
@@ -53,7 +54,8 @@ public class InitializedDataManager : MonoBehaviour
                 ComponentTypeData componentData = new ComponentTypeData
                 {
                     componentName = child.name,
-                    componentType = componentObject.GetComponentType()
+                    componentType = componentObject.GetComponentType(),
+                    componentGroup = componentObject.GetGroup()
                 };
 
                 data.components.Add(componentData);
@@ -89,6 +91,7 @@ public class InitializedDataManager : MonoBehaviour
                     componentObject = child.gameObject.AddComponent<ComponentObject>();
                 }
                 componentObject.SetComponentType(componentData.componentType);
+                componentObject.SetGroup(componentData.componentGroup);
             }
         }
     }

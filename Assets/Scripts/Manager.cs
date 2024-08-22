@@ -45,6 +45,12 @@ public class Manager : MonoBehaviour
     [SerializeField] private ToolManager toolManager; // Assign in Inspector
 
 
+    private bool isWaiting;
+    private Dictionary<string, GameObject> instantiatedComponents = new Dictionary<string, GameObject>();
+    private GameObject interactorClone; // Store a reference to the interactor clone
+    [SerializeField] private Material highlightMaterial;
+    private Dictionary<int, bool> secondHintShownForStep = new Dictionary<int, bool>();
+
     // Singleton
     public static Manager Instance { get; private set; }
 
@@ -290,6 +296,7 @@ public class Manager : MonoBehaviour
                 InitializeComponentsType();
                 MakeComponentsGrabbable();
                 interactor = FindObjectOfType<SnapToPosition>();
+                CopyComponentObjectToInteractor();
                 PlaceInitialComponent();
                 break;
             case State.Finish:
@@ -329,6 +336,8 @@ public class Manager : MonoBehaviour
             // Remove existing components of type Screw or Nail
             RemoveExistingScripts<Screw>(component.gameObject);
             RemoveExistingScripts<Nail>(component.gameObject);
+            RemoveExistingScripts<WoodenPin>(component.gameObject);
+
             component.tag = "Untagged";
             // Add the selected component script
             switch (componentObject.GetComponentType())
@@ -339,9 +348,53 @@ public class Manager : MonoBehaviour
                 case ComponentObject.ComponentType.Nail:
                     component.gameObject.AddComponent<Nail>();
                     break;
+                case ComponentObject.ComponentType.WoodenPin:
+                    component.gameObject.AddComponent<WoodenPin>();
+                    break;
                 case ComponentObject.ComponentType.None:
                     component.tag = "Component";
                     break;
+            }
+        }
+    }
+
+    private void CopyComponentObjectToInteractor()
+    {
+        if (interactor == null)
+        {
+            Debug.LogError("Interactor is not assigned.");
+            return;
+        }
+
+        foreach (var component in components)
+        {
+            // Find the corresponding child in the interactor
+            Transform interactorChild = interactor.transform.Find(component.name);
+            if (interactorChild != null)
+            {
+                // Copy the ComponentObject from the original component
+                ComponentObject sourceComponentObject = component.GetComponent<ComponentObject>();
+                if (sourceComponentObject != null)
+                {
+                    ComponentObject targetComponentObject = interactorChild.GetComponent<ComponentObject>();
+                    if (targetComponentObject == null)
+                    {
+                        targetComponentObject = interactorChild.gameObject.AddComponent<ComponentObject>();
+                    }
+                    // Copy properties
+                    targetComponentObject.SetComponentType(sourceComponentObject.GetComponentType());
+                    targetComponentObject.SetGroup(sourceComponentObject.GetGroup());
+                    targetComponentObject.SetIsPlaced(sourceComponentObject.GetIsPlaced());
+                    targetComponentObject.IsReleased = sourceComponentObject.IsReleased;
+                }
+                else
+                {
+                    Debug.LogWarning($"ComponentObject not found on source component: {component.name}");
+                }
+            }
+            else
+            {
+                Debug.LogWarning($"Child with name {component.name} not found in interactor.");
             }
         }
     }
@@ -421,10 +474,7 @@ public class Manager : MonoBehaviour
         component.rotation = targetRotation;
     }
 
-    private Dictionary<string, GameObject> instantiatedComponents = new Dictionary<string, GameObject>();
-    private GameObject interactorClone; // Store a reference to the interactor clone
-    [SerializeField] private Material highlightMaterial;
-    private Dictionary<int, bool> secondHintShownForStep = new Dictionary<int, bool>();
+
 
     public void PlaceAllComponentsGradually(float delayBetweenComponents)
     {
@@ -560,8 +610,6 @@ public class Manager : MonoBehaviour
     }
 
 
-    private bool isWaiting;
-
     public void ShowHint()
     {
         if (isWaiting)
@@ -621,7 +669,7 @@ public class Manager : MonoBehaviour
 
         yield return new WaitForSeconds(1f);
 
-        
+
         isWaiting = false;
     }
 
@@ -664,7 +712,7 @@ public class Manager : MonoBehaviour
     }
 }
 
-    public enum State
+public enum State
 {
     ChoosingModel,
     SelectingMode,

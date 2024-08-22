@@ -103,7 +103,9 @@ public class SequenceReader : MonoBehaviour
             GameObject obj = new GameObject(component.componentName);
             SetTransform(obj, component);
             obj.transform.SetParent(parent.transform);
-            CopyMeshAndMaterial(prefab, obj, component.componentName);
+
+            GameObject prefabChild = prefab.transform.Find(component.componentName).gameObject;
+            CopyMeshAndMaterial(prefabChild, obj);
 
             // Add the child's position to the list
             childPositions.Add(obj.transform.localPosition);
@@ -146,9 +148,8 @@ public class SequenceReader : MonoBehaviour
         }
     }
 
-    private void CopyMeshAndMaterial(GameObject prefabInstance, GameObject obj, string componentName)
+    private void CopyMeshAndMaterial(GameObject prefabChild, GameObject obj)
     {
-        Transform prefabChild = prefabInstance.transform.Find(componentName);
         if (prefabChild != null)
         {
             MeshFilter prefabMeshFilter = prefabChild.GetComponent<MeshFilter>();
@@ -166,10 +167,6 @@ public class SequenceReader : MonoBehaviour
                 meshRenderer.sharedMaterial = holographicMaterial;
                 meshRenderer.enabled = false;
             }
-        }
-        else
-        {
-            Debug.LogWarning($"Child with name {componentName} not found in prefab.");
         }
     }
 

@@ -58,6 +58,8 @@ public class MakeGrabbable : MonoBehaviour
     }
     public void MakeObjectGrabbable()
     {
+        if (gameObject.GetComponent<XRGrabInteractable>() != null)
+            return;
         DestroyClonedColliders();
         SaveOriginalCollidersAndInteractables();
 
@@ -124,6 +126,8 @@ public class MakeGrabbable : MonoBehaviour
     }
     public void MakeObjectNonGrabbable()
     {
+        if(gameObject.GetComponent<XRSimpleInteractable>() != null)
+            return;
         DestroyClonedColliders();
         SaveOriginalCollidersAndInteractables();
 
