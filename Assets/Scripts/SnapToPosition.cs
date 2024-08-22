@@ -26,7 +26,7 @@ public class SnapToPosition : MonoBehaviour
             SnapPoint snapPoint = new SnapPoint
             {
                 snapTransform = child,
-                componentName = child.name.Replace("SnapPoint", ""),
+                componentName = child.name,
                 meshRenderer = child.GetComponent<MeshRenderer>(),
                 componentObject = child.GetComponent<ComponentObject>()
             };
@@ -42,7 +42,7 @@ public class SnapToPosition : MonoBehaviour
         if (snappedObjects.Contains(other.gameObject))
             return;
 
-        if (Manager.Instance.State == State.PlayBack)
+        if (StateManager.Instance.CurrentState == State.PlayBack)
         {
             CheckSnap(other);
         }
@@ -50,59 +50,59 @@ public class SnapToPosition : MonoBehaviour
 
     private void CheckSnap(Collider other)
     {
-        
-            foreach (var snapPoint in snapPoints)
+        if (other == null)
+            return;
+        foreach (var snapPoint in snapPoints)
+        {
+            ComponentObject componentObject = other.GetComponent<ComponentObject>();
+            if (componentObject != null )
             {
-                ComponentObject componentObject = other.GetComponent<ComponentObject>();
-                if (componentObject != null)
+
+                if (other.name == snapPoint.componentName || (componentObject.GetGroup() != ComponentObject.Group.None && snapPoint.componentObject.GetGroup() != null && componentObject.GetGroup() == snapPoint.componentObject.GetGroup()))
                 {
 
-                    if (other.name == snapPoint.componentName || (componentObject.GetGroup() != ComponentObject.Group.None && componentObject.GetGroup() == snapPoint.componentObject.GetGroup()))
+                    float distance = Vector3.Distance(other.transform.position, snapPoint.snapTransform.position);
+                    float angle = Quaternion.Angle(other.transform.rotation, snapPoint.snapTransform.rotation);
+
+                    Fastener fastener = other.GetComponent<Fastener>();
+
+                    if (fastener != null)
                     {
+                        fastener.SetSocketTransform(snapPoint.snapTransform);
+                    }
 
-                        float distance = Vector3.Distance(other.transform.position, snapPoint.snapTransform.position);
-                        float angle = Quaternion.Angle(other.transform.rotation, snapPoint.snapTransform.rotation);
+                    if ((distance < snapDistance && angle < snapAngle) || (fastener && distance < snapDistance))
+                    {
+                        other.attachedRigidbody.isKinematic = false;
 
-                        Fastener fastener = other.GetComponent<Fastener>();
+                        snapPoint.meshRenderer.enabled = true;
 
-                        if (fastener != null)
+                        other.transform.SetPositionAndRotation(snapPoint.snapTransform.position, snapPoint.snapTransform.rotation);
+
+                        other.GetComponent<Rigidbody>().isKinematic = true;
+                        IXRInteractable xrInteractable = other.GetComponent<IXRInteractable>();
+                        if (xrInteractable != null)
                         {
-                            fastener.SetSocketTransform(snapPoint.snapTransform);
+                            interactionManager.RegisterInteractable(xrInteractable);
+                            Destroy(xrInteractable as MonoBehaviour);
                         }
 
-                        if ((distance < snapDistance && angle < snapAngle) || (fastener && distance < snapDistance))
-                        {
-                            other.attachedRigidbody.isKinematic = false;
+                        // Add the object to the snapped objects set
+                        snappedObjects.Add(other.gameObject);
 
-                            snapPoint.meshRenderer.enabled = true;
+                        snapPoint.meshRenderer.enabled = false;
 
-                            other.transform.SetPositionAndRotation(snapPoint.snapTransform.position, snapPoint.snapTransform.rotation);
+                        other.transform.SetParent(snapPoint.snapTransform);
 
-                            other.GetComponent<Rigidbody>().isKinematic = true;
-                            IXRInteractable xrInteractable = other.GetComponent<IXRInteractable>();
-                            if (xrInteractable != null)
-                            {
-                                interactionManager.RegisterInteractable(xrInteractable);
-                                Destroy(xrInteractable as MonoBehaviour);
-                            }
+                        AddGrabbable(other);
 
-                            // Add the object to the snapped objects set
-                            snappedObjects.Add(other.gameObject);
-
-                            snapPoint.meshRenderer.enabled = false;
-
-                            other.transform.SetParent(snapPoint.snapTransform);
-
-                            AddGrabbable(other);
-
-                            OnComponentPlaced?.Invoke();
+                        OnComponentPlaced?.Invoke();
 
 
-
-                            break;
-                        }
+                        break;
                     }
                 }
+            }
         }
 
 

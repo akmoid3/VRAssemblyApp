@@ -140,7 +140,7 @@ namespace UnityEngine.XR.Content.Interaction
         {
             // Check if the interactable is the correct one for the current step
             var manager = Manager.Instance;
-            if (manager != null && manager.GetCurrentSelectedComponent() != null)
+            if (manager != null && manager.CurrentSelectedComponent != null)
             {
                 var expectedComponentName = manager.AssemblySequence[manager.CurrentStep].componentName;
                 if (interactable.transform.name != expectedComponentName)

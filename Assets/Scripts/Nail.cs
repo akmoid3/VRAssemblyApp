@@ -16,7 +16,7 @@ public class Nail : Fastener
         if (Time.time - lastMoveTime < moveCooldown)
             return;
 
-        if (Manager.Instance.State == State.PlayBack)
+        if (StateManager.Instance.CurrentState == State.PlayBack)
         {
             if (socketTransform != null)
                 HandleSocketTransformInteraction();

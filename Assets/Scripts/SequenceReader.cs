@@ -31,8 +31,6 @@ public class SequenceReader : MonoBehaviour
     [SerializeField] private Manager manager;
     [SerializeField] private Material holographicMaterial;
     [SerializeField] private GameObject buildingPosition;
-    [SerializeField] private float distanceThreshold = 0.05f;
-    [SerializeField] private float angleThreshold = 10.0f;
 
     public void CreateSnapObjectFromJSON()
     {

@@ -7,47 +7,30 @@ using UnityEngine.XR.Interaction.Toolkit;
 
 public class Manager : MonoBehaviour
 {
-    [SerializeField] private SaveSequence saveSequence;
-    [SerializeField] private GameObject currentSelectedComponent;
+    [SerializeField] private StateManager stateManager;
+    [SerializeField] private InteractionManager interactionManager;
+    [SerializeField] private SequenceManager sequenceManager;
+
     [SerializeField] private GameObject model;
 
     [SerializeField] private bool isRealeased = false;
-    [SerializeField] private bool canHover = true;
     [SerializeField] private List<GameObject> sequenceOrderList = new List<GameObject>();
     [SerializeField] private List<Transform> components = new List<Transform>();
 
-
-    [SerializeField] private Color outlineColor = Color.white;
-    [SerializeField] private float outlineWidth = 1.0f;
-
-
-    [SerializeField] private State state;
-    public static event Action<State> OnStateChanged;
-
-
-    [SerializeField] private List<ComponentData> assemblySequence;
-    [SerializeField] private int currentStep;
-    [SerializeField] private int errorCount;
-    [SerializeField] private bool canIncrement = false;
-    [SerializeField] private int hintCount;
-    [SerializeField] private string finishTime;
-
-    public static event Action<int> OnErrorCountChanged;
-    public static event Action<int> OnHintCountChanged;
-    public static event Action<int> OnStepChanged;
-
     private Dictionary<int, bool> hintShownForStep = new Dictionary<int, bool>();
+    public static event Action<int> OnHintCountChanged;
+    [SerializeField] private int hintCount;
 
     SnapToPosition interactor;
     [SerializeField] private float timeForFirstPlacement = 1.0f;
     [SerializeField] private Transform showSolutionPosition;
 
-    [SerializeField] private ToolManager toolManager; // Assign in Inspector
+    [SerializeField] private ToolManager toolManager;
 
 
     private bool isWaiting;
     private Dictionary<string, GameObject> instantiatedComponents = new Dictionary<string, GameObject>();
-    private GameObject interactorClone; // Store a reference to the interactor clone
+    private GameObject interactorClone;
     [SerializeField] private Material highlightMaterial;
     private Dictionary<int, bool> secondHintShownForStep = new Dictionary<int, bool>();
 
@@ -59,13 +42,13 @@ public class Manager : MonoBehaviour
     public GameObject Model { get => model; set => model = value; }
     public List<Transform> Components { get => components; set => components = value; }
 
-    public State State { get => state; private set => state = value; }
-    public List<ComponentData> AssemblySequence { get => assemblySequence; set => assemblySequence = value; }
-    public int CurrentStep { get => currentStep; set => currentStep = value; }
-    public string FinishTime { get => finishTime; set => finishTime = value; }
+    public List<ComponentData> AssemblySequence { get => sequenceManager.AssemblySequence; set => sequenceManager.AssemblySequence = value; }
+    public int CurrentStep { get => sequenceManager.CurrentStep; set => sequenceManager.CurrentStep = value; }
+    public string FinishTime { get => sequenceManager.FinishTime; set => sequenceManager.FinishTime = value; }
     public int HintCount { get => hintCount; set => hintCount = value; }
-    public int ErrorCount { get => errorCount; set => errorCount = value; }
-    public GameObject CurrentSelectedComponent { get => currentSelectedComponent; set => currentSelectedComponent = value; }
+
+    public int ErrorCount { get => sequenceManager.ErrorCount; set => sequenceManager.ErrorCount = value; }
+    public GameObject CurrentSelectedComponent { get => interactionManager.GetCurrentSelectedComponent(); set => interactionManager.SetCurrentSelectedComponent(value); }
 
     private void Awake()
     {
@@ -79,35 +62,28 @@ public class Manager : MonoBehaviour
             Instance = this;
         }
 
+
         SnapToPosition.OnComponentPlaced += IncrementCurrentStep;
+        StateManager.OnStateChanged += HandleStateChange;
     }
 
     private void OnDestroy()
     {
         SnapToPosition.OnComponentPlaced -= IncrementCurrentStep;
-    }
-    private void IncrementCurrentStep()
-    {
-        currentStep++;
-        OnStepChanged?.Invoke(currentStep);
-    }
+        StateManager.OnStateChanged -= HandleStateChange;
 
-    public void IncrementCurrentError()
-    {
-        errorCount++;
-        OnErrorCountChanged?.Invoke(errorCount);
     }
-
     private void Start()
     {
-        UpdateState(State.ChoosingModel);
+        stateManager = StateManager.Instance;
+        stateManager.UpdateState(State.ChoosingModel);
     }
 
     private void Update()
     {
-        if (state == State.PlayBack)
+        if (stateManager.CurrentState == State.PlayBack)
         {
-            ComponentData componentData = assemblySequence[currentStep];
+            ComponentData componentData = AssemblySequence[CurrentStep];
             if (componentData != null)
             {
                 foreach (var component in components)
@@ -142,144 +118,63 @@ public class Manager : MonoBehaviour
     }
 
 
-
-    public void InitializeSequence(List<ComponentData> sequence)
+    private void IncrementCurrentStep()
     {
-        assemblySequence = sequence;
-        currentStep = 0;
-        errorCount = 0;
+       sequenceManager.IncrementCurrentStep();
     }
 
+    public void IncrementCurrentError()
+    {
+       sequenceManager.IncrementCurrentError();
+    }
+
+   
     public void OnSelectEnter(SelectEnterEventArgs args)
     {
-        if (args.interactorObject as XRBaseControllerInteractor)
-        {
-            currentSelectedComponent = args.interactableObject.transform.gameObject;
-            SetComponentReleasedState(currentSelectedComponent, false);
-            if (state != State.Initialize)
-                ResetParentIfNotGroup(currentSelectedComponent);
-            canHover = false;
-
-            if (currentSelectedComponent.GetComponent<Fastener>())
-            {
-                currentSelectedComponent.GetComponent<Fastener>().IsAligned = false;
-                currentSelectedComponent.GetComponent<Fastener>().CanStop = false;
-                currentSelectedComponent.GetComponent<Fastener>().IsStopped = false;
-            }
-        }
+        interactionManager.OnSelectEnter(args);
     }
 
     public void OnSelectExit(SelectExitEventArgs args)
     {
-        if (args.interactorObject as XRBaseControllerInteractor)
-        {
-            if (state != State.Initialize && state != State.PlayBack)
-                ResetParentIfNotGroup(currentSelectedComponent);
-            SetComponentReleasedState(currentSelectedComponent, true);
-            canHover = true;
-
-            if (state == State.PlayBack)
-                ValidateComponent(currentSelectedComponent);
-        }
+        interactionManager.OnSelectExit(args);
+        if (stateManager.CurrentState == State.PlayBack)
+            ValidateComponent(CurrentSelectedComponent);
     }
 
-    private void ResetParentIfNotGroup(GameObject component)
-    {
-        Transform parent = component.transform.parent;
-        if (parent != null && parent.name != "Group")
-        {
-            component.transform.SetParent(null);
-        }
-    }
-
-    private void SetComponentReleasedState(GameObject component, bool isReleased)
-    {
-        ComponentObject componentObject = component.GetComponent<ComponentObject>();
-        if (componentObject != null)
-        {
-            componentObject.IsReleased = isReleased;
-        }
-    }
-
-
-    private void ConfigureOutline(GameObject gameObject, bool enable)
-    {
-        Outline outline = gameObject.GetComponent<Outline>();
-        if (outline == null)
-        {
-            outline = gameObject.AddComponent<Outline>();
-            outline.OutlineColor = outlineColor;
-            outline.OutlineWidth = outlineWidth;
-        }
-        outline.enabled = enable;
-    }
 
     public void OnHoverEnter(HoverEnterEventArgs args)
     {
-        if (canHover)
-            ConfigureOutline(args.interactableObject.transform.gameObject, true);
+        interactionManager.OnHoverEnter(args);
     }
 
     public void OnHoverExit(HoverExitEventArgs args)
     {
-        ConfigureOutline(args.interactableObject.transform.gameObject, false);
+        interactionManager.OnHoverExit(args);
     }
 
-
-
-    public GameObject GetCurrentSelectedComponent()
+    public void InitializeSequence(List<ComponentData> sequence)
     {
-        return currentSelectedComponent;
-    }
-
-    public void SetCurrentSelectedComponent(GameObject gameObject)
-    {
-        currentSelectedComponent = gameObject;
+       sequenceManager.InitializeSequence(sequence);
     }
 
     public void SaveBuildingSequence()
     {
-        if (saveSequence != null)
-        {
-            saveSequence.SaveComponent(currentSelectedComponent);
-            saveSequence.SaveSequenceToJSON(model.name);
-        }
-        else
-        {
-            Debug.LogError("SaveSequence reference is not set.");
-        }
+       sequenceManager.SaveBuildingSequence(CurrentSelectedComponent,model.name);
     }
 
     public void ModifyBuildingSequence()
     {
-        if (saveSequence != null)
-        {
-            saveSequence.ModifyComponent(currentSelectedComponent);
-            saveSequence.SaveSequenceToJSON(model.name);
-        }
-        else
-        {
-            Debug.LogError("SaveSequence reference is not set.");
-        }
+       sequenceManager.ModifyBuildingSequence(CurrentSelectedComponent,model.name);
     }
 
     public void RemoveComponentFromSequence()
     {
-        if (saveSequence != null)
-        {
-            saveSequence.RemoveComponent(currentSelectedComponent);
-            saveSequence.SaveSequenceToJSON(model.name);
-        }
-        else
-        {
-            Debug.LogError("SaveSequence reference is not set.");
-        }
+        sequenceManager.RemoveComponentFromSequence(CurrentSelectedComponent, model.name);
     }
 
 
-    public void UpdateState(State newState)
+    public void HandleStateChange(State newState)
     {
-        state = newState;
 
         switch (newState)
         {
@@ -306,7 +201,6 @@ public class Manager : MonoBehaviour
             default:
                 break;
         }
-        OnStateChanged?.Invoke(newState);
     }
 
     private void MakeComponentsGrabbable()
@@ -410,26 +304,15 @@ public class Manager : MonoBehaviour
 
     private void ValidateComponent(GameObject component)
     {
-        var nextStep = currentStep + 1;
-        if (nextStep >= assemblySequence.Count)
-        {
-            UpdateState(State.Finish);
-            return;
-        }
-
-        ComponentData expectedComponent = assemblySequence[currentStep];
-        if (component.name != expectedComponent.componentName)
-        {
-            IncrementCurrentError();
-        }
+       sequenceManager.ValidateComponent(component);
     }
 
     private void PlaceInitialComponent()
     {
-        if (assemblySequence != null && assemblySequence.Count > 0)
+        if (AssemblySequence != null && AssemblySequence.Count > 0)
         {
             // Get the name of the first component to be placed
-            var firstComponentName = assemblySequence[0].componentName;
+            var firstComponentName = AssemblySequence[0].componentName;
 
             // Find the first component in the list of components
             var firstComponent = components.Find(c => c.name == firstComponentName);
@@ -527,12 +410,12 @@ public class Manager : MonoBehaviour
 
     private IEnumerator PlaceAllComponentsGraduallyCoroutine(float delayBetweenComponents, GameObject interactorClone)
     {
-        if (assemblySequence == null || assemblySequence.Count == 0)
+        if (AssemblySequence == null || AssemblySequence.Count == 0)
             yield break;
 
         bool isFirstComponent = true;
 
-        foreach (var componentData in assemblySequence)
+        foreach (var componentData in AssemblySequence)
         {
             var originalComponent = components.Find(c => c.name == componentData.componentName);
             if (originalComponent != null)
@@ -549,7 +432,7 @@ public class Manager : MonoBehaviour
                     instantiatedComponents[componentData.componentName] = componentClone;
                 }
 
-                Transform correctSnappoint = interactorClone.transform.GetChild(assemblySequence.IndexOf(componentData));
+                Transform correctSnappoint = interactorClone.transform.GetChild(AssemblySequence.IndexOf(componentData));
 
                 if (correctSnappoint != null)
                 {
@@ -618,18 +501,18 @@ public class Manager : MonoBehaviour
             return;
         }
 
-        var currentComponentName = assemblySequence[currentStep].componentName;
+        var currentComponentName = AssemblySequence[CurrentStep].componentName;
 
         // Check if the hint for the current step has already been shown
-        if (hintShownForStep.ContainsKey(currentStep) && hintShownForStep[currentStep])
+        if (hintShownForStep.ContainsKey(CurrentStep) && hintShownForStep[CurrentStep])
         {
             // Check if the second type of hint has been shown for this step
-            if (!secondHintShownForStep.ContainsKey(currentStep) || !secondHintShownForStep[currentStep])
+            if (!secondHintShownForStep.ContainsKey(CurrentStep) || !secondHintShownForStep[CurrentStep])
             {
                 // Increment the hint count for the second hint and mark it as shown
-                hintCount++;
-                secondHintShownForStep[currentStep] = true;
-                OnHintCountChanged?.Invoke(hintCount);
+                HintCount++;
+                secondHintShownForStep[CurrentStep] = true;
+                OnHintCountChanged?.Invoke(HintCount);
             }
 
             foreach (var component in components)
@@ -645,13 +528,13 @@ public class Manager : MonoBehaviour
 
         // Increment the hint count and mark the hint as shown for the current step
         hintCount++;
-        hintShownForStep[currentStep] = true;
+        hintShownForStep[CurrentStep] = true;
         OnHintCountChanged?.Invoke(hintCount);
 
         if (interactor != null)
         {
             // Find the snappoint with the same name as the current component
-            Transform correctSnappoint = interactor.transform.GetChild(currentStep);
+            Transform correctSnappoint = interactor.transform.GetChild(CurrentStep);
 
             if (correctSnappoint != null)
             {

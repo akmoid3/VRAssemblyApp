@@ -8,7 +8,7 @@ public class Screw : Fastener
     private bool isFirstError = true;
     protected override void HandleInteraction()
     {
-        if (Manager.Instance.State == State.PlayBack)
+        if (StateManager.Instance.CurrentState == State.PlayBack)
         {
             HandlePlayBackInteraction();
         }

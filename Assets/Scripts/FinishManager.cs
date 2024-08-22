@@ -10,21 +10,20 @@ public class FinishManager : MonoBehaviour
     [SerializeField] private TextMeshProUGUI timerText;
     [SerializeField] private TextMeshProUGUI errorCountText;
     [SerializeField] private TextMeshProUGUI hintCountText;
-
     private void Awake()
     {
-        Manager.OnStateChanged += SetPanelActive;
+        StateManager.OnStateChanged += SetPanelActive;
         finishButton.onClick.AddListener(OnFinishClicked);
     }
 
     private void Update()
     {
-        if (Manager.Instance.State == State.Finish && timerText.text == "00:00")
+        if (StateManager.Instance.CurrentState == State.Finish && timerText.text == "00:00")
             timerText.text = Manager.Instance.FinishTime;
     }
     private void OnDestroy()
     {
-        Manager.OnStateChanged -= SetPanelActive;
+        StateManager.OnStateChanged -= SetPanelActive;
         finishButton.onClick.RemoveListener(OnFinishClicked);
     }
 

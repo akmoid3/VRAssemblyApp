@@ -60,7 +60,7 @@ public abstract class Fastener : MonoBehaviour
             HandleInteraction();
         }
 
-        if (!canStop && !isStopped && !IsAligned && Manager.Instance.State == State.Record)
+        if (!canStop && !isStopped && !IsAligned && StateManager.Instance.CurrentState == State.Record)
             PerformComponentRaycast();
 
     }

@@ -13,18 +13,18 @@ public class InitializeComponentManager : MonoBehaviour
 
     private void Awake()
     {
-        Manager.OnStateChanged += SetPanelActive;
+        StateManager.OnStateChanged += SetPanelActive;
         finishedButton.onClick.AddListener(OnFinishedButtonClick);
     }
 
     private void OnFinishedButtonClick()
     {
-        Manager.Instance.UpdateState(State.SelectingMode);
+        StateManager.Instance.UpdateState(State.SelectingMode);
     }
 
     private void OnDestroy()
     {
-        Manager.OnStateChanged -= SetPanelActive;
+        StateManager.OnStateChanged -= SetPanelActive;
         finishedButton.onClick.RemoveListener(OnFinishedButtonClick);
     }
 
@@ -49,7 +49,7 @@ public class InitializeComponentManager : MonoBehaviour
 
     private void Update()
     {
-        GameObject selectedComponent = Manager.Instance.GetCurrentSelectedComponent();
+        GameObject selectedComponent = Manager.Instance.CurrentSelectedComponent;
         if (selectedComponent != null)
         {
             componentName.text = selectedComponent.name;
@@ -94,7 +94,7 @@ public class InitializeComponentManager : MonoBehaviour
         // Update selected component type based on dropdown selection
         ComponentObject.ComponentType selectedType = (ComponentObject.ComponentType)index;
 
-        GameObject selectedComponent = Manager.Instance.GetCurrentSelectedComponent();
+        GameObject selectedComponent = Manager.Instance.CurrentSelectedComponent;
         if (selectedComponent != null)
         {
             ComponentObject componentObject = selectedComponent.GetComponent<ComponentObject>();
@@ -111,7 +111,7 @@ public class InitializeComponentManager : MonoBehaviour
         // Update selected component group based on dropdown selection
         ComponentObject.Group selectedGroup = (ComponentObject.Group)index;
 
-        GameObject selectedComponent = Manager.Instance.GetCurrentSelectedComponent();
+        GameObject selectedComponent = Manager.Instance.CurrentSelectedComponent;
         if (selectedComponent != null)
         {
             ComponentObject componentObject = selectedComponent.GetComponent<ComponentObject>();
@@ -125,7 +125,7 @@ public class InitializeComponentManager : MonoBehaviour
 
     void UpdateDropdownsForSelectedComponent()
     {
-        GameObject selectedComponent = Manager.Instance.GetCurrentSelectedComponent();
+        GameObject selectedComponent = Manager.Instance.CurrentSelectedComponent;
 
         if (selectedComponent != null)
         {

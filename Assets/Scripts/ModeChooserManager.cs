@@ -14,7 +14,7 @@ public class ModeChooserManager : MonoBehaviour
 
     private void Awake()
     {
-        Manager.OnStateChanged += SetPanelActive;
+        StateManager.OnStateChanged += SetPanelActive;
         playBackButton.onClick.AddListener(OnPlayBackButtonClicked);
         recordButton.onClick.AddListener(OnRecordButtonClicked);
         initializeButton.onClick.AddListener(OnInitializeClicked);
@@ -24,7 +24,7 @@ public class ModeChooserManager : MonoBehaviour
 
     private void OnDestroy()
     {
-        Manager.OnStateChanged -= SetPanelActive;
+        StateManager.OnStateChanged -= SetPanelActive;
         playBackButton.onClick.RemoveListener(OnPlayBackButtonClicked);
         recordButton.onClick.RemoveListener(OnRecordButtonClicked);
         initializeButton.onClick.RemoveListener(OnInitializeClicked);
@@ -53,17 +53,17 @@ public class ModeChooserManager : MonoBehaviour
 
     private void OnInitializeClicked()
     {
-        Manager.Instance.UpdateState(State.Initialize);
+        StateManager.Instance.UpdateState(State.Initialize);
     }
 
     private void OnPlayBackButtonClicked()
     {
-        Manager.Instance.UpdateState(State.PlayBack);
+        StateManager.Instance.UpdateState(State.PlayBack);
     }
 
     private void OnRecordButtonClicked()
     {
-        Manager.Instance.UpdateState(State.Record);
+        StateManager.Instance.UpdateState(State.Record);
     }
 
     private void OnReturnBackClicked()

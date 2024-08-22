@@ -7,18 +7,18 @@ public class ModeSelectionManager : MonoBehaviour
     [SerializeField] private Button confirmButton;
     private void Awake()
     {
-        Manager.OnStateChanged += SetPanelActive;
+        StateManager.OnStateChanged += SetPanelActive;
         confirmButton.onClick.AddListener(OnConfirmButtonClicked);
     }
 
     private void OnConfirmButtonClicked()
     {
-        Manager.Instance.UpdateState(State.SelectingMode);
+        StateManager.Instance.UpdateState(State.SelectingMode);
     }
 
     private void OnDestroy()
     {
-        Manager.OnStateChanged -= SetPanelActive;
+        StateManager.OnStateChanged -= SetPanelActive;
         confirmButton.onClick.RemoveListener(OnConfirmButtonClicked);
     }
     private void SetPanelActive(State state)

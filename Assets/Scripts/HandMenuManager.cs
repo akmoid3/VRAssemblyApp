@@ -111,7 +111,7 @@ public class HandMenuManager : MonoBehaviour
 
     void Update()
     {
-        GameObject currentSelectedComponent = manager.GetCurrentSelectedComponent();
+        GameObject currentSelectedComponent = manager.CurrentSelectedComponent;
         if (currentSelectedComponent != null)
         {
             Vector3 position = currentSelectedComponent.transform.position;
@@ -198,23 +198,23 @@ public class HandMenuManager : MonoBehaviour
 
     private void AddToPosition(Vector3 increment)
     {
-        if (manager.GetCurrentSelectedComponent() != null)
+        if (manager.CurrentSelectedComponent != null)
         {
-            manager.GetCurrentSelectedComponent().transform.position += increment;
+            manager.CurrentSelectedComponent.transform.position += increment;
         }
     }
 
     private void AddToRotation(Vector3 increment)
     {
-        if (manager.GetCurrentSelectedComponent() != null)
+        if (manager.CurrentSelectedComponent != null)
         {
-            manager.GetCurrentSelectedComponent().transform.eulerAngles += increment;
+            manager.CurrentSelectedComponent.transform.eulerAngles += increment;
         }
     }
 
     private void ModifyComponent()
     {
-        GameObject currentSelectedComponent = manager.GetCurrentSelectedComponent();
+        GameObject currentSelectedComponent = manager.CurrentSelectedComponent;
 
         if (currentSelectedComponent != null)
         {
@@ -246,7 +246,7 @@ public class HandMenuManager : MonoBehaviour
 
     private void SaveComponent()
     {
-        GameObject currentSelectedComponent = manager.GetCurrentSelectedComponent();
+        GameObject currentSelectedComponent = manager.CurrentSelectedComponent;
 
         if (currentSelectedComponent != null)
         {

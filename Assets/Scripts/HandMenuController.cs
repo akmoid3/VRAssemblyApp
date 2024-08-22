@@ -22,7 +22,7 @@ public class HandMenuController : MonoBehaviour
 
     private void Toggle(InputAction.CallbackContext context)
     {
-        if (Manager.Instance.State == State.Record)
+        if (StateManager.Instance.CurrentState == State.Record)
         {
             bool isActive = !handMenu.activeSelf;
             handMenu.SetActive(isActive);

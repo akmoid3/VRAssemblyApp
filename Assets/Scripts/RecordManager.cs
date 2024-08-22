@@ -10,7 +10,7 @@ public class RecordManager : MonoBehaviour
 
     private void Awake()
     {
-        Manager.OnStateChanged += SetPanelActive;
+        StateManager.OnStateChanged += SetPanelActive;
         finishButton.onClick.AddListener(OnFinishClicked);
     }
 
@@ -21,7 +21,7 @@ public class RecordManager : MonoBehaviour
 
     private void OnDestroy()
     {
-        Manager.OnStateChanged -= SetPanelActive;
+        StateManager.OnStateChanged -= SetPanelActive;
         finishButton.onClick.RemoveListener(OnFinishClicked);
     }
 

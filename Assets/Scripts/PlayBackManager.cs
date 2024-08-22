@@ -18,10 +18,10 @@ public class PlayBackManager : MonoBehaviour
 
     private void Awake()
     {
-        Manager.OnStateChanged += SetPanelActive;
-        Manager.OnErrorCountChanged += IncrementErrorCount;
+        StateManager.OnStateChanged += SetPanelActive;
+        SequenceManager.OnErrorCountChanged += IncrementErrorCount;
         Manager.OnHintCountChanged += IncrementHintCount;
-        Manager.OnStepChanged += IncrementStepCount;
+        SequenceManager.OnStepChanged += IncrementStepCount;
 
         showSolutionButton.onClick.AddListener(OnShowSolutionClicked);
         finishButton.onClick.AddListener(OnFinishClicked);
@@ -43,10 +43,10 @@ public class PlayBackManager : MonoBehaviour
     }
     private void OnDestroy()
     {
-        Manager.OnStateChanged -= SetPanelActive;
-        Manager.OnErrorCountChanged -= IncrementErrorCount;
+        StateManager.OnStateChanged -= SetPanelActive;
+        SequenceManager.OnErrorCountChanged -= IncrementErrorCount;
         Manager.OnHintCountChanged -= IncrementHintCount;
-        Manager.OnStepChanged -= IncrementStepCount;
+        SequenceManager.OnStepChanged -= IncrementStepCount;
 
         showSolutionButton.onClick.RemoveListener(OnShowSolutionClicked);
         finishButton.onClick.RemoveListener(OnFinishClicked);
