@@ -20,7 +20,7 @@ public class PlayBackManager : MonoBehaviour
     {
         StateManager.OnStateChanged += SetPanelActive;
         SequenceManager.OnErrorCountChanged += IncrementErrorCount;
-        Manager.OnHintCountChanged += IncrementHintCount;
+        HintManager.OnHintCountChanged += IncrementHintCount;
         SequenceManager.OnStepChanged += IncrementStepCount;
 
         showSolutionButton.onClick.AddListener(OnShowSolutionClicked);
@@ -45,7 +45,7 @@ public class PlayBackManager : MonoBehaviour
     {
         StateManager.OnStateChanged -= SetPanelActive;
         SequenceManager.OnErrorCountChanged -= IncrementErrorCount;
-        Manager.OnHintCountChanged -= IncrementHintCount;
+        HintManager.OnHintCountChanged -= IncrementHintCount;
         SequenceManager.OnStepChanged -= IncrementStepCount;
 
         showSolutionButton.onClick.RemoveListener(OnShowSolutionClicked);

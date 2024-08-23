@@ -58,7 +58,7 @@ public class SnapToPosition : MonoBehaviour
             if (componentObject != null )
             {
 
-                if (other.name == snapPoint.componentName || (componentObject.GetGroup() != ComponentObject.Group.None && snapPoint.componentObject.GetGroup() != null && componentObject.GetGroup() == snapPoint.componentObject.GetGroup()))
+                if (other.name == snapPoint.componentName || (componentObject.GetGroup() != ComponentObject.Group.None && componentObject.GetGroup() == snapPoint.componentObject.GetGroup()))
                 {
 
                     float distance = Vector3.Distance(other.transform.position, snapPoint.snapTransform.position);
@@ -143,29 +143,6 @@ public class SnapToPosition : MonoBehaviour
         xrGrabInteractable.enabled = true;
     }
 
-
-    private bool AreAllSnapPointsFilled()
-    {
-        foreach (var snapPoint in snapPoints)
-        {
-            if (snapPoint.meshRenderer != null && snapPoint.meshRenderer.enabled)
-            {
-                return false; // At least one snap point is still empty
-            }
-        }
-        return true; // All snap points are filled
-    }
-
-    private void EnableAllSnapPoints()
-    {
-        foreach (var snapPoint in snapPoints)
-        {
-            if (snapPoint.meshRenderer != null)
-            {
-                snapPoint.meshRenderer.enabled = true;
-            }
-        }
-    }
 
     [System.Serializable]
     public class SnapPoint
