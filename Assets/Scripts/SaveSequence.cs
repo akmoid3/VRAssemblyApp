@@ -2,25 +2,26 @@ using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
 
+// A class to hold the data for each component
+[System.Serializable]
+public class ComponentData
+{
+    public string componentName;
+    public Vector3 position;
+    public Quaternion rotation;
+    public string toolName;
+    public ComponentObject.Group group;
+}
+
+// A class to hold the data for all components
+[System.Serializable]
+public class ObjectData
+{
+    public List<ComponentData> components = new List<ComponentData>();
+}
+
 public class SaveSequence : MonoBehaviour
 {
-    // A class to hold the data for each component
-    [System.Serializable]
-    public class ComponentData
-    {
-        public string componentName;
-        public Vector3 position;
-        public Quaternion rotation;
-        public string toolName;
-    }
-
-    // A class to hold the data for all components
-    [System.Serializable]
-    public class ObjectData
-    {
-        public List<ComponentData> components = new List<ComponentData>();
-    }
-
     private ObjectData objectData = new ObjectData();
 
     private string folderName = "SavedBuildData";
@@ -71,7 +72,8 @@ public class SaveSequence : MonoBehaviour
             componentName = component.name,
             position = component.transform.localPosition,
             rotation = component.transform.localRotation,
-            toolName = name
+            toolName = name,
+            group = component.GetComponent<ComponentObject>().GetGroup()
         };
         objectData.components.Add(newData);
     }

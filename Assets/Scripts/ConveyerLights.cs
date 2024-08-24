@@ -10,23 +10,7 @@ public class ConveyerLights : MonoBehaviour
 
     private Coroutine blinkCoroutine;
 
-    [SerializeField] private InputActionReference toggleLightsInputReference;
-
-    private void OnEnable()
-    {
-        toggleLightsInputReference.action.started += OnToggleLightsStarted;
-        toggleLightsInputReference.action.canceled += OnToggleLightsCanceled;
-        toggleLightsInputReference.action.Enable();
-    }
-
-    private void OnDisable()
-    {
-        toggleLightsInputReference.action.started -= OnToggleLightsStarted;
-        toggleLightsInputReference.action.canceled -= OnToggleLightsCanceled;
-        toggleLightsInputReference.action.Disable();
-    }
-
-    private void OnToggleLightsStarted(InputAction.CallbackContext context)
+    public void OnToggleLightsStarted()
     {
         if (blinkCoroutine == null)
         {
@@ -34,7 +18,7 @@ public class ConveyerLights : MonoBehaviour
         }
     }
 
-    private void OnToggleLightsCanceled(InputAction.CallbackContext context)
+    public void OnToggleLightsCanceled()
     {
         if (blinkCoroutine != null)
         {

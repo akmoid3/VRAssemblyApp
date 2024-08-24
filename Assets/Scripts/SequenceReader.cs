@@ -3,14 +3,6 @@ using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
 
-[Serializable]
-public class ComponentData
-{
-    public string componentName;
-    public TransformData position;
-    public TransformData rotation;
-    public string toolName;
-}
 
 [Serializable]
 public class TransformData

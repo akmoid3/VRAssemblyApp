@@ -12,32 +12,19 @@ public class Manager : MonoBehaviour
     [SerializeField] private SequenceManager sequenceManager;
     [SerializeField] private HintManager hintManager;
     [SerializeField] private AutomaticPlacementManager automaticPlacementManager;
-
-
-    [SerializeField] private GameObject model;
-
-    [SerializeField] private bool isRealeased = false;
-    [SerializeField] private List<GameObject> sequenceOrderList = new List<GameObject>();
-    [SerializeField] private List<Transform> components = new List<Transform>();
-
-    private Dictionary<int, bool> hintShownForStep = new Dictionary<int, bool>();
-
-    SnapToPosition interactor;
-    [SerializeField] private float timeForFirstPlacement = 1.0f;
-    [SerializeField] private Transform showSolutionPosition;
-
     [SerializeField] private ToolManager toolManager;
 
 
-    private bool isWaiting;
-    private Dictionary<string, GameObject> instantiatedComponents = new Dictionary<string, GameObject>();
-    private GameObject interactorClone;
-    private Dictionary<int, bool> secondHintShownForStep = new Dictionary<int, bool>();
+    [SerializeField] private GameObject model;
+    [SerializeField] private List<Transform> components = new List<Transform>();
+
+
+    SnapToPosition interactor;
+
 
     // Singleton
     public static Manager Instance { get; private set; }
 
-    public bool IsRealeased { get => isRealeased; set => isRealeased = value; }
 
     public GameObject Model { get => model; set => model = value; }
     public List<Transform> Components { get => components; set => components = value; }
@@ -83,12 +70,15 @@ public class Manager : MonoBehaviour
     {
         if (stateManager.CurrentState == State.PlayBack)
         {
+            hintManager.HighlightComponentToPlace(AssemblySequence, CurrentStep,components);
+
             ComponentData componentData = AssemblySequence[CurrentStep];
             if (componentData != null)
             {
                 foreach (var component in components)
                 {
-                    if (component.name == componentData.componentName)
+                    ComponentObject componentObject = component.GetComponent<ComponentObject>();
+                    if (component.name == componentData.componentName || (componentObject.GetGroup() != ComponentObject.Group.None))
                     {
                         Fastener fastener = component.GetComponent<Fastener>();
                         if (componentData.toolName != "null")
@@ -107,13 +97,13 @@ public class Manager : MonoBehaviour
                                     correctSnappoint.GetComponent<MeshRenderer>().enabled = false;
                                 }
                             }
+                            AudioManager.Instance.PlayPopSound();
                             ValidateComponent(component.gameObject);
                             IncrementCurrentStep();
                         }
                     }
                 }
             }
-
         }
     }
 
@@ -286,10 +276,7 @@ public class Manager : MonoBehaviour
                     Debug.LogWarning($"ComponentObject not found on source component: {component.name}");
                 }
             }
-            else
-            {
-                Debug.LogWarning($"Child with name {component.name} not found in interactor.");
-            }
+         
         }
     }
 

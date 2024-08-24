@@ -14,38 +14,15 @@ public class HintManager : MonoBehaviour
     private Dictionary<int, bool> secondHintShownForStep = new Dictionary<int, bool>();
     private bool isWaiting = false;
     public static event Action<int> OnHintCountChanged;
-  
+
 
     public void ShowHint(List<ComponentData> assemblySequence, int currentStep, List<Transform> components, SnapToPosition interactor)
     {
-        if (isWaiting)
-        {
-            // If we are waiting, do nothing and return immediately
-            return;
-        }
-
         var currentComponentName = assemblySequence[currentStep].componentName;
 
         // Check if the hint for the current step has already been shown
         if (hintShownForStep.ContainsKey(currentStep) && hintShownForStep[currentStep])
         {
-            // Check if the second type of hint has been shown for this step
-            if (!secondHintShownForStep.ContainsKey(currentStep) || !secondHintShownForStep[currentStep])
-            {
-                // Increment the hint count for the second hint and mark it as shown
-                hintCount++;
-                secondHintShownForStep[currentStep] = true;
-                OnHintCountChanged?.Invoke(hintCount);
-            }
-
-            foreach (var component in components)
-            {
-                if (component.name == currentComponentName)
-                {
-                    StartCoroutine(HandleHintCooldown(component.gameObject));
-                }
-            }
-
             return;
         }
 
@@ -56,12 +33,36 @@ public class HintManager : MonoBehaviour
 
         if (interactor != null)
         {
-            // Find the snappoint with the same name as the current component
-            Transform correctSnappoint = interactor.transform.GetChild(currentStep);
+            // Show the snappoint where the component should be snapped
+            ShowSnapPoint(interactor, currentStep);
+        }
+    }
 
-            if (correctSnappoint != null)
+    private void ShowSnapPoint(SnapToPosition interactor, int currentStep)
+    {
+        // Find the snappoint with the same name as the current component
+        Transform correctSnappoint = interactor.transform.GetChild(currentStep);
+
+        if (correctSnappoint != null)
+        {
+            correctSnappoint.GetComponent<MeshRenderer>().enabled = true;
+        }
+    }
+
+    public void HighlightComponentToPlace(List<ComponentData> assemblySequence, int currentStep, List<Transform> components)
+    {
+        if(isWaiting)
+            return;
+
+        var componentToPlaceName = assemblySequence[currentStep].componentName;
+        var componentToPlaceGroup = assemblySequence[currentStep].group;
+
+        foreach (var component in components)
+        {
+            ComponentObject componentObject = component.GetComponent<ComponentObject>();
+            if (component.name == componentToPlaceName || (componentObject.GetGroup() != ComponentObject.Group.None && componentToPlaceGroup == componentObject.GetGroup()))
             {
-                correctSnappoint.GetComponent<MeshRenderer>().enabled = true;
+                StartCoroutine(HandleHintCooldown(component.gameObject));
             }
         }
     }
@@ -97,23 +98,12 @@ public class HintManager : MonoBehaviour
             // Set the highlight materials
             meshRenderer.materials = tempMaterials;
 
-            // Wait for 0.5 seconds
-            yield return new WaitForSeconds(0.5f);
+            yield return new WaitForSeconds(hintCooldown);
 
             // Revert back to the original materials
             meshRenderer.materials = originalMaterials;
 
-            // Wait for 0.25 seconds
-            yield return new WaitForSeconds(0.25f);
 
-            // Set the highlight materials again
-            meshRenderer.materials = tempMaterials;
-
-            // Wait for another 0.5 seconds
-            yield return new WaitForSeconds(0.5f);
-
-            // Revert back to the original materials again
-            meshRenderer.materials = originalMaterials;
         }
     }
 

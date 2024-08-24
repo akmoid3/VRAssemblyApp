@@ -3,6 +3,16 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.XR.Interaction.Toolkit;
 
+[System.Serializable]
+public class SnapPoint
+{
+    public Transform snapTransform;
+    public string componentName;
+    public MeshRenderer meshRenderer;
+    public ComponentObject componentObject;
+
+}
+
 public class SnapToPosition : MonoBehaviour
 {
     public float snapDistance = 0.1f;
@@ -23,13 +33,23 @@ public class SnapToPosition : MonoBehaviour
 
         foreach (Transform child in transform)
         {
+            // Try to get the required components
+            MeshRenderer meshRenderer = child.GetComponent<MeshRenderer>();
+            ComponentObject componentObject = child.GetComponent<ComponentObject>();
+
+            if (componentObject == null)
+            {
+                componentObject = child.gameObject.AddComponent<ComponentObject>();
+            }
+
             SnapPoint snapPoint = new SnapPoint
             {
                 snapTransform = child,
                 componentName = child.name,
-                meshRenderer = child.GetComponent<MeshRenderer>(),
-                componentObject = child.GetComponent<ComponentObject>()
+                meshRenderer = meshRenderer,
+                componentObject = componentObject
             };
+
             snapPoints.Add(snapPoint);
         }
 
@@ -58,7 +78,7 @@ public class SnapToPosition : MonoBehaviour
             if (componentObject != null )
             {
 
-                if (other.name == snapPoint.componentName || (componentObject.GetGroup() != ComponentObject.Group.None && componentObject.GetGroup() == snapPoint.componentObject.GetGroup()))
+                if (other.name == snapPoint.componentName || (componentObject.GetGroup() != ComponentObject.Group.None && componentObject.GetGroup() == snapPoint.componentObject.GetGroup() && componentObject.GetType() == snapPoint.componentObject.GetType()))
                 {
 
                     float distance = Vector3.Distance(other.transform.position, snapPoint.snapTransform.position);
@@ -98,15 +118,14 @@ public class SnapToPosition : MonoBehaviour
 
                         OnComponentPlaced?.Invoke();
 
+                        AudioManager.Instance.PlayPopSound();
+
 
                         break;
                     }
                 }
             }
         }
-
-
-
     }
 
     private void AddGrabbable(Collider collider)
@@ -143,14 +162,4 @@ public class SnapToPosition : MonoBehaviour
         xrGrabInteractable.enabled = true;
     }
 
-
-    [System.Serializable]
-    public class SnapPoint
-    {
-        public Transform snapTransform;
-        public string componentName;
-        public MeshRenderer meshRenderer;
-        public ComponentObject componentObject;
-
-    }
 }
