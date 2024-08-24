@@ -11,6 +11,8 @@ public class ComponentData
     public Quaternion rotation;
     public string toolName;
     public ComponentObject.Group group;
+    public ComponentObject.ComponentType type;
+
 }
 
 // A class to hold the data for all components
@@ -73,7 +75,9 @@ public class SaveSequence : MonoBehaviour
             position = component.transform.localPosition,
             rotation = component.transform.localRotation,
             toolName = name,
-            group = component.GetComponent<ComponentObject>().GetGroup()
+            group = component.GetComponent<ComponentObject>().GetGroup(),
+            type = component.GetComponent<ComponentObject>().GetComponentType()
+
         };
         objectData.components.Add(newData);
     }

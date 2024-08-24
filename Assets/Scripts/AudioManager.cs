@@ -41,7 +41,8 @@ public class AudioManager : MonoBehaviour
         if (audioSource != null && screwSound != null)
         {
             audioSource.clip = screwSound; 
-            audioSource.loop = true; 
+            audioSource.loop = true;
+            audioSource.volume = 0.5f;
             audioSource.Play();
         }
     }

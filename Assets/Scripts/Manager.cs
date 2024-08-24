@@ -66,6 +66,7 @@ public class Manager : MonoBehaviour
         stateManager.UpdateState(State.ChoosingModel);
     }
 
+    List<Fastener> fasteners = new List<Fastener>();
     private void Update()
     {
         if (stateManager.CurrentState == State.PlayBack)
@@ -81,12 +82,15 @@ public class Manager : MonoBehaviour
                     if (component.name == componentData.componentName || (componentObject.GetGroup() != ComponentObject.Group.None))
                     {
                         Fastener fastener = component.GetComponent<Fastener>();
-                        if (componentData.toolName != "null")
+                        if (fasteners.Contains(fastener))
+                            fastener = null;
+                        if (fastener != null && componentData.toolName != "null")
                         {
                             fastener.CorrectToolName = componentData.toolName;
                         }
                         if (fastener != null && fastener.IsStopped)
                         {
+                            fasteners.Add(fastener);
                             if (interactor != null)
                             {
                                 // Find the snappoint with the same name as the current component
