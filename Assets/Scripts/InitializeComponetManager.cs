@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
@@ -9,12 +10,20 @@ public class InitializeComponentManager : MonoBehaviour
     [SerializeField] private TMP_Dropdown groupDropdown;
     [SerializeField] private GameObject canvasInit;
     [SerializeField] private Button finishedButton;
+    [SerializeField] private Button loadInstructionPDF;
     [SerializeField] private TextMeshProUGUI componentName;
+    [SerializeField] private FileBrowserManager fileBrowserManager;
 
     private void Awake()
     {
         StateManager.OnStateChanged += SetPanelActive;
         finishedButton.onClick.AddListener(OnFinishedButtonClick);
+        loadInstructionPDF.onClick.AddListener(OpenFileBrowser);
+    }
+
+    private void OpenFileBrowser()
+    {
+        fileBrowserManager.ShowDialog("Instructions",".pdf");
     }
 
     private void OnFinishedButtonClick()
@@ -26,6 +35,8 @@ public class InitializeComponentManager : MonoBehaviour
     {
         StateManager.OnStateChanged -= SetPanelActive;
         finishedButton.onClick.RemoveListener(OnFinishedButtonClick);
+        loadInstructionPDF.onClick.RemoveListener(OpenFileBrowser);
+
     }
 
     private void SetPanelActive(State state)

@@ -32,6 +32,8 @@ public abstract class Fastener : MonoBehaviour
 
     protected ComponentObject componentObject;
 
+    protected bool isFirstError = true;
+
     private string correctToolName;
     public bool IsAligned { get => isAligned; set => isAligned = value; }
     public bool IsStopped { get => isStopped; set => isStopped = value; }
@@ -75,6 +77,15 @@ public abstract class Fastener : MonoBehaviour
             isCollidingWithTool = true;
             OnToolCollisionEnter(other);
             canStop = true;
+
+            if(StateManager.Instance.CurrentState == State.PlayBack)
+            {
+                if (tool.name != CorrectToolName && isFirstError)
+                {
+                    Manager.Instance.IncrementCurrentError();
+                    isFirstError = false;
+                }
+            }
         }
     }
 
@@ -84,6 +95,14 @@ public abstract class Fastener : MonoBehaviour
         {
             isCollidingWithTool = false;
             OnToolCollisionExit(other);
+
+            if (StateManager.Instance.CurrentState == State.PlayBack)
+            {
+                if (!isFirstError)
+                {
+                    isFirstError = true;
+                }
+            }
         }
     }
 

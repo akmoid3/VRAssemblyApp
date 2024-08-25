@@ -67,7 +67,7 @@ public class FileBrowserTests
         MethodInfo startMethod = fileBrowserManager.GetType().GetMethod("Start", BindingFlags.NonPublic | BindingFlags.Instance);
         startMethod.Invoke(fileBrowserManager, null);
 
-        fileBrowserManager.ShowDialog();
+        fileBrowserManager.ShowDialog("Models",".glb");
 
 
         string[] filePaths = new string[] { testFilePath };

@@ -7,12 +7,15 @@ using UnityEngine.UI;
 
 public class PdfLoader : MonoBehaviour
 {
-    [SerializeField] private string filename = "eket_70_35_35.pdf";
+    [SerializeField] private GameObject pdfPanel;
     [SerializeField] private GameObject imagePrefab;
     [SerializeField] private Transform spawnPoint;
     [SerializeField] private bool overWrite = true;
     [SerializeField] private Button nextPageButton;
     [SerializeField] private Button previousPageButton;
+    [SerializeField] private int dpi = 600;
+
+    private bool canActivePanel = true;
 
     private List<Texture2D> pages = new List<Texture2D>();
     private int currentPageIndex = 0;
@@ -21,16 +24,53 @@ public class PdfLoader : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        var inputDir = Application.persistentDataPath;  // Use persistent data path
-        var inputPath = Path.Combine(inputDir, filename);
-        var outputPath = Path.Combine(inputDir, Path.GetFileNameWithoutExtension(inputPath) + "_out");
-        Directory.CreateDirectory(outputPath);
-        RenderPdfToFile(inputPath, outputPath, 300);
-        LoadFileToTextures(outputPath);
-
-        // Set up button listeners
         nextPageButton.onClick.AddListener(NextPage);
         previousPageButton.onClick.AddListener(PreviousPage);
+
+        StateManager.OnStateChanged += HandleStateChanged;
+
+        HandleStateChanged(StateManager.Instance.CurrentState);
+    }
+
+
+    private void OnDestroy()
+    {
+        nextPageButton.onClick.RemoveListener(NextPage);
+        previousPageButton.onClick.RemoveListener(PreviousPage);
+
+        StateManager.OnStateChanged -= HandleStateChanged;
+    }
+
+    private void HandleStateChanged(State newState)
+    {
+        bool shouldActivatePanel = (newState == State.Record || newState == State.PlayBack) && canActivePanel;
+        pdfPanel.SetActive(shouldActivatePanel);
+    }
+
+    public void LoadPDF(string fileName)
+    {
+        // Append ".pdf" extension if not already present
+        fileName = fileName.EndsWith(".pdf") ? fileName : fileName + ".pdf";
+
+        var inputDir = Path.Combine(Application.persistentDataPath, "Instructions");
+        var inputPath = Path.Combine(inputDir, fileName);
+        var outputPath = Path.Combine(inputDir, Path.GetFileNameWithoutExtension(inputPath));
+
+        // Check if the PDF file exists
+        if (!File.Exists(inputPath))
+        {
+            canActivePanel = false;
+
+            return; // Exit the method if the file does not exist
+        }
+        if (!IsPdfAlreadyConverted(outputPath, fileName))
+        {
+            Directory.CreateDirectory(outputPath);
+            RenderPdfToFile(inputPath, outputPath);
+        }
+
+        LoadFileToTextures(outputPath);
+
 
         // Instantiate the image prefab and set the initial page
         var pageObject = Instantiate(imagePrefab, spawnPoint, false);
@@ -38,7 +78,7 @@ public class PdfLoader : MonoBehaviour
         ShowPage(currentPageIndex);
     }
 
-    private void RenderPdfToFile(string pdfFilename, string outputDir, int dpi)
+    private void RenderPdfToFile(string pdfFilename, string outputDir)
     {
         using (var doc = PdfiumViewer.PdfDocument.Load(pdfFilename))
         {               // Load PDF Document from file
@@ -117,5 +157,21 @@ public class PdfLoader : MonoBehaviour
             currentPageIndex--;
             ShowPage(currentPageIndex);
         }
+    }
+
+    private bool IsPdfAlreadyConverted(string outputDir,string filename)
+    {
+        if (Directory.Exists(outputDir))
+        {
+            var pngFiles = Directory.GetFiles(outputDir, "*.png");
+
+            // Attempt to determine the number of pages from an existing output
+            using (var doc = PdfiumViewer.PdfDocument.Load(Path.Combine(Application.persistentDataPath, "Instructions", filename)))
+            {
+                return pngFiles.Length == doc.PageCount;
+            }
+        }
+
+        return false;
     }
 }

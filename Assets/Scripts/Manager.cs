@@ -13,6 +13,7 @@ public class Manager : MonoBehaviour
     [SerializeField] private HintManager hintManager;
     [SerializeField] private AutomaticPlacementManager automaticPlacementManager;
     [SerializeField] private ToolManager toolManager;
+    [SerializeField] private PdfLoader pdfLoader;
 
 
     [SerializeField] private GameObject model;
@@ -126,13 +127,14 @@ public class Manager : MonoBehaviour
     public void OnSelectEnter(SelectEnterEventArgs args)
     {
         interactionManager.OnSelectEnter(args);
+        if (stateManager.CurrentState == State.PlayBack)
+            ValidateComponent(CurrentSelectedComponent);
     }
 
     public void OnSelectExit(SelectExitEventArgs args)
     {
         interactionManager.OnSelectExit(args);
-        if (stateManager.CurrentState == State.PlayBack)
-            ValidateComponent(CurrentSelectedComponent);
+       
     }
 
 
@@ -178,10 +180,12 @@ public class Manager : MonoBehaviour
                 MakeComponentsNonGrabbable();
                 break;
             case State.Record:
+                LoadPDF();
                 InitializeComponentsType();
                 MakeComponentsGrabbable();
                 break;
             case State.PlayBack:
+                LoadPDF();
                 InitializeComponentsType();
                 MakeComponentsGrabbable();
                 interactor = FindObjectOfType<SnapToPosition>();
@@ -195,6 +199,11 @@ public class Manager : MonoBehaviour
             default:
                 break;
         }
+    }
+
+    private void LoadPDF()
+    {
+        pdfLoader.LoadPDF(model.name);
     }
 
     private void MakeComponentsGrabbable()

@@ -5,7 +5,6 @@ public class Screw : Fastener
     private BaseScrewDriver screwdriverScript;
     [SerializeField] protected float pitch = 0.1f;
     private bool isScrewing = false;
-    private bool isFirstError = true;
     protected override void HandleInteraction()
     {
         if (StateManager.Instance.CurrentState == State.PlayBack)
@@ -57,10 +56,6 @@ public class Screw : Fastener
                     StopScrewSound();
                 }
             }
-        }else if (screwdriverScript.gameObject.name != CorrectToolName && isFirstError)
-        {
-            Manager.Instance.IncrementCurrentError();
-            isFirstError = false;
         }
     }
 
@@ -106,15 +101,12 @@ public class Screw : Fastener
     protected override void OnToolCollisionEnter(Collider other)
     {
         screwdriverScript = other.GetComponentInParent<BaseScrewDriver>();
-
     }
 
     protected override void OnToolCollisionExit(Collider other)
     {
         screwdriverScript = null;
         StopScrewSound(); // Stop sound when screwdriver leaves
-        isFirstError = true;
-
     }
 
     private void StopScrewSound()

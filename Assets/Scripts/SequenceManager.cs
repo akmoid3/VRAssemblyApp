@@ -90,7 +90,7 @@ public class SequenceManager : MonoBehaviour
         }
 
         ComponentData expectedComponent = assemblySequence[currentStep];
-        if (component.name != expectedComponent.componentName)
+        if (component.name != expectedComponent.componentName && component.GetComponent<ComponentObject>().GetGroup() != expectedComponent.group)
         {
             IncrementCurrentError();
         }
