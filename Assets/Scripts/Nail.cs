@@ -18,7 +18,7 @@ public class Nail : Fastener
 
         if (StateManager.Instance.CurrentState == State.PlayBack)
         {
-            if (socketTransform != null)
+            if (socketTransform != null && hammerScript != null)
                 HandleSocketTransformInteraction();
         }
         else if (hammerScript != null && isAligned)
