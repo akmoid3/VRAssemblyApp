@@ -66,7 +66,7 @@ public class AutomaticPlacementManager : MonoBehaviour
         StartCoroutine(PlaceAllComponentsGraduallyCoroutine(delayBetweenComponents, interactorClone, assemblySequence, components, toolManager));
     }
 
-    private IEnumerator PlaceAllComponentsGraduallyCoroutine(float delayBetweenComponents, GameObject interactorClone, List<ComponentData> assemblySequence, List<Transform> components, ToolManager toolManager)
+    public IEnumerator PlaceAllComponentsGraduallyCoroutine(float delayBetweenComponents, GameObject interactorClone, List<ComponentData> assemblySequence, List<Transform> components, ToolManager toolManager)
     {
         if (assemblySequence == null || assemblySequence.Count == 0)
             yield break;

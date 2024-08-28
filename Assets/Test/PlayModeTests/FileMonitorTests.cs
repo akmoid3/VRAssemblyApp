@@ -56,6 +56,30 @@ public class FileMonitorTests
 
     }
 
+    [Test]
+    public void EnsureModelDirectoryExists_ShouldCreateDirectory_WhenDirectoryDoesNotExist()
+    {
+        // Arrange
+        string testDirectoryPath = Path.Combine(Application.persistentDataPath, "TestEnsureDirectory");
+        fileMonitor.PersistentDataPath = testDirectoryPath;
+
+        // Ensure the directory does not exist
+        if (Directory.Exists(testDirectoryPath))
+        {
+            Directory.Delete(testDirectoryPath, true);
+        }
+
+        // Use reflection to access the private method
+        var methodInfo = typeof(FileMonitor).GetMethod("EnsureModelDirectoryExists", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+
+        // Act
+        methodInfo.Invoke(fileMonitor, null);
+
+        // Assert
+        Assert.IsTrue(Directory.Exists(testDirectoryPath), "Directory was not created as expected.");
+    }
+
+
     [TearDown]
     public void TearDown()
     {

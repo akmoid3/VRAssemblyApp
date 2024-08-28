@@ -5,10 +5,12 @@ using UnityEngine.InputSystem;
 public class ConveyerLights : MonoBehaviour
 {
     [SerializeField] private Material materialRed;
-    [SerializeField] private Material materialGreen;
+    [SerializeField] private Material materialRed2;
     [SerializeField] private float blinkInterval = 0.3f;
 
     private Coroutine blinkCoroutine;
+
+    public float BlinkInterval { get => blinkInterval; set => blinkInterval = value; }
 
     public void OnToggleLightsStarted()
     {
@@ -25,7 +27,7 @@ public class ConveyerLights : MonoBehaviour
             StopCoroutine(blinkCoroutine);
             blinkCoroutine = null;
             TurnOffEmission(materialRed);
-            TurnOffEmission(materialGreen);
+            TurnOffEmission(materialRed2);
         }
     }
 
@@ -37,10 +39,10 @@ public class ConveyerLights : MonoBehaviour
             yield return new WaitForSeconds(blinkInterval);
 
             ToggleEmission(materialRed, false);
-            ToggleEmission(materialGreen, true);
+            ToggleEmission(materialRed2, true);
 
             yield return new WaitForSeconds(blinkInterval);
-            ToggleEmission(materialGreen, false);
+            ToggleEmission(materialRed2, false);
         }
     }
 

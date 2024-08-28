@@ -37,8 +37,15 @@ public class ComponentPositioner : MonoBehaviour
 
     public bool ButtonRightPressed { get => buttonRightPressed; set => buttonRightPressed = value; }
     public bool ButtonLeftPressed { get => buttonLeftPressed; set => buttonLeftPressed = value; }
+    public GameObject Parent { get => parent; set => parent = value; }
+    public GameObject TableRoll { get => tableRoll; set => tableRoll = value; }
+    public AudioSource AudioSource { get => audioSource; set => audioSource = value; }
+    public AudioClip StartScrollClip { get => startScrollClip; set => startScrollClip = value; }
+    public AudioClip LoopScrollClip { get => loopScrollClip; set => loopScrollClip = value; }
+    public float ScrollSpeed { get => scrollSpeed; set => scrollSpeed = value; }
+    public bool IsScrolling { get => isScrolling; set => isScrolling = value; }
 
-    void Start()
+    public void Start()
     {
         tableRenderer = tableRoll.GetComponent<MeshRenderer>();
         tableBounds = tableRenderer.bounds;
@@ -57,7 +64,7 @@ public class ComponentPositioner : MonoBehaviour
         }
     }
 
-    void Update()
+    public void Update()
     {
         if (buttonLeftPressed) 
         {
@@ -154,7 +161,7 @@ public class ComponentPositioner : MonoBehaviour
         }
     }
 
-    private void ScrollLeft()
+    public void ScrollLeft()
     {
         Transform rightmostChild = null;
         float rightmostX = float.MinValue;
@@ -216,7 +223,7 @@ public class ComponentPositioner : MonoBehaviour
         }
     }
 
-    private void ScrollRight()
+    public void ScrollRight()
     {
         Transform leftmostChild = null;
         float leftmostX = float.MaxValue;
@@ -278,7 +285,7 @@ public class ComponentPositioner : MonoBehaviour
         }
     }
 
-    private void StartScrolling()
+    public void StartScrolling()
     {
         if (audioSource != null && !audioSource.isPlaying)
         {
@@ -292,7 +299,7 @@ public class ComponentPositioner : MonoBehaviour
         isScrolling = true;
     }
 
-    private void StopScrolling()
+    public void StopScrolling()
     {
         if (audioSource != null)
         {
@@ -301,7 +308,7 @@ public class ComponentPositioner : MonoBehaviour
         isScrolling = false;
     }
 
-    private void StartLoopingSound()
+    public void StartLoopingSound()
     {
         if (isScrolling && audioSource != null)
         {

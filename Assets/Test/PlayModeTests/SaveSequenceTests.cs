@@ -49,12 +49,21 @@ public class SaveSequenceTests
         return Regex.Replace(json, @"\s+", "");
     }
 
+    private ComponentObject CreateComponentObject(GameObject component, ComponentObject.Group group, ComponentObject.ComponentType type)
+    {
+        ComponentObject componentObject = component.AddComponent<ComponentObject>();
+        componentObject.SetGroup(group);
+        componentObject.SetComponentType(type);
+        return componentObject;
+    }
+
     [UnityTest]
     public IEnumerator SaveComponent_CreatesExpectedJsonFile()
     {
         GameObject component = new GameObject("Component1");
-        saveSequence.SaveComponent(component);
+        CreateComponentObject(component, ComponentObject.Group.None, ComponentObject.ComponentType.None);
 
+        saveSequence.SaveComponent(component);
         saveSequence.SaveSequenceToJSON("test_sequence");
 
         // Wait a frame to ensure file writing is complete
@@ -80,7 +89,9 @@ public class SaveSequenceTests
                             ""z"": 0.0,
                             ""w"": 1.0
                         },
-                        ""toolName"": ""null""
+                        ""toolName"": ""null"",
+                        ""group"": 0,
+                        ""type"": 0
                     }
                 ]
             }";
@@ -94,6 +105,8 @@ public class SaveSequenceTests
     {
         // Create and save the initial component
         GameObject component = new GameObject("Component1");
+        CreateComponentObject(component, ComponentObject.Group.None, ComponentObject.ComponentType.None);
+
         saveSequence.SaveComponent(component);
 
         // Modify the component's transform and rotation
@@ -114,35 +127,38 @@ public class SaveSequenceTests
 
         // Define the expected JSON structure with precise values
         string expectedJson = @"
-    {
-        ""components"": [
-            {
-                ""componentName"": ""Component1"",
-                ""position"": {
-                    ""x"": 1.0,
-                    ""y"": 2.0,
-                    ""z"": 3.0
-                },
-                ""rotation"": {
-                    ""x"": 0.27059808373451235,
-                    ""y"": 0.6532815098762512,
-                    ""z"": -0.27059808373451235,
-                    ""w"": 0.6532815098762512
-                },
-                ""toolName"": ""null""
-            }
-        ]
-    }";
+        {
+            ""components"": [
+                {
+                    ""componentName"": ""Component1"",
+                    ""position"": {
+                        ""x"": 1.0,
+                        ""y"": 2.0,
+                        ""z"": 3.0
+                    },
+                    ""rotation"": {
+                        ""x"": 0.27059808373451235,
+                        ""y"": 0.6532815098762512,
+                        ""z"": -0.27059808373451235,
+                        ""w"": 0.6532815098762512
+                    },
+                    ""toolName"": ""null"",
+                    ""group"": 0,
+                    ""type"": 0
+                }
+            ]
+        }";
 
         // Normalize and compare JSON
         Assert.AreEqual(NormalizeJson(expectedJson), NormalizeJson(json), "The JSON file does not match the expected structure after modification.");
     }
 
-
     [UnityTest]
     public IEnumerator RemoveComponent_ResultsInEmptyJsonFile()
     {
         GameObject component = new GameObject("Component1");
+        CreateComponentObject(component, ComponentObject.Group.None, ComponentObject.ComponentType.None);
+
         saveSequence.SaveComponent(component);
         saveSequence.RemoveComponent(component);
 
@@ -164,45 +180,36 @@ public class SaveSequenceTests
         Assert.AreEqual(NormalizeJson(expectedJson), NormalizeJson(json), "The JSON file should be empty after removing the component.");
     }
 
-    [UnityTest]
-    public IEnumerator SaveSequenceToJson_CreatesExpectedFile()
+    [Test]
+    public void ObjectDataProperty_GetsAndSetsCorrectly()
     {
-        GameObject component = new GameObject("Component1");
-        saveSequence.SaveComponent(component);
+        // Arrange
+        var newObjectData = new ObjectData();
+        newObjectData.components.Add(new ComponentData
+        {
+            componentName = "TestComponent",
+            position = new Vector3(1, 2, 3),
+            rotation = Quaternion.Euler(45, 90, 0),
+            toolName = "TestTool",
+            group = ComponentObject.Group.None,
+            type = ComponentObject.ComponentType.None
+        });
 
-        saveSequence.SaveSequenceToJSON("test_sequence");
+        // Act
+        saveSequence.ObjectData = newObjectData;
 
-        // Wait a frame to ensure file writing is complete
-        yield return null;
-
-        Assert.IsTrue(File.Exists(testFilePath), "The JSON file should be created");
-
-        // Read JSON from the file
-        string json = File.ReadAllText(testFilePath);
-
-        // Expected JSON structure
-        string expectedJson =
-            @"{
-                ""components"": [
-                    {
-                        ""componentName"": ""Component1"",
-                        ""position"": {
-                            ""x"": 0.0,
-                            ""y"": 0.0,
-                            ""z"": 0.0
-                        },
-                        ""rotation"": {
-                            ""x"": 0.0,
-                            ""y"": 0.0,
-                            ""z"": 0.0,
-                            ""w"": 1.0
-                        },
-                        ""toolName"": ""null""
-                    }
-                ]
-            }";
-
-        // Normalize and compare JSON
-        Assert.AreEqual(NormalizeJson(expectedJson), NormalizeJson(json), "The JSON file does not match the expected structure.");
+        // Assert
+        Assert.AreEqual(newObjectData, saveSequence.ObjectData, "The ObjectData property did not correctly set or get the expected value.");
     }
+
+    [Test]
+    public void StartMethod_InitializesDirectoryPathCorrectly()
+    {
+        // Act
+        saveSequence.Invoke("Start", 0f);
+
+        // Assert
+        Assert.IsTrue(Directory.Exists(testDirectoryPath), "The directory path was not correctly initialized or created by the Start method.");
+    }
+
 }

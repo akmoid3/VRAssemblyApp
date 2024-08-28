@@ -2160,7 +2160,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &138717112
 RectTransform:
   m_ObjectHideFlags: 0
@@ -8579,8 +8579,7 @@ MonoBehaviour:
     type: 3}
   drillPrefab: {fileID: 86421255856367454, guid: 9677d64c5f5269a49abac2f52e4f47d8,
     type: 3}
-  screwDriver: {fileID: 6488919234988220715, guid: 81f5c1056126e254a9bab4cfa8da3762,
-    type: 3}
+  screwDriverPrefab: {fileID: 1986671232}
 --- !u!4 &714736365
 Transform:
   m_ObjectHideFlags: 0
@@ -17918,50 +17917,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_ShowMaskGraphic: 0
---- !u!1 &1228203432
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1228203434}
-  - component: {fileID: 1228203433}
-  m_Layer: 0
-  m_Name: AppQuitManager
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 2147483647
-  m_IsActive: 1
---- !u!114 &1228203433
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1228203432}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 13579bc20efb7b345a079fbc82b99a1c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
---- !u!4 &1228203434
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1228203432}
-  serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -3.6926653, y: 2.053434, z: 5.687333}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1233848406
 GameObject:
   m_ObjectHideFlags: 0
@@ -23434,7 +23389,7 @@ PrefabInstance:
     - target: {fileID: 8823536370023880547, guid: 44b07e58bad7cc247bfeea88b72c810d,
         type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0.69
+      value: 0.94
       objectReference: {fileID: 0}
     - target: {fileID: 8823536370023880547, guid: 44b07e58bad7cc247bfeea88b72c810d,
         type: 3}
@@ -26116,9 +26071,9 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1228203433}
-        m_TargetAssemblyTypeName: ApplicationQuitManager, Assembly-CSharp
-        m_MethodName: QuitApplication
+      - m_Target: {fileID: 658687901}
+        m_TargetAssemblyTypeName: Manager, Scripts
+        m_MethodName: CloseApp
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -26166,6 +26121,12 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1975941036}
   m_CullTransparentMesh: 1
+--- !u!1 &1986671232 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 6488919234988220715, guid: 81f5c1056126e254a9bab4cfa8da3762,
+    type: 3}
+  m_PrefabInstance: {fileID: 7502737078278008821}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &2028260376
 GameObject:
   m_ObjectHideFlags: 0
@@ -27137,7 +27098,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   materialRed: {fileID: 2100000, guid: a00146eabc528c14ab6f92213d90c7e4, type: 2}
-  materialGreen: {fileID: 2100000, guid: 223b5f277eaa43b4fb30b2fff07424fd, type: 2}
+  materialRed2: {fileID: 2100000, guid: 223b5f277eaa43b4fb30b2fff07424fd, type: 2}
   blinkInterval: 0.5
 --- !u!4 &2079107212 stripped
 Transform:
@@ -28772,7 +28733,7 @@ PrefabInstance:
     - target: {fileID: 8823536370023880547, guid: 44b07e58bad7cc247bfeea88b72c810d,
         type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0.69
+      value: 0.94
       objectReference: {fileID: 0}
     - target: {fileID: 8823536370023880547, guid: 44b07e58bad7cc247bfeea88b72c810d,
         type: 3}
@@ -29978,7 +29939,6 @@ SceneRoots:
   - {fileID: 897201299}
   - {fileID: 1917727892}
   - {fileID: 714736365}
-  - {fileID: 1228203434}
   - {fileID: 468182687}
   - {fileID: 1149898054}
   - {fileID: 1270638855}

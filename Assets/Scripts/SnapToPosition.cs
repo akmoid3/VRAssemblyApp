@@ -15,12 +15,15 @@ public class SnapPoint
 
 public class SnapToPosition : MonoBehaviour
 {
-    public float snapDistance = 0.1f;
-    public float snapAngle = 5f;
+    private float snapDistance = 0.1f;
+    private float snapAngle = 5f;
     private List<SnapPoint> snapPoints;
     private HashSet<GameObject> snappedObjects = new HashSet<GameObject>(); // Track snapped objects
     public static event Action OnComponentPlaced;
     private XRInteractionManager interactionManager;
+
+    public float SnapDistance { get => snapDistance; set => snapDistance = value; }
+    public float SnapAngle { get => snapAngle; set => snapAngle = value; }
 
     private void Awake()
     {

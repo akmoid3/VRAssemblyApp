@@ -66,7 +66,7 @@ public class ElectricScrewDriver : BaseScrewDriver
         if (firstInteractorSelecting is XRBaseControllerInteractor interactor)
         {
             InteractionState activateState = interactor.xrController.activateInteractionState;
-            currentRotationSpeed = activateState.value * speedMultiplier;
+            currentRotationSpeed = activateState.value * SpeedMultiplier;
             screwDriver.Rotate(Vector3.forward * currentRotationSpeed * Time.deltaTime * -1.0f);
         }
     }

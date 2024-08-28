@@ -5,18 +5,23 @@ public class ToolManager : MonoBehaviour
 {
     [SerializeField] private GameObject hammerPrefab;
     [SerializeField] private GameObject drillPrefab;
-    [SerializeField] private GameObject screwDriver;
+    [SerializeField] private GameObject screwDriverPrefab;
 
     private Dictionary<string, GameObject> toolPrefabs;
     private Dictionary<GameObject, GameObject> toolInstances = new Dictionary<GameObject, GameObject>();
 
-    private void Awake()
+    public GameObject HammerPrefab { get => hammerPrefab; set => hammerPrefab = value; }
+    public GameObject DrillPrefab { get => drillPrefab; set => drillPrefab = value; }
+    public GameObject ScrewDriverPrefab { get => screwDriverPrefab; set => screwDriverPrefab = value; }
+    public Dictionary<GameObject, GameObject> ToolInstances { get => toolInstances; set => toolInstances = value; }
+
+    public void Start()
     {
         toolPrefabs = new Dictionary<string, GameObject>
         {
             { hammerPrefab.name, hammerPrefab },
             { drillPrefab.name, drillPrefab },
-            { screwDriver.name, screwDriver }
+            { screwDriverPrefab.name, screwDriverPrefab }
 
         };
     }

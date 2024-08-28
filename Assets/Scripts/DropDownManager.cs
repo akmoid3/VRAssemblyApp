@@ -28,7 +28,14 @@ public class DropDownManager : MonoBehaviour
 
     private void OnDropdownValueChanged(int index)
     {
+        if (index < 0 || index >= dropdown.options.Count)
+        {
+            Debug.LogError("Dropdown index out of range: " + index);
+            return;
+        }
+
         string selectedModelName = dropdown.options[index].text;
         prefabManager.ShowModel(selectedModelName);
     }
+
 }

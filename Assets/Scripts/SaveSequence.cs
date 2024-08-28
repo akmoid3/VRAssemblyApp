@@ -28,6 +28,9 @@ public class SaveSequence : MonoBehaviour
 
     private string folderName = "SavedBuildData";
     private string directoryPath;
+
+    public ObjectData ObjectData { get => objectData; set => objectData = value; }
+
     private void Start()
     {
         directoryPath = Path.Combine(Application.persistentDataPath, folderName);

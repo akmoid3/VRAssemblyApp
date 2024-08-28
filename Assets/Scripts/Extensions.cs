@@ -1,10 +1,11 @@
+using System;
 using System.Reflection;
+using UnityEngine;
 
 public static class Extensions
 {
     public static void CopyPropertiesAndFields(this object source, object destination)
     {
-        // Copy all properties
         var properties = source.GetType().GetProperties(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
         foreach (var property in properties)
         {
@@ -14,14 +15,13 @@ public static class Extensions
                 {
                     property.SetValue(destination, property.GetValue(source));
                 }
-                catch
+                catch (Exception ex)
                 {
-                    // Ignore properties that cannot be copied
+                    Debug.LogWarning($"Failed to copy property '{property.Name}': {ex.Message}");
                 }
             }
         }
 
-        // Copy all fields
         var fields = source.GetType().GetFields(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
         foreach (var field in fields)
         {
@@ -29,9 +29,9 @@ public static class Extensions
             {
                 field.SetValue(destination, field.GetValue(source));
             }
-            catch
+            catch (Exception ex)
             {
-                // Ignore fields that cannot be copied
+                Debug.LogWarning($"Failed to copy field '{field.Name}': {ex.Message}");
             }
         }
     }

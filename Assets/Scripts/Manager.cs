@@ -72,7 +72,7 @@ public class Manager : MonoBehaviour
     {
         if (stateManager.CurrentState == State.PlayBack)
         {
-            hintManager.HighlightComponentToPlace(AssemblySequence, CurrentStep,components);
+            hintManager.HighlightComponentToPlace(AssemblySequence, CurrentStep, components);
 
             ComponentData componentData = AssemblySequence[CurrentStep];
             if (componentData != null)
@@ -134,7 +134,7 @@ public class Manager : MonoBehaviour
     public void OnSelectExit(SelectExitEventArgs args)
     {
         interactionManager.OnSelectExit(args);
-       
+
     }
 
 
@@ -150,17 +150,20 @@ public class Manager : MonoBehaviour
 
     public void InitializeSequence(List<ComponentData> sequence)
     {
-        sequenceManager.InitializeSequence(sequence);
+        if (sequenceManager != null)
+            sequenceManager.InitializeSequence(sequence);
     }
 
     public void SaveBuildingSequence()
     {
-        sequenceManager.SaveBuildingSequence(CurrentSelectedComponent, model.name);
+        if (sequenceManager != null)
+            sequenceManager.SaveBuildingSequence(CurrentSelectedComponent, model.name);
     }
 
     public void ModifyBuildingSequence()
     {
-        sequenceManager.ModifyBuildingSequence(CurrentSelectedComponent, model.name);
+        if (sequenceManager != null)
+            sequenceManager.ModifyBuildingSequence(CurrentSelectedComponent, model.name);
     }
 
     public void RemoveComponentFromSequence()
@@ -289,7 +292,7 @@ public class Manager : MonoBehaviour
                     Debug.LogWarning($"ComponentObject not found on source component: {component.name}");
                 }
             }
-         
+
         }
     }
 
@@ -309,13 +312,13 @@ public class Manager : MonoBehaviour
 
     private void PlaceInitialComponent()
     {
-        automaticPlacementManager.PlaceInitialComponent(AssemblySequence,components,interactor);
+        automaticPlacementManager.PlaceInitialComponent(AssemblySequence, components, interactor);
     }
 
 
     public void PlaceAllComponentsGradually(float delayBetweenComponents)
     {
-        automaticPlacementManager.PlaceAllComponentsGradually(delayBetweenComponents,interactor,AssemblySequence,components,toolManager);
+        automaticPlacementManager.PlaceAllComponentsGradually(delayBetweenComponents, interactor, AssemblySequence, components, toolManager);
     }
 
     private void RemoveAllComponentsExceptTransform(GameObject gameObject)
@@ -336,6 +339,12 @@ public class Manager : MonoBehaviour
     public void ShowHint()
     {
         hintManager.ShowHint(AssemblySequence, CurrentStep, components, interactor);
+    }
+
+    public void CloseApp()
+    {
+        ApplicationQuit applicationQuit = new ApplicationQuit();
+        applicationQuit.QuitApplication();
     }
 }
 
