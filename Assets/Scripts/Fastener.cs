@@ -15,7 +15,7 @@ public abstract class Fastener : MonoBehaviour
 
     [SerializeField] protected Transform socketTransform;
     protected Vector3 initialSocketPosition;
-    protected GameObject tool;
+    private GameObject tool;
     protected Renderer fastenerRenderer;
     protected Color alignedColor = Color.green;
     protected Color notAlignedColor = Color.red;
@@ -39,6 +39,7 @@ public abstract class Fastener : MonoBehaviour
     public bool IsStopped { get => isStopped; set => isStopped = value; }
     public bool CanStop { get => canStop; set => canStop = value; }
     public string CorrectToolName { get => correctToolName; set => correctToolName = value; }
+    public GameObject Tool { get => tool; set => tool = value; }
 
     public GameObject getTool()
     {

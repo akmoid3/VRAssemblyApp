@@ -124,26 +124,26 @@ public class Manager : MonoBehaviour
     }
 
 
-    public void OnSelectEnter(SelectEnterEventArgs args)
+    public virtual void OnSelectEnter(SelectEnterEventArgs args)
     {
         interactionManager.OnSelectEnter(args);
         if (stateManager.CurrentState == State.PlayBack)
             ValidateComponent(CurrentSelectedComponent);
     }
 
-    public void OnSelectExit(SelectExitEventArgs args)
+    public virtual void OnSelectExit(SelectExitEventArgs args)
     {
         interactionManager.OnSelectExit(args);
 
     }
 
 
-    public void OnHoverEnter(HoverEnterEventArgs args)
+    public virtual void OnHoverEnter(HoverEnterEventArgs args)
     {
         interactionManager.OnHoverEnter(args);
     }
 
-    public void OnHoverExit(HoverExitEventArgs args)
+    public virtual void OnHoverExit(HoverExitEventArgs args)
     {
         interactionManager.OnHoverExit(args);
     }

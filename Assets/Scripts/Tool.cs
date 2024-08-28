@@ -4,6 +4,10 @@ public abstract class Tool : XRGrabInteractable
 {
     protected Manager manager = Manager.Instance;
 
+    public void SetManager(Manager customManager)
+    {
+        manager = customManager;
+    }
     protected override void OnHoverEntered(HoverEnterEventArgs args)
     {
         base.OnHoverEntered(args);

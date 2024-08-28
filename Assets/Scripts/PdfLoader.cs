@@ -21,6 +21,8 @@ public class PdfLoader : MonoBehaviour
     private int currentPageIndex = 0;
     private RawImage pageImage;
 
+    public List<Texture2D> Pages { get => pages; set => pages = value; }
+
     // Start is called before the first frame update
     void Start()
     {
@@ -138,7 +140,8 @@ public class PdfLoader : MonoBehaviour
             return;
         }
 
-        pageImage.texture = pages[pageIndex];
+        if (pageImage)
+            pageImage.texture = pages[pageIndex];
     }
 
     private void NextPage()
@@ -159,7 +162,7 @@ public class PdfLoader : MonoBehaviour
         }
     }
 
-    private bool IsPdfAlreadyConverted(string outputDir,string filename)
+    private bool IsPdfAlreadyConverted(string outputDir, string filename)
     {
         if (Directory.Exists(outputDir))
         {

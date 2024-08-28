@@ -21,12 +21,12 @@ public class InitializedDataManager : MonoBehaviour
     [SerializeField] InitializeComponentManager initializeComponentManager;
     [SerializeField] List<Transform> components;
     [SerializeField] ComponentPositioner componentPositioner;
+    private string directory = "InitializedModels";
 
     private string directoryPath;
-    //[SerializeField] private List<ComponentTypeData> components = new List<ComponentTypeData>();
     void Start()
     {
-        directoryPath = Path.Combine(Application.persistentDataPath, "InitializedModels");
+        directoryPath = Path.Combine(Application.persistentDataPath, directory);
         if(!Directory.Exists(directoryPath))
         {
             Directory.CreateDirectory(directoryPath);

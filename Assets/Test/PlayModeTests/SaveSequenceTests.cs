@@ -12,10 +12,12 @@ public class SaveSequenceTests
     private SaveSequence saveSequence;
     private string testDirectoryPath;
     private string testFilePath;
-
+    private StateManager stateManager;
     [SetUp]
     public void SetUp()
     {
+        stateManager = new GameObject().AddComponent<StateManager>();
+
         gameObject = new GameObject();
         saveSequence = gameObject.AddComponent<SaveSequence>();
 
@@ -41,6 +43,8 @@ public class SaveSequenceTests
             File.Delete(testFilePath);
         }
         GameObject.DestroyImmediate(gameObject);
+        GameObject.DestroyImmediate(stateManager.gameObject);
+
     }
 
     private string NormalizeJson(string json)
@@ -211,5 +215,137 @@ public class SaveSequenceTests
         // Assert
         Assert.IsTrue(Directory.Exists(testDirectoryPath), "The directory path was not correctly initialized or created by the Start method.");
     }
+
+    [UnityTest]
+    public IEnumerator SaveComponent_SetsToolNameWhenFastenerAndToolArePresent()
+    {
+        // Arrange
+        GameObject component = new GameObject("ComponentWithFastener");
+
+        // Aggiungi un Renderer al GameObject se necessario
+        component.AddComponent<MeshRenderer>();
+        component.AddComponent<ComponentObject>();
+
+
+        // Aggiungi il componente Fastener
+        Fastener fastener = component.AddComponent<Screw>();
+
+        // Crea un oggetto Tool e assegnalo al Fastener
+        GameObject tool = new GameObject("Screwdriver");
+        fastener.CorrectToolName = (tool.name);
+
+        // Verifica che il tool sia stato correttamente impostato
+        Assert.AreEqual(tool.name, fastener.CorrectToolName, "Il tool non è stato impostato correttamente nel Fastener.");
+
+        CreateComponentObject(component, ComponentObject.Group.None, ComponentObject.ComponentType.None);
+
+        fastener.Tool = tool;
+
+        Assert.AreEqual(tool, fastener.Tool, "Il tool non è stato impostato correttamente nel Fastener.");
+
+        // Act
+        saveSequence.SaveComponent(component);
+        saveSequence.SaveSequenceToJSON("test_sequence");
+
+        // Wait a frame to ensure file writing is complete
+        yield return null;
+
+        // Read JSON from the file
+        string json = File.ReadAllText(testFilePath);
+
+        // Expected JSON structure
+        string expectedJson =
+            @"{
+            ""components"": [
+                {
+                    ""componentName"": ""ComponentWithFastener"",
+                    ""position"": {
+                        ""x"": 0.0,
+                        ""y"": 0.0,
+                        ""z"": 0.0
+                    },
+                    ""rotation"": {
+                        ""x"": 0.0,
+                        ""y"": 0.0,
+                        ""z"": 0.0,
+                        ""w"": 1.0
+                    },
+                    ""toolName"": ""Screwdriver"",
+                    ""group"": 0,
+                    ""type"": 0
+                }
+            ]
+        }";
+
+        // Normalize and compare JSON
+        Assert.AreEqual(NormalizeJson(expectedJson), NormalizeJson(json), "The JSON file does not match the expected structure when Fastener and Tool are present.");
+    }
+
+
+    [UnityTest]
+    public IEnumerator SaveComponent_DoesNotSetToolNameWhenToolIsNull()
+    {
+        // Arrange
+        GameObject component = new GameObject("ComponentWithFastenerButNoTool");
+        Fastener fastener = component.AddComponent<Fastener>();
+
+        // Non impostare alcun tool per il Fastener
+        CreateComponentObject(component, ComponentObject.Group.None, ComponentObject.ComponentType.None);
+
+        // Act
+        saveSequence.SaveComponent(component);
+        saveSequence.SaveSequenceToJSON("test_sequence");
+
+        // Wait a frame to ensure file writing is complete
+        yield return null;
+
+        // Read JSON from the file
+        string json = File.ReadAllText(testFilePath);
+
+        // Expected JSON structure
+        string expectedJson =
+            @"{
+            ""components"": [
+                {
+                    ""componentName"": ""ComponentWithFastenerButNoTool"",
+                    ""position"": {
+                        ""x"": 0.0,
+                        ""y"": 0.0,
+                        ""z"": 0.0
+                    },
+                    ""rotation"": {
+                        ""x"": 0.0,
+                        ""y"": 0.0,
+                        ""z"": 0.0,
+                        ""w"": 1.0
+                    },
+                    ""toolName"": ""null"",
+                    ""group"": 0,
+                    ""type"": 0
+                }
+            ]
+        }";
+
+        // Normalize and compare JSON
+        Assert.AreEqual(NormalizeJson(expectedJson), NormalizeJson(json), "The JSON file should not include a tool name when Tool is null.");
+    }
+
+    [UnityTest]
+    public IEnumerator Start_CreatesDirectoryIfNotExists()
+    {
+        // Arrange
+        if (Directory.Exists(testDirectoryPath))
+        {
+            Directory.Delete(testDirectoryPath, true);
+        }
+
+        // Act
+        saveSequence.Invoke("Start", 0f);
+
+        yield return null;
+        // Assert
+        Assert.IsTrue(Directory.Exists(testDirectoryPath), "The directory should be created if it does not exist.");
+    }
+
 
 }
