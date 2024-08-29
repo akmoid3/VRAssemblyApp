@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
+using Moq;
 using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.TestTools;
@@ -12,6 +13,8 @@ public class FileBrowserTests
     private GameObject fileBrowserCanvas;
     private string testDirectory;
     private string testFilePath;
+    private Manager mockManager;
+    private StateManager stateManager;
 
     [SetUp]
     public void SetUp()
@@ -31,11 +34,20 @@ public class FileBrowserTests
 
         testFilePath = Path.Combine(Application.persistentDataPath, "test.glb");
         File.WriteAllText(testFilePath, "test content");
+
+        // Set up a mock for Manager.Instance.Model.name
+        mockManager = new GameObject().AddComponent<Manager>();
+        mockManager.Model = new GameObject("modello");
+
+        stateManager = new GameObject().AddComponent<StateManager>();
     }
 
     [TearDown]
     public void TearDown()
     {
+        Object.DestroyImmediate(mockManager);
+        Object.DestroyImmediate(stateManager);
+
         if (File.Exists(testFilePath))
         {
             File.Delete(testFilePath);
@@ -50,56 +62,112 @@ public class FileBrowserTests
         }
     }
 
-    [UnityTest]
-    public IEnumerator Start_FileBrowserCanvasIsHidden()
+    [Test]
+    public void Start_FileBrowserCanvasIsHidden()
     {
         MethodInfo startMethod = fileBrowserManager.GetType().GetMethod("Start", BindingFlags.NonPublic | BindingFlags.Instance);
         startMethod.Invoke(fileBrowserManager, null);
 
-        yield return null;
 
         Assert.IsFalse(fileBrowserCanvas.activeSelf, "File browser canvas should be hidden at start.");
     }
 
-    [UnityTest]
-    public IEnumerator ShowDialog_FileSelection_CopiesFileToModelsDirectory()
+    [Test]
+    public void ShowDialog_FileSelection_CopiesFileToModelsDirectory()
     {
+        // Manually invoke Start to initialize the file browser manager
         MethodInfo startMethod = fileBrowserManager.GetType().GetMethod("Start", BindingFlags.NonPublic | BindingFlags.Instance);
         startMethod.Invoke(fileBrowserManager, null);
 
-        fileBrowserManager.ShowDialog("Models",".glb");
+        // Simulate showing the dialog
+        string directoryName = "Models";
+        fileBrowserManager.ShowDialog(directoryName, ".glb");
 
-
+        // Simulate file selection
         string[] filePaths = new string[] { testFilePath };
         string destinationPath = Path.Combine(testDirectory, "test.glb");
 
-        yield return new WaitForSeconds(1f);
-        MethodInfo onFilesSelectedMethod = fileBrowserManager.GetType().GetMethod("OnFilesSelected", BindingFlags.NonPublic | BindingFlags.Instance);
-        onFilesSelectedMethod.Invoke(fileBrowserManager, new object[] { filePaths });
 
+        // Invoke OnFilesSelected using reflection, passing the correct parameters
+        MethodInfo onFilesSelectedMethod = fileBrowserManager.GetType().GetMethod("OnFilesSelected", BindingFlags.NonPublic | BindingFlags.Instance);
+        Assert.IsNotNull(onFilesSelectedMethod, "OnFilesSelected method not found.");
+        onFilesSelectedMethod.Invoke(fileBrowserManager, new object[] { filePaths, directoryName });
+
+        // Validate that the file was copied
         Assert.IsTrue(fileBrowserCanvas.activeSelf, "File browser canvas should be active after ShowDialog method.");
         Assert.IsTrue(File.Exists(destinationPath), "File should be copied to the Models directory.");
         Assert.AreEqual(File.ReadAllText(testFilePath), File.ReadAllText(destinationPath), "File contents should match.");
     }
 
-    [UnityTest]
-    public IEnumerator OnFilesSelected_DirectoryCreation()
+
+    [Test]
+    public void OnFilesSelected_DirectoryCreation()
     {
-        string directoryPath = Path.Combine(Application.persistentDataPath, "NewModels");
+        string directoryName = "NewModels";
+        string directoryPath = Path.Combine(Application.persistentDataPath, directoryName);
+
+        // Ensure the directory does not exist before the test
         if (Directory.Exists(directoryPath))
         {
             Directory.Delete(directoryPath, true);
         }
 
-        FieldInfo directoryNameField = fileBrowserManager.GetType().GetField("directoryName", BindingFlags.NonPublic | BindingFlags.Instance);
-        directoryNameField.SetValue(fileBrowserManager, "NewModels");
+        // Manually invoke ShowDialog to simulate the user opening the dialog
+        fileBrowserManager.ShowDialog(directoryName, ".glb");
 
+        // Simulate file selection
+        string[] filePaths = new string[] { testFilePath };
         MethodInfo onFilesSelectedMethod = fileBrowserManager.GetType().GetMethod("OnFilesSelected", BindingFlags.NonPublic | BindingFlags.Instance);
-        onFilesSelectedMethod.Invoke(fileBrowserManager, new object[] { new string[] { testFilePath } });
+        Assert.IsNotNull(onFilesSelectedMethod, "OnFilesSelected method not found.");
+        onFilesSelectedMethod.Invoke(fileBrowserManager, new object[] { filePaths, directoryName });
 
-        yield return null;
 
-        string modelsDirectory = Path.Combine(Application.persistentDataPath, "NewModels");
-        Assert.IsTrue(Directory.Exists(modelsDirectory), "Models directory should be created.");
+        // Verify that the directory was created
+        Assert.IsTrue(Directory.Exists(directoryPath), "Models directory should be created.");
     }
+
+    [Test]
+    public void OnFilesSelected_CopiesAndRenamesPdfFile()
+    {
+        // Arrange
+        string directoryName = "PDFTest";
+        string pdfFileName = "test.pdf";
+        string pdfFilePath = Path.Combine(Application.persistentDataPath, pdfFileName);
+
+
+        // Make sure the destination directory does not exist before the test
+        string directoryPath = Path.Combine(Application.persistentDataPath, directoryName);
+        if (Directory.Exists(directoryPath))
+        {
+            Directory.Delete(directoryPath, true);
+        }
+
+
+        // Act
+        string[] filePaths = new string[] { pdfFilePath };
+        MethodInfo onFilesSelectedMethod = fileBrowserManager.GetType().GetMethod("OnFilesSelected", BindingFlags.NonPublic | BindingFlags.Instance);
+        Assert.IsNotNull(onFilesSelectedMethod, "OnFilesSelected method not found.");
+        onFilesSelectedMethod.Invoke(fileBrowserManager, new object[] { filePaths, directoryName });
+
+
+
+        var finalPath = Path.Combine(directoryPath, mockManager.Model.name + ".pdf");
+
+        // Check if the original PDF was copied and renamed correctly
+        Assert.IsTrue(File.Exists(finalPath), "PDF file should be renamed and moved to the Models directory." + finalPath);
+        Assert.AreEqual(File.ReadAllText(pdfFilePath), File.ReadAllText(finalPath), "PDF file contents should match after renaming.");
+
+        
+        if (File.Exists(directoryPath + "modello.pdf"))
+        {
+            File.Delete(directoryPath + "modello.pdf");
+        }
+        if (Directory.Exists(directoryPath))
+        {
+            Directory.Delete(directoryPath, true);
+        }
+
+
+    }
+
 }

@@ -39,7 +39,7 @@ public class SaveSequence : MonoBehaviour
             Directory.CreateDirectory(directoryPath);
         }
     }
-    public void ModifyComponent(GameObject component)
+    public virtual void ModifyComponent(GameObject component)
     {
         // Gets the last data of the component
         ComponentData existingData = objectData.components.FindLast(data => data.componentName == component.name);
@@ -58,7 +58,7 @@ public class SaveSequence : MonoBehaviour
     }
 
     // Method to save components
-    public void SaveComponent(GameObject component)
+    public virtual void SaveComponent(GameObject component)
     {
         string name = "null";
         Fastener fastener = component.GetComponent<Fastener>();
@@ -86,7 +86,7 @@ public class SaveSequence : MonoBehaviour
     }
 
     // Method to remove the last occurrence of component data with a given name
-    public void RemoveComponent(GameObject component)
+    public virtual void RemoveComponent(GameObject component)
     {
         // Find the last occurrence of the component data with the given component name
         int index = objectData.components.FindLastIndex(data => data.componentName == component.name);
@@ -98,7 +98,7 @@ public class SaveSequence : MonoBehaviour
         }
     }
 
-    public void SaveSequenceToJSON(string name)
+    public virtual void SaveSequenceToJSON(string name)
     {
 
         /* DA USARE PER LA BUILD

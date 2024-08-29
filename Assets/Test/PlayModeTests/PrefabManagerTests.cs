@@ -13,11 +13,12 @@ public class PrefabManagerTests
     private Mock<IModelLoader> mockLoader;
     private Mock<IFileMonitor> mockFileMonitor;
     private Manager manager;
-
+    private StateManager stateManager;
 
     [SetUp]
     public void SetUp()
     {
+        stateManager = new GameObject().AddComponent<StateManager>();
         prefabManagerGameObject = new GameObject();
         prefabManager = prefabManagerGameObject.AddComponent<PrefabManager>();
 
@@ -36,6 +37,7 @@ public class PrefabManagerTests
     {
         Object.DestroyImmediate(prefabManagerGameObject);
         Object.DestroyImmediate(manager.gameObject);
+        Object.DestroyImmediate(stateManager.gameObject);
     }
 
     [UnityTest]

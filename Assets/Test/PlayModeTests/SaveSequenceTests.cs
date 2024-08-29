@@ -287,7 +287,9 @@ public class SaveSequenceTests
     {
         // Arrange
         GameObject component = new GameObject("ComponentWithFastenerButNoTool");
-        Fastener fastener = component.AddComponent<Fastener>();
+        Fastener fastener = component.AddComponent<Nail>();
+        component.AddComponent<MeshRenderer>();
+
 
         // Non impostare alcun tool per il Fastener
         CreateComponentObject(component, ComponentObject.Group.None, ComponentObject.ComponentType.None);

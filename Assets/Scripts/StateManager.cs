@@ -6,7 +6,7 @@ using UnityEngine;
 public class StateManager : MonoBehaviour
 {
     public static StateManager Instance { get; private set; }
-    public State CurrentState { get; private set; }
+    public State CurrentState { get; set; }
     public static event Action<State> OnStateChanged;
 
     private void Awake()

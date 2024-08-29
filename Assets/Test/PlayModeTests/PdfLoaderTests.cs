@@ -8,7 +8,6 @@ using System.Collections;
 using UnityEngine.TestTools;
 using System.Drawing;
 
-[TestFixture]
 public class PdfLoaderTests
 {
     private PdfLoader _pdfLoader;
@@ -65,8 +64,8 @@ public class PdfLoaderTests
         Assert.IsFalse(canActivePanel);
     }
 
-    [UnityTest]
-    public IEnumerator LoadPDF_ValidFileFromResources_CanActivePanelIsTrue()
+    [Test]
+    public void LoadPDF_ValidFileFromResources_CanActivePanelIsTrue()
     {
         string pdfFileName = "test.pdf";
         int expectedPageCount = 8;
@@ -75,10 +74,9 @@ public class PdfLoaderTests
         string inputDir = Path.Combine(Application.persistentDataPath, "Instructions", pdfFileName);
 
         Directory.CreateDirectory(outputDir);
-        
+
 
         _pdfLoader.LoadPDF(pdfFileName);
-        yield return null;
         var canActivePanel = (bool)_pdfLoader.GetType().GetField("canActivePanel", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance).GetValue(_pdfLoader);
         Assert.IsTrue(canActivePanel);
 
@@ -132,12 +130,76 @@ public class PdfLoaderTests
         _previousPageButton.onClick.Invoke(); // Simula il click sul pulsante "Next Page"
 
         yield return null;
-
         var currentPageIndex = (int)_pdfLoader.GetType().GetField("currentPageIndex", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance).GetValue(_pdfLoader);
 
         // Assicurati che l'indice della pagina sia aggiornato
         Assert.AreEqual(0, currentPageIndex);
     }
 
-  
+    [Test]
+    public void NextPage_UpdatesCurrentPageIndex_MethodInvoke()
+    {
+        var page1 = new Texture2D(2, 2);
+        var page2 = new Texture2D(2, 2);
+        var pages = new List<Texture2D> { page1, page2 };
+
+        _pdfLoader.Pages = pages;
+
+        _pdfLoader.GetType().GetField("currentPageIndex", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance).SetValue(_pdfLoader, 1);
+
+        CollectionAssert.AreEqual(pages, _pdfLoader.Pages);
+
+        var nextPageMethod = _pdfLoader.GetType().GetMethod("NextPage", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+        nextPageMethod.Invoke(_pdfLoader, null);
+
+
+        var currentPageIndex = (int)_pdfLoader.GetType().GetField("currentPageIndex", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance).GetValue(_pdfLoader);
+
+        Assert.AreEqual(1, currentPageIndex);
+    }
+
+    [Test]
+    public void PreviousPage_UpdatesCurrentPageIndex_MethodInvoke()
+    {
+        var page1 = new Texture2D(2, 2);
+        var page2 = new Texture2D(2, 2);
+        var pages = new List<Texture2D> { page1, page2 };
+
+        _pdfLoader.Pages = pages;
+
+        _pdfLoader.GetType().GetField("currentPageIndex", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance).SetValue(_pdfLoader, 1);
+
+        CollectionAssert.AreEqual(pages, _pdfLoader.Pages);
+
+        var previousPageMethod = _pdfLoader.GetType().GetMethod("PreviousPage", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+        previousPageMethod.Invoke(_pdfLoader, null);
+
+
+        var currentPageIndex = (int)_pdfLoader.GetType().GetField("currentPageIndex", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance).GetValue(_pdfLoader);
+
+        Assert.AreEqual(0, currentPageIndex);
+    }
+
+    [Test]
+    public void ShowPage_InvalidIndex_ShouldLogWarning()
+    {
+    
+        // Act: Invoke ShowPage with invalid index
+        var showPageMethod = _pdfLoader.GetType().GetMethod("ShowPage", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+
+        // Invalid index: no pages loaded (index 0)
+        LogAssert.Expect(LogType.Warning, "Invalid page index or no pages loaded.");
+        showPageMethod.Invoke(_pdfLoader, new object[] { 0 });
+
+        // Invalid index: negative index
+        LogAssert.Expect(LogType.Warning, "Invalid page index or no pages loaded.");
+        showPageMethod.Invoke(_pdfLoader, new object[] { -1 });
+
+        // Invalid index: index greater than pages count
+        LogAssert.Expect(LogType.Warning, "Invalid page index or no pages loaded.");
+        showPageMethod.Invoke(_pdfLoader, new object[] { 2 });  // Index 2 is out of bounds
+    }
+
+
+
 }

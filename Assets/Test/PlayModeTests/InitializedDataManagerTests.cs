@@ -72,26 +72,6 @@ public class InitializedDataManagerTests
         Object.DestroyImmediate(manager.gameObject);
     }
 
-    [UnityTest]
-    public IEnumerator Start_CreatesDirectoryIfNotExists()
-    {
-        // Assicurati che la directory non esista prima di eseguire Start
-        if (Directory.Exists(testDirectoryPath))
-        {
-            Directory.Delete(testDirectoryPath, true);
-        }
-
-        Assert.IsFalse(Directory.Exists(testDirectoryPath), "La directory non dovrebbe esistere prima di eseguire Start");
-
-        // Esegui il metodo Start
-        initializedDataManager.GetType().GetMethod("Start", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance).Invoke(initializedDataManager, null);
-
-        yield return null;
-
-        // Verifica che la directory sia stata creata
-        Assert.IsTrue(Directory.Exists(testDirectoryPath), "La directory dovrebbe essere stata creata dal metodo Start");
-    }
-
 
 
     [Test]

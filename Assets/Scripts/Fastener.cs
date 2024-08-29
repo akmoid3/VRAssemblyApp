@@ -40,6 +40,7 @@ public abstract class Fastener : MonoBehaviour
     public bool CanStop { get => canStop; set => canStop = value; }
     public string CorrectToolName { get => correctToolName; set => correctToolName = value; }
     public GameObject Tool { get => tool; set => tool = value; }
+    public Renderer FastenerRenderer { get => fastenerRenderer; set => fastenerRenderer = value; }
 
     public GameObject getTool()
     {
@@ -79,7 +80,7 @@ public abstract class Fastener : MonoBehaviour
             OnToolCollisionEnter(other);
             canStop = true;
 
-            if(StateManager.Instance.CurrentState == State.PlayBack)
+            if (StateManager.Instance.CurrentState == State.PlayBack)
             {
                 if (tool.name != CorrectToolName && isFirstError)
                 {
@@ -200,5 +201,10 @@ public abstract class Fastener : MonoBehaviour
             initialSocketPosition = socket.localPosition;
     }
 
-   
+    public Transform getSocketTransform()
+    {
+        return socketTransform;
+    }
+
+
 }

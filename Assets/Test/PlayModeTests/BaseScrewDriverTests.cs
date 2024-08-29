@@ -28,10 +28,6 @@ public class BaseScrewDriverTests
         testScrewDriver.GetType()
                        .GetField("screwDriver", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)
                        .SetValue(testScrewDriver, new GameObject().transform);
-
-        testScrewDriver.GetType()
-                       .GetField("speedMultiplier", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)
-                       .SetValue(testScrewDriver, 100.0f);
     }
 
     [Test]

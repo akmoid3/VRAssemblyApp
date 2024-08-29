@@ -115,12 +115,15 @@ public class Manager : MonoBehaviour
 
     private void IncrementCurrentStep()
     {
-        sequenceManager.IncrementCurrentStep();
+        if (sequenceManager)
+
+            sequenceManager.IncrementCurrentStep();
     }
 
     public void IncrementCurrentError()
     {
-        sequenceManager.IncrementCurrentError();
+        if (sequenceManager)
+            sequenceManager.IncrementCurrentError();
     }
 
 

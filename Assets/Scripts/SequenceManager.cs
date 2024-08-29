@@ -82,17 +82,17 @@ public class SequenceManager : MonoBehaviour
     // Checks the validity of the current component
     public void ValidateComponent(GameObject component)
     {
+        ComponentData expectedComponent = assemblySequence[currentStep];
+        if (component.name != expectedComponent.componentName && component.GetComponent<ComponentObject>().GetGroup() != expectedComponent.group)
+        {
+            IncrementCurrentError();
+        }
+
         var nextStep = currentStep + 1;
         if (nextStep >= assemblySequence.Count)
         {
             StateManager.Instance.UpdateState(State.Finish);
             return;
-        }
-
-        ComponentData expectedComponent = assemblySequence[currentStep];
-        if (component.name != expectedComponent.componentName && component.GetComponent<ComponentObject>().GetGroup() != expectedComponent.group)
-        {
-            IncrementCurrentError();
         }
     }
 
