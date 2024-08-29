@@ -63,8 +63,17 @@ public class FileMonitor : MonoBehaviour, IFileMonitor
 
     public void ForceCheckForFileChanges()
     {
-        string[] files = Directory.GetFiles(persistentDataPath, ModelFileExtension);
-        if(files == null)
+        string[] files;
+        try
+        {
+            files = Directory.GetFiles(persistentDataPath, ModelFileExtension);
+
+        }
+        catch (Exception ex)
+        {
+            return;
+        }
+        if (files == null)
             return;
         HashSet<string> newFiles = new HashSet<string>(files);
 

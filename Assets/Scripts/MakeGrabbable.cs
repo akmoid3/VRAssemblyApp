@@ -15,6 +15,11 @@ public class MakeGrabbable : MonoBehaviour
     [SerializeField] private bool useDynamicAttach = true;
     [SerializeField] private InteractableSelectMode selectMode = InteractableSelectMode.Multiple;
 
+    public bool ThrowOnDetach { get => throwOnDetach; set => throwOnDetach = value; }
+    public XRBaseInteractable.MovementType MovementType { get => movementType; set => movementType = value; }
+    public bool UseDynamicAttach { get => useDynamicAttach; set => useDynamicAttach = value; }
+    public InteractableSelectMode SelectMode { get => selectMode; set => selectMode = value; }
+
     private void Awake()
     {
         interactionManager = FindObjectOfType<XRInteractionManager>();

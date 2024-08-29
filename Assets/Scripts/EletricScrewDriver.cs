@@ -6,6 +6,9 @@ public class ElectricScrewDriver : BaseScrewDriver
     private AudioSource audioSource;
     private bool isPlayingSound = false;
 
+    public AudioSource AudioSource { get => audioSource; set => audioSource = value; }
+    public bool IsPlayingSound { get => isPlayingSound; set => isPlayingSound = value; }
+
     private void Start()
     {
         audioSource = GetComponent<AudioSource>();
@@ -71,7 +74,7 @@ public class ElectricScrewDriver : BaseScrewDriver
         }
     }
 
-    private void StopScrewDriverSound()
+    public void StopScrewDriverSound()
     {
         if (isPlayingSound && audioSource != null)
         {

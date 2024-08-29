@@ -9,6 +9,9 @@ public class AutomaticPlacementManager : MonoBehaviour
     private GameObject interactorClone;
     private Dictionary<string, GameObject> instantiatedComponents = new Dictionary<string, GameObject>();
 
+    public float TimeForFirstPlacement { get => timeForFirstPlacement; set => timeForFirstPlacement = value; }
+    public Dictionary<string, GameObject> InstantiatedComponents { get => instantiatedComponents; set => instantiatedComponents = value; }
+
     public void PlaceInitialComponent(List<ComponentData> assemblySequence, List<Transform> components, SnapToPosition interactor)
     {
         if (assemblySequence != null && assemblySequence.Count > 0)
@@ -126,7 +129,7 @@ public class AutomaticPlacementManager : MonoBehaviour
         CleanupPreviousClones();
     }
 
-    private void CleanupPreviousClones()
+    public void CleanupPreviousClones()
     {
         // Destroy the interactor clone if it exists
         if (interactorClone != null)
@@ -147,7 +150,7 @@ public class AutomaticPlacementManager : MonoBehaviour
         instantiatedComponents.Clear();
     }
 
-    private IEnumerator SmoothMoveComponent(Transform component, Vector3 targetPosition, Quaternion targetRotation, float duration)
+    public IEnumerator SmoothMoveComponent(Transform component, Vector3 targetPosition, Quaternion targetRotation, float duration)
     {
         Vector3 initialPosition = component.position;
         Quaternion initialRotation = component.rotation;

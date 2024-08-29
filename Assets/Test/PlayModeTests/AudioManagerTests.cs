@@ -20,7 +20,7 @@ public class AudioManagerTests
 
         // Access private fields and set them up for testing
         typeof(AudioManager).GetField("audioSource", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)
-                            ?.SetValue(_audioManager, _audioSource);
+                            .SetValue(_audioManager, _audioSource);
     }
 
     [TearDown]
@@ -52,7 +52,7 @@ public class AudioManagerTests
         // Arrange
         var screwClip = AudioClip.Create("ScrewSound", 44100, 1, 44100, false);
         typeof(AudioManager).GetField("screwSound", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)
-                            ?.SetValue(_audioManager, screwClip);
+                            .SetValue(_audioManager, screwClip);
 
         // Act
         _audioManager.PlayScrewSound();
@@ -70,7 +70,7 @@ public class AudioManagerTests
         // Arrange
         var popClip = AudioClip.Create("PopSound", 44100, 1, 44100, false);
         typeof(AudioManager).GetField("popSound", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)
-                            ?.SetValue(_audioManager, popClip);
+                            .SetValue(_audioManager, popClip);
 
         // Act
         _audioManager.PlayPopSound();
