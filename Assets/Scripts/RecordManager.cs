@@ -8,24 +8,25 @@ public class RecordManager : MonoBehaviour
     [SerializeField] private Button finishButton;
 
 
-    private void Awake()
+    public virtual void Awake()
     {
         StateManager.OnStateChanged += SetPanelActive;
         finishButton.onClick.AddListener(OnFinishClicked);
     }
 
-    private void OnFinishClicked()
+    public void OnFinishClicked()
     {
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+        Debug.Log($"Loading scene {SceneManager.GetActiveScene().name}");
     }
 
-    private void OnDestroy()
+    public virtual void OnDestroy()
     {
         StateManager.OnStateChanged -= SetPanelActive;
         finishButton.onClick.RemoveListener(OnFinishClicked);
     }
 
-    private void SetPanelActive(State state)
+    protected void SetPanelActive(State state)
     {
         recordPanel.SetActive(state == State.Record);
     }
