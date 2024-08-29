@@ -1,16 +1,16 @@
 ﻿# Summary
 |||
 |:---|:---|
-| Generated on: | 29/08/2024 - 22:41:36 |
+| Generated on: | 29/08/2024 - 22:50:06 |
 | Parser: | MultiReportParser (133x OpenCoverParser) |
 | Assemblies: | 1 |
 | Classes: | 45 |
 | Files: | 43 |
-| Covered lines: | 1383 |
-| Uncovered lines: | 1419 |
+| Covered lines: | 1379 |
+| Uncovered lines: | 1423 |
 | Coverable lines: | 2802 |
 | Total lines: | 4574 |
-| Line coverage: | 49.3% (1383 of 2802) |
+| Line coverage: | 49.2% (1379 of 2802) |
 | Covered branches: | 0 |
 | Total branches: | 0 |
 | Covered methods: | 244 |
@@ -19,7 +19,7 @@
 
 |**Name**|**Covered**|**Uncovered**|**Coverable**|**Total**|**Line coverage**|**Covered**|**Total**|**Branch coverage**|**Covered**|**Total**|**Method coverage**|
 |:---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|
-|**Scripts**|**1383**|**1419**|**2802**|**4813**|**49.3%**|**0**|**0**|****|**244**|**403**|**60.5%**|
+|**Scripts**|**1379**|**1423**|**2802**|**4813**|**49.2%**|**0**|**0**|****|**244**|**403**|**60.5%**|
 |ApplicationQuit|3|0|3|17|100%|0|0||1|1|100%|
 |AudioManager|49|0|49|77|100%|0|0||7|7|100%|
 |AutomaticPlacementManager|0|110|110|176|0%|0|0||0|6|0%|
@@ -60,7 +60,7 @@
 |SequenceManager|50|10|60|104|83.3%|0|0||15|15|100%|
 |SequenceReader|92|12|104|173|88.4%|0|0||8|8|100%|
 |SimpleHammer|29|3|32|62|90.6%|0|0||5|5|100%|
-|SnapToPosition|82|10|92|168|89.1%|0|0||6|10|60%|
+|SnapToPosition|78|14|92|168|84.7%|0|0||6|10|60%|
 |StateManager|15|0|15|29|100%|0|0||6|6|100%|
 |Tool|18|0|18|28|100%|0|0||4|4|100%|
 |ToolManager|39|0|39|71|100%|0|0||13|13|100%|
