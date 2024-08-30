@@ -371,6 +371,7 @@ public class Manager : MonoBehaviour
 
     public void PlaceAllComponentsGradually(float delayBetweenComponents)
     {
+        if(automaticPlacementManager != null)
         automaticPlacementManager.PlaceAllComponentsGradually(delayBetweenComponents, interactor, AssemblySequence, components, toolManager);
     }
 

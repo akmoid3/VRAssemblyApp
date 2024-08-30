@@ -1,25 +1,25 @@
 ﻿# Summary
 |||
 |:---|:---|
-| Generated on: | 30/08/2024 - 23:00:43 |
-| Parser: | MultiReportParser (252x OpenCoverParser) |
+| Generated on: | 30/08/2024 - 23:13:02 |
+| Parser: | MultiReportParser (260x OpenCoverParser) |
 | Assemblies: | 1 |
 | Classes: | 45 |
 | Files: | 43 |
-| Covered lines: | 2457 |
-| Uncovered lines: | 374 |
-| Coverable lines: | 2831 |
-| Total lines: | 4687 |
-| Line coverage: | 86.7% (2457 of 2831) |
+| Covered lines: | 2515 |
+| Uncovered lines: | 337 |
+| Coverable lines: | 2852 |
+| Total lines: | 4692 |
+| Line coverage: | 88.1% (2515 of 2852) |
 | Covered branches: | 0 |
 | Total branches: | 0 |
-| Covered methods: | 412 |
-| Total methods: | 448 |
-| Method coverage: | 91.9% (412 of 448) |
+| Covered methods: | 437 |
+| Total methods: | 462 |
+| Method coverage: | 94.5% (437 of 462) |
 
 |**Name**|**Covered**|**Uncovered**|**Coverable**|**Total**|**Line coverage**|**Covered**|**Total**|**Branch coverage**|**Covered**|**Total**|**Method coverage**|
 |:---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|
-|**Scripts**|**2457**|**374**|**2831**|**4926**|**86.7%**|**0**|**0**|****|**412**|**448**|**91.9%**|
+|**Scripts**|**2515**|**337**|**2852**|**4931**|**88.1%**|**0**|**0**|****|**437**|**462**|**94.5%**|
 |ApplicationQuit|3|0|3|17|100%|0|0||1|1|100%|
 |AudioManager|49|0|49|77|100%|0|0||7|7|100%|
 |AutomaticPlacementManager|96|17|113|180|84.9%|0|0||10|10|100%|
@@ -44,7 +44,7 @@
 |InteractionManager|40|25|65|100|61.5%|0|0||8|10|80%|
 |JsonData|1|0|1|112|100%|0|0||1|1|100%|
 |MakeGrabbable|99|20|119|183|83.1%|0|0||18|22|81.8%|
-|Manager|224|50|274|397|81.7%|0|0||60|62|96.7%|
+|Manager|225|50|275|398|81.8%|0|0||61|62|98.3%|
 |ManualScrewDriver|25|7|32|60|78.1%|0|0||4|4|100%|
 |ModeChooserManager|37|20|57|78|64.9%|0|0||14|15|93.3%|
 |ModelLoader|17|0|17|38|100%|0|0||1|1|100%|
@@ -52,7 +52,7 @@
 |Nail|69|0|69|115|100%|0|0||6|6|100%|
 |ObjectData|1|0|1|127|100%|0|0||1|1|100%|
 |PdfLoader|111|6|117|189|94.8%|0|0||14|14|100%|
-|PlayBackManager|0|58|58|97|0%|0|0||0|11|0%|
+|PlayBackManager|57|21|78|101|73%|0|0||24|25|96%|
 |PrefabManager|83|6|89|129|93.2%|0|0||9|9|100%|
 |RecordManager|12|5|17|36|70.5%|0|0||3|4|75%|
 |SaveSequence|44|3|47|127|93.6%|0|0||8|8|100%|

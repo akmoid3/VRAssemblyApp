@@ -5,16 +5,19 @@ using UnityEngine.UI;
 
 public class PlayBackManager : MonoBehaviour
 {
-    [SerializeField] private GameObject playBackPanel;
-    [SerializeField] private Button finishButton;
-    [SerializeField] private Button showSolutionButton;
-    [SerializeField] private TextMeshProUGUI timerText;
-    [SerializeField] private TextMeshProUGUI errorCountText;
-    [SerializeField] private TextMeshProUGUI hintCountText;
-    [SerializeField] private TextMeshProUGUI stepsText;
+    public GameObject playBackPanel;
+    public Button finishButton;
+    public Button showSolutionButton;
+    public TextMeshProUGUI timerText;
+    public TextMeshProUGUI errorCountText;
+    public TextMeshProUGUI hintCountText;
+    public TextMeshProUGUI stepsText;
 
     private float elapsedTime = 0f;
     private bool isPlayingBack = false;
+
+    public float ElapsedTime { get => elapsedTime; set => elapsedTime = value; }
+    public bool IsPlayingBack { get => isPlayingBack; set => isPlayingBack = value; }
 
     private void Awake()
     {
@@ -22,26 +25,27 @@ public class PlayBackManager : MonoBehaviour
         SequenceManager.OnErrorCountChanged += IncrementErrorCount;
         HintManager.OnHintCountChanged += IncrementHintCount;
         SequenceManager.OnStepChanged += IncrementStepCount;
-
+        if(showSolutionButton != null)
         showSolutionButton.onClick.AddListener(OnShowSolutionClicked);
+        if(finishButton != null) 
         finishButton.onClick.AddListener(OnFinishClicked);
     }
 
-    private void IncrementErrorCount(int n)
+    public void IncrementErrorCount(int n)
     {
         errorCountText.text = n.ToString();
     }
 
-    private void IncrementHintCount(int n)
+    public void IncrementHintCount(int n)
     {
         hintCountText.text = n.ToString();
     }
-    private void IncrementStepCount(int n)
+    public void IncrementStepCount(int n)
     {
         int totalSteps = Manager.Instance.AssemblySequence.Count;
         stepsText.text = $"{n}/{totalSteps}";
     }
-    private void OnDestroy()
+    public void OnDestroy()
     {
         StateManager.OnStateChanged -= SetPanelActive;
         SequenceManager.OnErrorCountChanged -= IncrementErrorCount;
@@ -52,7 +56,7 @@ public class PlayBackManager : MonoBehaviour
         finishButton.onClick.RemoveListener(OnFinishClicked);
     }
 
-    private void Update()
+    public void Update()
     {
         if (isPlayingBack)
         {
@@ -61,7 +65,7 @@ public class PlayBackManager : MonoBehaviour
         }
     }
 
-    private void SetPanelActive(State state)
+    public void SetPanelActive(State state)
     {
         playBackPanel.SetActive(state == State.PlayBack);
         isPlayingBack = (state == State.PlayBack);
@@ -80,7 +84,7 @@ public class PlayBackManager : MonoBehaviour
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
 
-    private void UpdateTimerDisplay()
+    public void UpdateTimerDisplay()
     {
         // Format the time into minutes and seconds
         int minutes = Mathf.FloorToInt(elapsedTime / 60f);
@@ -88,7 +92,7 @@ public class PlayBackManager : MonoBehaviour
         timerText.text = string.Format("{0:D2}:{1:D2}", minutes, seconds);
     }
 
-    private void OnShowSolutionClicked()
+    public void OnShowSolutionClicked()
     {
         // Call the method to place all components gradually
         Manager.Instance.PlaceAllComponentsGradually(0.75f);
