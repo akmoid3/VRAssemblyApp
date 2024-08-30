@@ -9,31 +9,33 @@ public class ModelSelectionManager : MonoBehaviour
     [SerializeField] private FileBrowserManager fileBrowserManager;
 
 
-    private void Awake()
+    public void Awake()
     {
         StateManager.OnStateChanged += SetPanelActive;
+        if(confirmButton != null)
         confirmButton.onClick.AddListener(OnConfirmButtonClicked);
+        if(loadModel != null)
         loadModel.onClick.AddListener(ShowFileBrowser);
     }
 
-    private void OnConfirmButtonClicked()
+    public void OnConfirmButtonClicked()
     {
         StateManager.Instance.UpdateState(State.SelectingMode);
     }
 
-    private void OnDestroy()
+    public void OnDestroy()
     {
         StateManager.OnStateChanged -= SetPanelActive;
         confirmButton.onClick.RemoveListener(OnConfirmButtonClicked);
         loadModel.onClick.RemoveListener(ShowFileBrowser);
 
     }
-    private void SetPanelActive(State state)
+    public void SetPanelActive(State state)
     {
         modelSelectionPanel.SetActive(state == State.ChoosingModel);
     }
 
-    private void ShowFileBrowser()
+    public void ShowFileBrowser()
     {
         fileBrowserManager.ShowDialog("Models", ".glb");
     }

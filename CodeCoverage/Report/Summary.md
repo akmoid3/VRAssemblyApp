@@ -1,25 +1,25 @@
 ﻿# Summary
 |||
 |:---|:---|
-| Generated on: | 30/08/2024 - 22:50:09 |
-| Parser: | MultiReportParser (249x OpenCoverParser) |
+| Generated on: | 30/08/2024 - 23:00:43 |
+| Parser: | MultiReportParser (252x OpenCoverParser) |
 | Assemblies: | 1 |
 | Classes: | 45 |
 | Files: | 43 |
-| Covered lines: | 2438 |
-| Uncovered lines: | 384 |
-| Coverable lines: | 2822 |
-| Total lines: | 4685 |
-| Line coverage: | 86.3% (2438 of 2822) |
+| Covered lines: | 2457 |
+| Uncovered lines: | 374 |
+| Coverable lines: | 2831 |
+| Total lines: | 4687 |
+| Line coverage: | 86.7% (2457 of 2831) |
 | Covered branches: | 0 |
 | Total branches: | 0 |
-| Covered methods: | 403 |
-| Total methods: | 444 |
-| Method coverage: | 90.7% (403 of 444) |
+| Covered methods: | 412 |
+| Total methods: | 448 |
+| Method coverage: | 91.9% (412 of 448) |
 
 |**Name**|**Covered**|**Uncovered**|**Coverable**|**Total**|**Line coverage**|**Covered**|**Total**|**Branch coverage**|**Covered**|**Total**|**Method coverage**|
 |:---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|
-|**Scripts**|**2438**|**384**|**2822**|**4924**|**86.3%**|**0**|**0**|****|**403**|**444**|**90.7%**|
+|**Scripts**|**2457**|**374**|**2831**|**4926**|**86.7%**|**0**|**0**|****|**412**|**448**|**91.9%**|
 |ApplicationQuit|3|0|3|17|100%|0|0||1|1|100%|
 |AudioManager|49|0|49|77|100%|0|0||7|7|100%|
 |AutomaticPlacementManager|96|17|113|180|84.9%|0|0||10|10|100%|
@@ -48,7 +48,7 @@
 |ManualScrewDriver|25|7|32|60|78.1%|0|0||4|4|100%|
 |ModeChooserManager|37|20|57|78|64.9%|0|0||14|15|93.3%|
 |ModelLoader|17|0|17|38|100%|0|0||1|1|100%|
-|ModelSelectionManager|0|19|19|41|0%|0|0||0|5|0%|
+|ModelSelectionManager|19|9|28|43|67.8%|0|0||9|9|100%|
 |Nail|69|0|69|115|100%|0|0||6|6|100%|
 |ObjectData|1|0|1|127|100%|0|0||1|1|100%|
 |PdfLoader|111|6|117|189|94.8%|0|0||14|14|100%|
