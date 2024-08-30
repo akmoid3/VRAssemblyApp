@@ -1,25 +1,25 @@
 ﻿# Summary
 |||
 |:---|:---|
-| Generated on: | 30/08/2024 - 23:13:02 |
+| Generated on: | 30/08/2024 - 23:34:32 |
 | Parser: | MultiReportParser (260x OpenCoverParser) |
 | Assemblies: | 1 |
-| Classes: | 45 |
-| Files: | 43 |
+| Classes: | 46 |
+| Files: | 44 |
 | Covered lines: | 2515 |
-| Uncovered lines: | 337 |
-| Coverable lines: | 2852 |
-| Total lines: | 4692 |
-| Line coverage: | 88.1% (2515 of 2852) |
+| Uncovered lines: | 276 |
+| Coverable lines: | 2791 |
+| Total lines: | 4706 |
+| Line coverage: | 90.1% (2515 of 2791) |
 | Covered branches: | 0 |
 | Total branches: | 0 |
-| Covered methods: | 437 |
-| Total methods: | 462 |
-| Method coverage: | 94.5% (437 of 462) |
+| Covered methods: | 403 |
+| Total methods: | 428 |
+| Method coverage: | 94.1% (403 of 428) |
 
 |**Name**|**Covered**|**Uncovered**|**Coverable**|**Total**|**Line coverage**|**Covered**|**Total**|**Branch coverage**|**Covered**|**Total**|**Method coverage**|
 |:---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|
-|**Scripts**|**2515**|**337**|**2852**|**4931**|**88.1%**|**0**|**0**|****|**437**|**462**|**94.5%**|
+|**Scripts**|**2515**|**276**|**2791**|**4945**|**90.1%**|**0**|**0**|****|**403**|**428**|**94.1%**|
 |ApplicationQuit|3|0|3|17|100%|0|0||1|1|100%|
 |AudioManager|49|0|49|77|100%|0|0||7|7|100%|
 |AutomaticPlacementManager|96|17|113|180|84.9%|0|0||10|10|100%|
@@ -35,7 +35,7 @@
 |FileBrowserManager|30|6|36|81|83.3%|0|0||3|3|100%|
 |FileChecker|8|0|8|19|100%|0|0||1|1|100%|
 |FileMonitor|41|1|42|86|97.6%|0|0||9|9|100%|
-|FinishManager|20|8|28|46|71.4%|0|0||7|9|77.7%|
+|FinishManager|20|4|24|46|83.3%|0|0||4|5|80%|
 |HandMenuController|0|14|14|33|0%|0|0||0|3|0%|
 |HandMenuManager|282|4|286|449|98.6%|0|0||35|35|100%|
 |HintManager|56|4|60|111|93.3%|0|0||8|8|100%|
@@ -44,15 +44,16 @@
 |InteractionManager|40|25|65|100|61.5%|0|0||8|10|80%|
 |JsonData|1|0|1|112|100%|0|0||1|1|100%|
 |MakeGrabbable|99|20|119|183|83.1%|0|0||18|22|81.8%|
-|Manager|225|50|275|398|81.8%|0|0||61|62|98.3%|
+|Manager|225|23|248|398|90.7%|0|0||51|52|98%|
 |ManualScrewDriver|25|7|32|60|78.1%|0|0||4|4|100%|
-|ModeChooserManager|37|20|57|78|64.9%|0|0||14|15|93.3%|
+|ModeChooserManager|37|7|44|78|84%|0|0||7|8|87.5%|
 |ModelLoader|17|0|17|38|100%|0|0||1|1|100%|
-|ModelSelectionManager|19|9|28|43|67.8%|0|0||9|9|100%|
+|ModelSelectionManager|19|2|21|43|90.4%|0|0||5|5|100%|
 |Nail|69|0|69|115|100%|0|0||6|6|100%|
 |ObjectData|1|0|1|127|100%|0|0||1|1|100%|
+|OpenMenu|0|6|6|14|0%|0|0||0|1|0%|
 |PdfLoader|111|6|117|189|94.8%|0|0||14|14|100%|
-|PlayBackManager|57|21|78|101|73%|0|0||24|25|96%|
+|PlayBackManager|57|5|62|101|91.9%|0|0||14|15|93.3%|
 |PrefabManager|83|6|89|129|93.2%|0|0||9|9|100%|
 |RecordManager|12|5|17|36|70.5%|0|0||3|4|75%|
 |SaveSequence|44|3|47|127|93.6%|0|0||8|8|100%|
