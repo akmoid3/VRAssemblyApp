@@ -48,7 +48,7 @@ public class HintManager : MonoBehaviour
         }
     }
 
-    public void HighlightComponentToPlace(List<ComponentData> assemblySequence, int currentStep, List<Transform> components)
+    public virtual void HighlightComponentToPlace(List<ComponentData> assemblySequence, int currentStep, List<Transform> components)
     {
         if(isWaiting)
             return;

@@ -24,7 +24,7 @@ public class ManualScrewDriver : BaseScrewDriver
         }
     }
 
-    private void CalculateRotationSpeed()
+    public void CalculateRotationSpeed()
     {
         Quaternion currentRotation = transform.localRotation; // Use local rotation
         Quaternion deltaRotation = currentRotation * Quaternion.Inverse(lastRotation);
@@ -55,6 +55,6 @@ public class ManualScrewDriver : BaseScrewDriver
     public override void RotateScrewDriver()
     {
         // Rotate around the local forward axis
-        screwDriver.Rotate(transform.forward * currentRotationSpeed * Time.deltaTime);
+        ScrewDriver.Rotate(transform.forward * currentRotationSpeed * Time.deltaTime);
     }
 }

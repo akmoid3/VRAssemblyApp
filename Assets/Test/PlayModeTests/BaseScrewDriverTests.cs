@@ -25,9 +25,7 @@ public class BaseScrewDriverTests
         testScrewDriver = testObject.AddComponent<TestScrewDriver>();
 
         // Set any required properties
-        testScrewDriver.GetType()
-                       .GetField("screwDriver", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)
-                       .SetValue(testScrewDriver, new GameObject().transform);
+        testScrewDriver.ScrewDriver = new GameObject().transform;
     }
 
     [Test]

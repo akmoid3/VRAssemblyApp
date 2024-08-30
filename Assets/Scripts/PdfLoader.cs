@@ -26,19 +26,25 @@ public class PdfLoader : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        nextPageButton.onClick.AddListener(NextPage);
-        previousPageButton.onClick.AddListener(PreviousPage);
+        if (nextPageButton != null)
+            nextPageButton.onClick.AddListener(NextPage);
+        if (previousPageButton != null)
 
-        StateManager.OnStateChanged += HandleStateChanged;
+            previousPageButton.onClick.AddListener(PreviousPage);
 
-        HandleStateChanged(StateManager.Instance.CurrentState);
+
+        if (StateManager.Instance != null)
+        {
+            StateManager.OnStateChanged += HandleStateChanged;
+            HandleStateChanged(StateManager.Instance.CurrentState);
+        }
     }
 
 
     private void OnDestroy()
     {
-        if(nextPageButton != null)
-        nextPageButton.onClick.RemoveListener(NextPage);
+        if (nextPageButton != null)
+            nextPageButton.onClick.RemoveListener(NextPage);
         if (previousPageButton != null)
             previousPageButton.onClick.RemoveListener(PreviousPage);
 
@@ -48,7 +54,8 @@ public class PdfLoader : MonoBehaviour
     private void HandleStateChanged(State newState)
     {
         bool shouldActivatePanel = (newState == State.Record || newState == State.PlayBack) && canActivePanel;
-        pdfPanel.SetActive(shouldActivatePanel);
+        if (pdfPanel != null)
+            pdfPanel.SetActive(shouldActivatePanel);
     }
 
     public virtual void LoadPDF(string fileName)

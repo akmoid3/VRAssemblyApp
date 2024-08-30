@@ -70,7 +70,7 @@ public class ElectricScrewDriver : BaseScrewDriver
         {
             InteractionState activateState = interactor.xrController.activateInteractionState;
             currentRotationSpeed = activateState.value * SpeedMultiplier;
-            screwDriver.Rotate(Vector3.forward * currentRotationSpeed * Time.deltaTime * -1.0f);
+            ScrewDriver.Rotate(Vector3.forward * currentRotationSpeed * Time.deltaTime * -1.0f);
         }
     }
 

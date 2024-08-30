@@ -12,7 +12,7 @@ public class AutomaticPlacementManager : MonoBehaviour
     public float TimeForFirstPlacement { get => timeForFirstPlacement; set => timeForFirstPlacement = value; }
     public Dictionary<string, GameObject> InstantiatedComponents { get => instantiatedComponents; set => instantiatedComponents = value; }
 
-    public void PlaceInitialComponent(List<ComponentData> assemblySequence, List<Transform> components, SnapToPosition interactor)
+    public virtual void PlaceInitialComponent(List<ComponentData> assemblySequence, List<Transform> components, SnapToPosition interactor)
     {
         if (assemblySequence != null && assemblySequence.Count > 0)
         {

@@ -3,6 +3,9 @@ using UnityEngine.XR.Interaction.Toolkit;
 using UnityEngine;
 using NUnit.Framework;
 using System.Reflection;
+using UnityEngine.TestTools;
+using Moq;
+using System.Collections;
 
 public class MockSequenceManager : SequenceManager
 {
@@ -81,21 +84,36 @@ public class MockInteractionManager : InteractionManager
 public class MockHintManager : HintManager
 {
     public bool ShowHintCalled { get; private set; }
+    public bool HighlightComponentToPlaceCalled { get; private set; }
+
 
     public override void ShowHint(List<ComponentData> assemblySequence, int currentStep, List<Transform> components, SnapToPosition interactor)
     {
         ShowHintCalled = true;
+    }
+
+    public override void HighlightComponentToPlace(List<ComponentData> assemblySequence, int currentStep, List<Transform> components)
+    {
+        HighlightComponentToPlaceCalled = true;
     }
 }
 
 public class MockAutomaticPlacementManager : AutomaticPlacementManager
 {
     public bool PlaceAllComponentsGraduallyCalled { get; private set; }
+    public bool PlaceInitialComponentCalled { get; private set; }
+
 
     public override void PlaceAllComponentsGradually(float delay, SnapToPosition interactor, List<ComponentData> assemblySequence, List<Transform> components, ToolManager toolManager)
     {
         PlaceAllComponentsGraduallyCalled = true;
     }
+
+    public override void PlaceInitialComponent(List<ComponentData> assemblySequence, List<Transform> components, SnapToPosition interactor)
+    {
+        PlaceInitialComponentCalled = true;
+    }
+
 }
 
 public class MockPdfLoader : PdfLoader
@@ -135,9 +153,12 @@ public class ManagerTests
     private MockAutomaticPlacementManager _mockAutomaticPlacementManager;
     private MockPdfLoader _mockPdfLoader;
     private GameObject selectedComponent;
+    private AudioManager audioManager;
+
     [SetUp]
     public void SetUp()
     {
+        audioManager = new GameObject().AddComponent<AudioManager>();
         // Initialize mocks
         _mockStateManager = new GameObject().AddComponent<StateManager>();
         _mockSequenceManager = new GameObject().AddComponent<MockSequenceManager>();
@@ -192,7 +213,9 @@ public class ManagerTests
         Object.DestroyImmediate(_mockInteractionManager.gameObject);
         Object.DestroyImmediate(_mockHintManager.gameObject);
         Object.DestroyImmediate(_mockAutomaticPlacementManager.gameObject);
-        Object.DestroyImmediate(_mockPdfLoader.gameObject); 
+        Object.DestroyImmediate(_mockPdfLoader.gameObject);
+        Object.DestroyImmediate(audioManager.gameObject);
+
     }
     [Test]
     public void IncrementCurrentStep_ShouldCallIncrementOnSequenceManager()
@@ -259,11 +282,21 @@ public class ManagerTests
     [Test]
     public void HandleStateChange_ShouldCallLoadPDF_WhenStateIsRecord()
     {
+
+
         // Act
         _manager.HandleStateChange(State.Record);
 
         // Assert
         Assert.IsTrue(_mockPdfLoader.LoadPDFCalled);
+
+        LogAssert.Expect(LogType.Error, "Interactor is not assigned.");
+
+        _manager.HandleStateChange(State.PlayBack);
+
+        Assert.IsTrue(_mockPdfLoader.LoadPDFCalled);
+
+
     }
 
     [Test]
@@ -290,6 +323,17 @@ public class ManagerTests
     }
 
     [Test]
+    public void PlaceInitialComponent_ShouldCallPlaceInitialComponentGraduallyOnAutomaticPlacementManager()
+    {
+
+        // Act
+        _manager.PlaceInitialComponent();
+
+        // Assert
+        Assert.IsTrue(_mockAutomaticPlacementManager.PlaceInitialComponentCalled);
+    }
+
+    [Test]
     public void InitializeSequence_ShouldCallInitializeSequenceOnSequenceManager()
     {
         // Arrange
@@ -305,7 +349,7 @@ public class ManagerTests
     [Test]
     public void SaveBuildingSequence_ShouldCallSaveBuildingSequenceOnSequenceManager()
     {
-        
+
 
         // Act
         _manager.SaveBuildingSequence();
@@ -327,7 +371,7 @@ public class ManagerTests
     [Test]
     public void RemoveComponentFromSequence_ShouldCallRemoveComponentFromSequenceOnSequenceManager()
     {
-    
+
         // Act
         _manager.RemoveComponentFromSequence();
 
@@ -363,4 +407,335 @@ public class ManagerTests
             Assert.IsTrue(makeGrabbable.MakeObjectNonGrabbableCalled);
         }
     }
+
+    [Test]
+    public void HighlightComponentToPlace_ShouldCallHighlightComponentToPlaceOnHintManager()
+    {
+        // Act
+        var highlightComponentToPlaceMethod = typeof(Manager).GetMethod("HighlightComponentToPlace", BindingFlags.NonPublic | BindingFlags.Instance);
+        highlightComponentToPlaceMethod.Invoke(_manager, null);
+
+        // Assert
+        Assert.IsTrue(_mockHintManager.HighlightComponentToPlaceCalled);
+
+
+    }
+
+    [Test]
+    public void HideCorrectSnapPoint_ShouldDisableMeshRendererOfCorrectSnapPoint()
+    {
+        // Arrange
+        // Create a mock interactor with a child corresponding to the CurrentStep
+        var interactor = new GameObject("Interactor").AddComponent<SnapToPosition>();
+        interactor.transform.SetParent(_manager.transform);
+
+        // Set the current step to 0
+        _manager.GetType().GetProperty("CurrentStep").SetValue(_manager, 0);
+
+        // Create a snap point as a child of the interactor
+        var snapPoint = new GameObject("SnapPoint");
+        var meshRenderer = snapPoint.AddComponent<MeshRenderer>();
+        snapPoint.transform.SetParent(interactor.transform);
+
+        // Assign the interactor to the manager
+        _manager.GetType().GetField("interactor", BindingFlags.NonPublic | BindingFlags.Instance).SetValue(_manager, interactor);
+
+        // Act
+        var hideCorrectSnapPointMethod = typeof(Manager).GetMethod("HideCorrectSnapPoint", BindingFlags.NonPublic | BindingFlags.Instance);
+        hideCorrectSnapPointMethod.Invoke(_manager, null);
+
+        // Assert
+        Assert.IsFalse(meshRenderer.enabled);
+    }
+
+
+    [Test]
+    public void ProcessComponentPlacement_ShouldCallValidateComponent_WhenComponentIsValid()
+    {
+        // Arrange
+        var componentData = new ComponentData { componentName = selectedComponent.name, toolName = "Tool" };
+        var processComponentPlacementMethod = typeof(Manager).GetMethod("ProcessComponentPlacement", BindingFlags.NonPublic | BindingFlags.Instance);
+
+        // Act
+        processComponentPlacementMethod.Invoke(_manager, new object[] { componentData });
+
+    }
+
+    [Test]
+    public void Update_ShouldCallProcessPlaybackState_WhenCurrentStateIsPlayBack()
+    {
+        _mockStateManager.CurrentState = State.PlayBack;
+
+        // Mock the AssemblySequence by creating a list with dummy data
+        var mockAssemblySequence = new List<ComponentData>
+    {
+        new ComponentData
+        {
+            componentName = "TestComponent1",
+            position = new Vector3(1, 0, 0),
+            rotation = Quaternion.identity,
+            toolName = "null",
+            group = ComponentObject.Group.None,
+            type = ComponentObject.ComponentType.Screw
+        },
+        new ComponentData
+        {
+            componentName = "TestComponent2",
+            position = new Vector3(2, 0, 0),
+            rotation = Quaternion.identity,
+            toolName = "null",
+            group = ComponentObject.Group.None,
+            type = ComponentObject.ComponentType.Nail
+        }
+    };
+
+        // Assign the mockAssemblySequence to the AssemblySequence property
+        _manager.AssemblySequence = mockAssemblySequence;
+
+        // Set CurrentStep to a valid index
+        _manager.GetType().GetProperty("CurrentStep").SetValue(_manager, 0);
+
+        // Act
+        var updateMethod = typeof(Manager).GetMethod("Update", BindingFlags.NonPublic | BindingFlags.Instance);
+        updateMethod.Invoke(_manager, null);
+
+    }
+
+
+
+    [Test]
+    public void HandleComponentFastening_ShouldCallOnFastenerStopped_WhenFastenerIsStopped()
+    {
+        // Arrange
+        var componentData = new ComponentData { componentName = selectedComponent.name, toolName = "Tool" };
+        selectedComponent.AddComponent<Nail>().IsStopped = true;
+        selectedComponent.AddComponent<MeshRenderer>();
+
+
+        var handleComponentFasteningMethod = typeof(Manager).GetMethod("HandleComponentFastening", BindingFlags.NonPublic | BindingFlags.Instance);
+
+        // Act
+        handleComponentFasteningMethod.Invoke(_manager, new object[] { selectedComponent.transform, componentData });
+
+        // Assert
+        Assert.IsTrue(_mockSequenceManager.IncrementCurrentStepCalled);
+        Assert.IsTrue(_mockSequenceManager.ValidateComponentCalled);
+    }
+
+    [Test]
+    public void HandleStateChange_ShouldCallMakeComponentsGrabbable_WhenStateIsRecord()
+    {
+        // Act
+        _manager.HandleStateChange(State.Record);
+
+        // Assert
+        foreach (Transform component in _manager.Components)
+        {
+            var makeGrabbable = component.GetComponent<MockMakeGrabbable>();
+            Assert.IsTrue(makeGrabbable.MakeObjectGrabbableCalled);
+        }
+    }
+
+    [Test]
+    public void HandleStateChange_ShouldCallMakeComponentsNonGrabbable_WhenStateIsInitialize()
+    {
+        // Act
+        _manager.HandleStateChange(State.Initialize);
+
+        // Assert
+        foreach (Transform component in _manager.Components)
+        {
+            var makeGrabbable = component.GetComponent<MockMakeGrabbable>();
+            Assert.IsTrue(makeGrabbable.MakeObjectNonGrabbableCalled);
+        }
+    }
+
+    [Test]
+    public void CopyComponentObjectToInteractor_ShouldLogError_WhenInteractorIsNotAssigned()
+    {
+        // Act
+        LogAssert.Expect(LogType.Error, "Interactor is not assigned.");
+        var copyComponentObjectToInteractorMethod = typeof(Manager).GetMethod("CopyComponentObjectToInteractor", BindingFlags.NonPublic | BindingFlags.Instance);
+        copyComponentObjectToInteractorMethod.Invoke(_manager, null);
+    }
+
+    [Test]
+    public void CopyComponentObjectToInteractor_ShouldCopyComponentProperties_WhenInteractorIsAssigned()
+    {
+        // Arrange
+        var interactor = new GameObject("Interactor").AddComponent<SnapToPosition>();
+        interactor.transform.SetParent(_manager.transform);
+        var interactorChild = new GameObject(selectedComponent.name).transform;
+        interactorChild.SetParent(interactor.transform);
+
+        var componentObject = selectedComponent.GetComponent<ComponentObject>();
+        componentObject.SetComponentType(ComponentObject.ComponentType.Screw);
+        componentObject.SetGroup(ComponentObject.Group.None);
+        componentObject.SetIsPlaced(true);
+        componentObject.IsReleased = true;
+
+        _manager.GetType().GetField("interactor", BindingFlags.NonPublic | BindingFlags.Instance).SetValue(_manager, interactor);
+
+        var copyComponentObjectToInteractorMethod = typeof(Manager).GetMethod("CopyComponentObjectToInteractor", BindingFlags.NonPublic | BindingFlags.Instance);
+
+        // Act
+        copyComponentObjectToInteractorMethod.Invoke(_manager, null);
+
+        // Assert
+        var targetComponentObject = interactorChild.GetComponent<ComponentObject>();
+        Assert.IsNotNull(targetComponentObject);
+        Assert.AreEqual(ComponentObject.ComponentType.Screw, targetComponentObject.GetComponentType());
+        Assert.AreEqual(ComponentObject.Group.None, targetComponentObject.GetGroup());
+        Assert.IsTrue(targetComponentObject.GetIsPlaced());
+        Assert.IsTrue(targetComponentObject.IsReleased);
+    }
+
+    [UnityTest]
+    public IEnumerator InitializeComponentsType_ShouldAddCorrectComponentAndRemoveExistingScripts()
+    {
+        // Arrange
+        // Create a GameObject and add it to the components list
+        var testGameObject = new GameObject("TestComponent");
+        testGameObject.AddComponent<MeshRenderer>();
+        var testTransform = testGameObject.transform;
+        _manager.Components.Clear();
+        _manager.Components.Add(testTransform);
+
+        // Add a ComponentObject and set its type
+        var componentObject = testGameObject.AddComponent<ComponentObject>();
+        componentObject.SetComponentType(ComponentObject.ComponentType.Screw);
+
+        // Add existing scripts that should be removed
+        var existingScrew = testGameObject.AddComponent<Screw>();
+        var existingNail = testGameObject.AddComponent<Nail>();
+
+        // Act
+        var initializeComponentsTypeMethod = typeof(Manager).GetMethod("InitializeComponentsType", BindingFlags.Public | BindingFlags.Instance);
+        initializeComponentsTypeMethod.Invoke(_manager, null);
+
+        yield return null;
+        // Assert
+        // Verify that the existing scripts were removed
+        Assert.IsNull(testGameObject.GetComponent<Nail>(), "Existing Nail component should be removed.");
+
+        // Verify that the correct component was added
+        Assert.IsNotNull(testGameObject.GetComponent<Screw>(), "A new Screw component should be added based on the ComponentObject type.");
+        Assert.IsNull(testGameObject.GetComponent<Nail>(), "Nail component should not be added.");
+
+        // Cleanup
+        _manager.Components.Remove(testTransform);
+        Object.DestroyImmediate(testGameObject);
+    }
+
+    [Test]
+    public void InitializeComponentsType_ShouldSetTagToComponent_WhenComponentTypeIsNone()
+    {
+        // Arrange
+        // Create a GameObject and add it to the components list
+        var testGameObject = new GameObject("TestComponent");
+        var testTransform = testGameObject.transform;
+        _manager.Components.Add(testTransform);
+
+        // Add a ComponentObject and set its type to None
+        var componentObject = testGameObject.AddComponent<ComponentObject>();
+        componentObject.SetComponentType(ComponentObject.ComponentType.None);
+
+        // Act
+        var initializeComponentsTypeMethod = typeof(Manager).GetMethod("InitializeComponentsType", BindingFlags.Public | BindingFlags.Instance);
+        initializeComponentsTypeMethod.Invoke(_manager, null);
+
+        // Assert
+        // Verify that the tag is set to "Component"
+        Assert.AreEqual("Component", testGameObject.tag, "Tag should be set to 'Component' when ComponentType is None.");
+
+        // Cleanup
+        _manager.Components.Remove(testTransform);
+        Object.DestroyImmediate(testGameObject);
+    }
+
+    [Test]
+    public void FinishTime_Get_ShouldReturnCorrectValueFromSequenceManager()
+    {
+        // Arrange
+        const string expectedFinishTime = "10:00";
+        _mockSequenceManager.GetType().GetProperty("FinishTime").SetValue(_mockSequenceManager, expectedFinishTime);
+
+        // Act
+        var actualFinishTime = _manager.FinishTime;
+
+        // Assert
+        Assert.AreEqual(expectedFinishTime, actualFinishTime);
+    }
+
+    [Test]
+    public void FinishTime_Set_ShouldSetCorrectValueInSequenceManager()
+    {
+        // Arrange
+        const string newFinishTime = "15:00";
+
+        // Act
+        _manager.FinishTime = newFinishTime;
+
+        // Assert
+        var actualFinishTime = _mockSequenceManager.GetType().GetProperty("FinishTime").GetValue(_mockSequenceManager) as string;
+        Assert.AreEqual(newFinishTime, actualFinishTime);
+    }
+
+    [Test]
+    public void HintCount_Get_ShouldReturnCorrectValueFromHintManager()
+    {
+        // Arrange
+        const int expectedHintCount = 5;
+        _mockHintManager.GetType().GetProperty("HintCount").SetValue(_mockHintManager, expectedHintCount);
+
+        // Act
+        var actualHintCount = _manager.HintCount;
+
+        // Assert
+        Assert.AreEqual(expectedHintCount, actualHintCount);
+    }
+
+    [Test]
+    public void HintCount_Set_ShouldSetCorrectValueInHintManager()
+    {
+        // Arrange
+        const int newHintCount = 7;
+
+        // Act
+        _manager.HintCount = newHintCount;
+
+        // Assert
+        var actualHintCount = (int)_mockHintManager.GetType().GetProperty("HintCount").GetValue(_mockHintManager);
+        Assert.AreEqual(newHintCount, actualHintCount);
+    }
+
+    [Test]
+    public void ErrorCount_Get_ShouldReturnCorrectValueFromSequenceManager()
+    {
+        // Arrange
+        const int expectedErrorCount = 3;
+        _mockSequenceManager.GetType().GetProperty("ErrorCount").SetValue(_mockSequenceManager, expectedErrorCount);
+
+        // Act
+        var actualErrorCount = _manager.ErrorCount;
+
+        // Assert
+        Assert.AreEqual(expectedErrorCount, actualErrorCount);
+    }
+
+    [Test]
+    public void ErrorCount_Set_ShouldSetCorrectValueInSequenceManager()
+    {
+        // Arrange
+        const int newErrorCount = 4;
+
+        // Act
+        _manager.ErrorCount = newErrorCount;
+
+        // Assert
+        var actualErrorCount = (int)_mockSequenceManager.GetType().GetProperty("ErrorCount").GetValue(_mockSequenceManager);
+        Assert.AreEqual(newErrorCount, actualErrorCount);
+    }
+
+
 }

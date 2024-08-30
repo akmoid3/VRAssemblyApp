@@ -68,47 +68,88 @@ public class Manager : MonoBehaviour
     }
 
     List<Fastener> fasteners = new List<Fastener>();
+
     private void Update()
     {
         if (stateManager.CurrentState == State.PlayBack)
         {
-            hintManager.HighlightComponentToPlace(AssemblySequence, CurrentStep, components);
+            ProcessPlaybackState();
+        }
+    }
 
-            ComponentData componentData = AssemblySequence[CurrentStep];
-            if (componentData != null)
+    private void ProcessPlaybackState()
+    {
+        HighlightComponentToPlace();
+
+        var componentData = AssemblySequence[CurrentStep];
+        if (componentData != null)
+        {
+            ProcessComponentPlacement(componentData);
+        }
+    }
+
+    private void HighlightComponentToPlace()
+    {
+        hintManager.HighlightComponentToPlace(AssemblySequence, CurrentStep, components);
+    }
+
+    private void ProcessComponentPlacement(ComponentData componentData)
+    {
+        foreach (var component in components)
+        {
+            ComponentObject componentObject = component.GetComponent<ComponentObject>();
+            if (IsTargetComponent(component, componentData, componentObject))
             {
-                foreach (var component in components)
-                {
-                    ComponentObject componentObject = component.GetComponent<ComponentObject>();
-                    if (component.name == componentData.componentName || (componentObject.GetGroup() != ComponentObject.Group.None))
-                    {
-                        Fastener fastener = component.GetComponent<Fastener>();
-                        if (fasteners.Contains(fastener))
-                            fastener = null;
-                        if (fastener != null && componentData.toolName != "null")
-                        {
-                            fastener.CorrectToolName = componentData.toolName;
-                        }
-                        if (fastener != null && fastener.IsStopped)
-                        {
-                            fasteners.Add(fastener);
-                            if (interactor != null)
-                            {
-                                // Find the snappoint with the same name as the current component
-                                Transform correctSnappoint = interactor.transform.GetChild(CurrentStep);
-
-                                if (correctSnappoint != null)
-                                {
-                                    correctSnappoint.GetComponent<MeshRenderer>().enabled = false;
-                                }
-                            }
-                            AudioManager.Instance.PlayPopSound();
-                            ValidateComponent(component.gameObject);
-                            IncrementCurrentStep();
-                        }
-                    }
-                }
+                HandleComponentFastening(component, componentData);
             }
+        }
+    }
+
+    private bool IsTargetComponent(Transform component, ComponentData componentData, ComponentObject componentObject)
+    {
+        return component.name == componentData.componentName || componentObject.GetGroup() != ComponentObject.Group.None;
+    }
+
+    private void HandleComponentFastening(Transform component, ComponentData componentData)
+    {
+        Fastener fastener = component.GetComponent<Fastener>();
+        if (fasteners.Contains(fastener))
+            fastener = null;
+
+        if (fastener != null)
+        {
+            if (!string.IsNullOrEmpty(componentData.toolName))
+            {
+                fastener.CorrectToolName = componentData.toolName;
+            }
+
+            if (fastener.IsStopped)
+            {
+                OnFastenerStopped(component, fastener);
+            }
+        }
+    }
+
+    private void OnFastenerStopped(Transform component, Fastener fastener)
+    {
+        fasteners.Add(fastener);
+        if (interactor != null)
+        {
+            HideCorrectSnapPoint();
+        }
+
+        AudioManager.Instance.PlayPopSound();
+        ValidateComponent(component.gameObject);
+        IncrementCurrentStep();
+    }
+
+    private void HideCorrectSnapPoint()
+    {
+        Transform correctSnappoint = interactor.transform.GetChild(CurrentStep);
+
+        if (correctSnappoint != null)
+        {
+            correctSnappoint.GetComponent<MeshRenderer>().enabled = false;
         }
     }
 
@@ -232,7 +273,7 @@ public class Manager : MonoBehaviour
         }
     }
 
-    private void InitializeComponentsType()
+    public void InitializeComponentsType()
     {
         foreach (Transform component in components)
         {
@@ -314,7 +355,7 @@ public class Manager : MonoBehaviour
         sequenceManager.ValidateComponent(component);
     }
 
-    private void PlaceInitialComponent()
+    public void PlaceInitialComponent()
     {
         automaticPlacementManager.PlaceInitialComponent(AssemblySequence, components, interactor);
     }
@@ -323,21 +364,6 @@ public class Manager : MonoBehaviour
     public void PlaceAllComponentsGradually(float delayBetweenComponents)
     {
         automaticPlacementManager.PlaceAllComponentsGradually(delayBetweenComponents, interactor, AssemblySequence, components, toolManager);
-    }
-
-    private void RemoveAllComponentsExceptTransform(GameObject gameObject)
-    {
-        // Get all components attached to the GameObject
-        var components = gameObject.GetComponents<Component>();
-
-        // Loop through each component and destroy it, except for the Transform component
-        foreach (var component in components)
-        {
-            if (!(component is Transform))
-            {
-                Destroy(component);
-            }
-        }
     }
 
     public void ShowHint()
