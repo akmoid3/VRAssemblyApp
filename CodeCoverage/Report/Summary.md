@@ -1,25 +1,25 @@
 ﻿# Summary
 |||
 |:---|:---|
-| Generated on: | 30/08/2024 - 09:54:09 |
-| Parser: | MultiReportParser (159x OpenCoverParser) |
+| Generated on: | 30/08/2024 - 10:45:58 |
+| Parser: | MultiReportParser (169x OpenCoverParser) |
 | Assemblies: | 1 |
 | Classes: | 45 |
 | Files: | 43 |
-| Covered lines: | 1666 |
-| Uncovered lines: | 1091 |
+| Covered lines: | 1697 |
+| Uncovered lines: | 1060 |
 | Coverable lines: | 2757 |
 | Total lines: | 4596 |
-| Line coverage: | 60.4% (1666 of 2757) |
+| Line coverage: | 61.5% (1697 of 2757) |
 | Covered branches: | 0 |
 | Total branches: | 0 |
-| Covered methods: | 295 |
+| Covered methods: | 300 |
 | Total methods: | 396 |
-| Method coverage: | 74.4% (295 of 396) |
+| Method coverage: | 75.7% (300 of 396) |
 
 |**Name**|**Covered**|**Uncovered**|**Coverable**|**Total**|**Line coverage**|**Covered**|**Total**|**Branch coverage**|**Covered**|**Total**|**Method coverage**|
 |:---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|
-|**Scripts**|**1666**|**1091**|**2757**|**4835**|**60.4%**|**0**|**0**|****|**295**|**396**|**74.4%**|
+|**Scripts**|**1697**|**1060**|**2757**|**4835**|**61.5%**|**0**|**0**|****|**300**|**396**|**75.7%**|
 |ApplicationQuit|3|0|3|17|100%|0|0||1|1|100%|
 |AudioManager|49|0|49|77|100%|0|0||7|7|100%|
 |AutomaticPlacementManager|95|17|112|179|84.8%|0|0||10|10|100%|
@@ -41,7 +41,7 @@
 |HintManager|4|56|60|111|6.6%|0|0||1|8|12.5%|
 |InitializeComponentManager|0|88|88|153|0%|0|0||0|12|0%|
 |InitializedDataManager|57|3|60|112|95%|0|0||5|5|100%|
-|InteractionManager|9|56|65|100|13.8%|0|0||3|10|30%|
+|InteractionManager|40|25|65|100|61.5%|0|0||8|10|80%|
 |JsonData|1|0|1|112|100%|0|0||1|1|100%|
 |MakeGrabbable|99|20|119|183|83.1%|0|0||18|22|81.8%|
 |Manager|115|109|224|362|51.3%|0|0||36|46|78.2%|
