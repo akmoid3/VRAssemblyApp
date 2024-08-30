@@ -157,8 +157,14 @@ public class Manager : MonoBehaviour
     private void IncrementCurrentStep()
     {
         if (sequenceManager)
-
+        {
             sequenceManager.IncrementCurrentStep();
+            if (AssemblySequence != null && CurrentStep >= AssemblySequence.Count)
+            {
+                StateManager.Instance.UpdateState(State.Finish);
+                return;
+            }
+        }
     }
 
     public void IncrementCurrentError()
