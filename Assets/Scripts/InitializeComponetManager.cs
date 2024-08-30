@@ -6,27 +6,32 @@ using UnityEngine.UI;
 
 public class InitializeComponentManager : MonoBehaviour
 {
-    [SerializeField] private TMP_Dropdown componentDropdown;
-    [SerializeField] private TMP_Dropdown groupDropdown;
-    [SerializeField] private GameObject canvasInit;
-    [SerializeField] private Button finishedButton;
-    [SerializeField] private Button loadInstructionPDF;
-    [SerializeField] private TextMeshProUGUI componentName;
+    public TMP_Dropdown componentDropdown;
+    public TMP_Dropdown groupDropdown;
+    public GameObject canvasInit;
+    public Button finishedButton;
+    public Button loadInstructionPDF;
+    public TextMeshProUGUI componentName;
     [SerializeField] private FileBrowserManager fileBrowserManager;
 
-    private void Awake()
+    public FileBrowserManager FileBrowserManager { get => fileBrowserManager; set => fileBrowserManager = value; }
+
+    public void Awake()
     {
         StateManager.OnStateChanged += SetPanelActive;
-        finishedButton.onClick.AddListener(OnFinishedButtonClick);
-        loadInstructionPDF.onClick.AddListener(OpenFileBrowser);
+        if (finishedButton != null)
+            finishedButton.onClick.AddListener(OnFinishedButtonClick);
+        if (loadInstructionPDF != null)
+
+            loadInstructionPDF.onClick.AddListener(OpenFileBrowser);
     }
 
-    private void OpenFileBrowser()
+    public void OpenFileBrowser()
     {
-        fileBrowserManager.ShowDialog("Instructions",".pdf");
+        fileBrowserManager.ShowDialog("Instructions", ".pdf");
     }
 
-    private void OnFinishedButtonClick()
+    public void OnFinishedButtonClick()
     {
         StateManager.Instance.UpdateState(State.SelectingMode);
     }
@@ -34,7 +39,11 @@ public class InitializeComponentManager : MonoBehaviour
     private void OnDestroy()
     {
         StateManager.OnStateChanged -= SetPanelActive;
-        finishedButton.onClick.RemoveListener(OnFinishedButtonClick);
+        if (finishedButton != null)
+
+            finishedButton.onClick.RemoveListener(OnFinishedButtonClick);
+        if (loadInstructionPDF != null)
+
         loadInstructionPDF.onClick.RemoveListener(OpenFileBrowser);
 
     }
@@ -44,7 +53,7 @@ public class InitializeComponentManager : MonoBehaviour
         canvasInit.SetActive(state == State.Initialize);
     }
 
-    void Start()
+    public void Start()
     {
         // Populate the dropdown options
         PopulateComponentDropdown();
@@ -55,20 +64,20 @@ public class InitializeComponentManager : MonoBehaviour
         groupDropdown.onValueChanged.AddListener(OnGroupDropdownValueChanged);  // New group dropdown listener
 
         // Update dropdowns to reflect the current component's type and group
-        UpdateDropdownsForSelectedComponent();
+        UpdateDropdownsForSelectedComponent(Manager.Instance.CurrentSelectedComponent);
     }
 
-    private void Update()
+    public void Update()
     {
         GameObject selectedComponent = Manager.Instance.CurrentSelectedComponent;
         if (selectedComponent != null)
         {
             componentName.text = selectedComponent.name;
-            UpdateDropdownsForSelectedComponent();
+            UpdateDropdownsForSelectedComponent(selectedComponent);
         }
     }
 
-    void PopulateComponentDropdown()
+    public void PopulateComponentDropdown()
     {
         // Clear existing options
         componentDropdown.ClearOptions();
@@ -84,7 +93,7 @@ public class InitializeComponentManager : MonoBehaviour
         componentDropdown.AddOptions(options);
     }
 
-    void PopulateGroupDropdown()
+    public void PopulateGroupDropdown()
     {
         // Clear existing options
         groupDropdown.ClearOptions();
@@ -100,7 +109,7 @@ public class InitializeComponentManager : MonoBehaviour
         groupDropdown.AddOptions(options);
     }
 
-    void OnComponentDropdownValueChanged(int index)
+    public void OnComponentDropdownValueChanged(int index)
     {
         // Update selected component type based on dropdown selection
         ComponentObject.ComponentType selectedType = (ComponentObject.ComponentType)index;
@@ -117,7 +126,7 @@ public class InitializeComponentManager : MonoBehaviour
         }
     }
 
-    void OnGroupDropdownValueChanged(int index)
+    public void OnGroupDropdownValueChanged(int index)
     {
         // Update selected component group based on dropdown selection
         ComponentObject.Group selectedGroup = (ComponentObject.Group)index;
@@ -134,9 +143,8 @@ public class InitializeComponentManager : MonoBehaviour
         }
     }
 
-    void UpdateDropdownsForSelectedComponent()
+    public void UpdateDropdownsForSelectedComponent(GameObject selectedComponent)
     {
-        GameObject selectedComponent = Manager.Instance.CurrentSelectedComponent;
 
         if (selectedComponent != null)
         {

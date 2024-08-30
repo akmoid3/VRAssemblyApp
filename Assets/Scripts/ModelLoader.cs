@@ -31,7 +31,6 @@ public class ModelLoader : MonoBehaviour, IModelLoader
         }
         else
         {
-            Debug.LogError("Loading glb failed!");
             return null;
         }
     }

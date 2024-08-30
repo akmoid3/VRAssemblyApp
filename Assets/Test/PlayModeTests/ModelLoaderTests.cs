@@ -1,29 +1,35 @@
+using UnityEngine.TestTools;
 using NUnit.Framework;
-using Moq;
+using System.Collections;
 using UnityEngine;
-using System.Threading.Tasks;
 
-[TestFixture]
-public class ModelLoaderTests
+public class ModelLoaderPlayModeTests
 {
-    private Mock<IModelLoader> mockLoader;
-
-    [SetUp]
-    public void SetUp()
+    [UnityTest]
+    public IEnumerator TestModelLoaderWithRealFile()
     {
-        mockLoader = new Mock<IModelLoader>();
+        var loader = new GameObject().AddComponent<ModelLoader>();
+        var loadTask = loader.LoadFromFile("Assets/ModelsTest/Test.glb");
+
+        // Wait for the load operation to complete
+        yield return new WaitUntil(() => loadTask.IsCompleted);
+
+        // Check results
+        Assert.IsNotNull(loadTask.Result);
+        // Further assertions as necessary
     }
 
-    [Test]
-    public async void LoadFromFile_ShouldReturnGameObject()
+    [UnityTest]
+    public IEnumerator TestModelLoaderWithNonValidFile_()
     {
-        string filePath = "test.glb";
-        var testGameObject = new GameObject();
-        mockLoader.Setup(x => x.LoadFromFile(It.IsAny<string>())).ReturnsAsync(testGameObject);
+        var loader = new GameObject().AddComponent<ModelLoader>();
+        var loadTask = loader.LoadFromFile("Assets/ModelsTest/nonvalid.glb");
 
-        var result = await mockLoader.Object.LoadFromFile(filePath);
+        // Wait for the load operation to complete
+        yield return new WaitUntil(() => loadTask.IsCompleted);
 
-        Assert.IsNotNull(result);
-        Assert.AreEqual(testGameObject, result);
+        // Check results
+        Assert.IsNull(loadTask.Result);
+        // Further assertions as necessary
     }
 }

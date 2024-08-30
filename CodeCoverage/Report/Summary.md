@@ -1,53 +1,53 @@
 ﻿# Summary
 |||
 |:---|:---|
-| Generated on: | 30/08/2024 - 19:13:21 |
-| Parser: | MultiReportParser (221x OpenCoverParser) |
+| Generated on: | 30/08/2024 - 21:56:44 |
+| Parser: | MultiReportParser (231x OpenCoverParser) |
 | Assemblies: | 1 |
 | Classes: | 45 |
 | Files: | 43 |
-| Covered lines: | 2129 |
-| Uncovered lines: | 694 |
-| Coverable lines: | 2823 |
-| Total lines: | 4665 |
-| Line coverage: | 75.4% (2129 of 2823) |
+| Covered lines: | 2316 |
+| Uncovered lines: | 453 |
+| Coverable lines: | 2769 |
+| Total lines: | 4675 |
+| Line coverage: | 83.6% (2316 of 2769) |
 | Covered branches: | 0 |
 | Total branches: | 0 |
-| Covered methods: | 377 |
-| Total methods: | 457 |
-| Method coverage: | 82.4% (377 of 457) |
+| Covered methods: | 365 |
+| Total methods: | 423 |
+| Method coverage: | 86.2% (365 of 423) |
 
 |**Name**|**Covered**|**Uncovered**|**Coverable**|**Total**|**Line coverage**|**Covered**|**Total**|**Branch coverage**|**Covered**|**Total**|**Method coverage**|
 |:---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|
-|**Scripts**|**2129**|**694**|**2823**|**4904**|**75.4%**|**0**|**0**|****|**377**|**457**|**82.4%**|
+|**Scripts**|**2316**|**453**|**2769**|**4914**|**83.6%**|**0**|**0**|****|**365**|**423**|**86.2%**|
 |ApplicationQuit|3|0|3|17|100%|0|0||1|1|100%|
 |AudioManager|49|0|49|77|100%|0|0||7|7|100%|
 |AutomaticPlacementManager|96|17|113|180|84.9%|0|0||10|10|100%|
 |BaseHammer|6|0|6|16|100%|0|0||2|2|100%|
-|BaseScrewDriver|6|1|7|18|85.7%|0|0||7|7|100%|
+|BaseScrewDriver|6|0|6|18|100%|0|0||6|6|100%|
 |ComponentObject|23|0|23|61|100%|0|0||9|9|100%|
-|ComponentPositioner|129|93|222|319|58.1%|0|0||27|27|100%|
+|ComponentPositioner|210|14|224|321|93.7%|0|0||27|29|93.1%|
 |ConveyerLights|40|0|40|66|100%|0|0||8|8|100%|
 |DropDownManager|14|8|22|41|63.6%|0|0||2|3|66.6%|
-|ElectricScrewDriver|50|28|78|90|64.1%|0|0||15|20|75%|
+|ElectricScrewDriver|50|13|63|90|79.3%|0|0||9|12|75%|
 |Extensions|27|0|27|38|100%|0|0||1|1|100%|
 |Fastener|100|31|131|210|76.3%|0|0||22|22|100%|
 |FileBrowserManager|30|6|36|81|83.3%|0|0||3|3|100%|
 |FileChecker|8|0|8|19|100%|0|0||1|1|100%|
 |FileMonitor|41|1|42|86|97.6%|0|0||9|9|100%|
 |FinishManager|0|23|23|45|0%|0|0||0|5|0%|
-|HandMenuController|0|14|14|32|0%|0|0||0|3|0%|
+|HandMenuController|0|14|14|33|0%|0|0||0|3|0%|
 |HandMenuManager|282|4|286|449|98.6%|0|0||35|35|100%|
 |HintManager|5|55|60|111|8.3%|0|0||3|8|37.5%|
-|InitializeComponentManager|0|88|88|153|0%|0|0||0|12|0%|
+|InitializeComponentManager|88|4|92|161|95.6%|0|0||14|14|100%|
 |InitializedDataManager|57|3|60|112|95%|0|0||5|5|100%|
 |InteractionManager|40|25|65|100|61.5%|0|0||8|10|80%|
 |JsonData|1|0|1|112|100%|0|0||1|1|100%|
 |MakeGrabbable|99|20|119|183|83.1%|0|0||18|22|81.8%|
-|Manager|221|60|281|395|78.6%|0|0||71|73|97.2%|
+|Manager|222|23|245|395|90.6%|0|0||51|52|98%|
 |ManualScrewDriver|25|7|32|60|78.1%|0|0||4|4|100%|
 |ModeChooserManager|0|40|40|74|0%|0|0||0|8|0%|
-|ModelLoader|0|18|18|39|0%|0|0||0|1|0%|
+|ModelLoader|17|0|17|38|100%|0|0||1|1|100%|
 |ModelSelectionManager|0|19|19|41|0%|0|0||0|5|0%|
 |Nail|69|0|69|115|100%|0|0||6|6|100%|
 |ObjectData|1|0|1|127|100%|0|0||1|1|100%|
@@ -57,7 +57,7 @@
 |RecordManager|0|15|15|33|0%|0|0||0|4|0%|
 |SaveSequence|44|3|47|127|93.6%|0|0||8|8|100%|
 |Screw|84|0|84|117|100%|0|0||7|7|100%|
-|SequenceManager|45|16|61|99|73.7%|0|0||15|23|65.2%|
+|SequenceManager|45|9|54|99|83.3%|0|0||15|15|100%|
 |SequenceReader|92|12|104|173|88.4%|0|0||8|8|100%|
 |SimpleHammer|29|3|32|62|90.6%|0|0||5|5|100%|
 |SnapToPosition|78|14|92|168|84.7%|0|0||6|10|60%|

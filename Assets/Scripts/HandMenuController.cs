@@ -9,12 +9,13 @@ public class HandMenuController : MonoBehaviour
     [SerializeField]
     private InputActionReference toggleReference;
 
-    private void Awake()
+
+    public void Awake()
     {
         toggleReference.action.started += Toggle;
         handMenu.SetActive(false);
     }
-  
+
     private void OnDestroy()
     {
         toggleReference.action.started -= Toggle;
@@ -27,6 +28,6 @@ public class HandMenuController : MonoBehaviour
             bool isActive = !handMenu.activeSelf;
             handMenu.SetActive(isActive);
         }
-           
+
     }
 }

@@ -1,6 +1,7 @@
 using NUnit.Framework;
 using System.Collections;
 using System.Collections.Generic;
+using UnityEditor.Animations;
 using UnityEngine;
 using UnityEngine.TestTools;
 
@@ -133,6 +134,10 @@ public class ComponentPositionerTests
     [Test]
     public void TestScrollingLeft()
     {
+        componentPositioner.Parent = new GameObject();
+        GameObject child1 = new GameObject();
+        child1.AddComponent<MeshRenderer>();
+        child1.transform.SetParent(componentPositioner.Parent.transform);
         componentPositioner.Start();
         componentPositioner.TableRoll.GetComponent<MeshRenderer>().bounds = new Bounds(Vector3.zero, new Vector3(5, 5, 5));
 
@@ -146,8 +151,12 @@ public class ComponentPositionerTests
     [Test]
     public void TestScrollingRight()
     {
+        componentPositioner.Parent = new GameObject();
+        GameObject child1 = new GameObject();
+        child1.AddComponent<MeshRenderer>();
+        child1.transform.SetParent(componentPositioner.Parent.transform);
         componentPositioner.Start();
-        componentPositioner.TableRoll.GetComponent<MeshRenderer>().bounds = new Bounds(Vector3.zero, new Vector3(5, 5, 5));
+        componentPositioner.TableRoll.GetComponent<MeshRenderer>().bounds = new Bounds(Vector3.zero, new Vector3(1, 1, 1));
 
         componentPositioner.ButtonRightPressed = true;
         componentPositioner.Update();
@@ -166,6 +175,18 @@ public class ComponentPositionerTests
 
         Assert.IsFalse(componentPositioner.AudioSource.isPlaying, "Audio should stop when scrolling is inactive.");
         Assert.IsFalse(componentPositioner.IsScrolling, "Scrolling should be inactive when no button is pressed.");
+    }
+
+    [Test]
+    public void TestStartScrolling()
+    {
+        AudioSource audioSource = componentPositioner.gameObject.AddComponent<AudioSource>();
+        componentPositioner.AudioSource = audioSource;
+
+        componentPositioner.AudioSource.Stop();
+        componentPositioner.StartScrolling();
+
+        Assert.IsTrue(componentPositioner.IsScrolling);
     }
 
     [Test]

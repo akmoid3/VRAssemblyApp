@@ -44,6 +44,7 @@ public class ComponentPositioner : MonoBehaviour
     public AudioClip LoopScrollClip { get => loopScrollClip; set => loopScrollClip = value; }
     public float ScrollSpeed { get => scrollSpeed; set => scrollSpeed = value; }
     public bool IsScrolling { get => isScrolling; set => isScrolling = value; }
+    public AudioClip LoopScrollClip1 { get => loopScrollClip; set => loopScrollClip = value; }
 
     public void Start()
     {
@@ -66,7 +67,7 @@ public class ComponentPositioner : MonoBehaviour
 
     public void Update()
     {
-        if (buttonLeftPressed) 
+        if (buttonLeftPressed)
         {
             isScrollingLeft = true;
             StartScrolling();
@@ -293,7 +294,8 @@ public class ComponentPositioner : MonoBehaviour
             audioSource.Play();
 
             // Schedule the looped clip to start after the start clip
-            Invoke("StartLoopingSound", startScrollClip.length);
+            if (startScrollClip != null)
+                Invoke("StartLoopingSound", startScrollClip.length);
         }
 
         isScrolling = true;
