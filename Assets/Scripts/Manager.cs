@@ -171,7 +171,8 @@ public class Manager : MonoBehaviour
 
     public void RemoveComponentFromSequence()
     {
-        sequenceManager.RemoveComponentFromSequence(CurrentSelectedComponent, model.name);
+        if (sequenceManager != null)
+            sequenceManager.RemoveComponentFromSequence(CurrentSelectedComponent, model.name);
     }
 
 

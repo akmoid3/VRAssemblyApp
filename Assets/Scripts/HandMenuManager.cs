@@ -9,7 +9,7 @@ public class HandMenuManager : MonoBehaviour
     private Manager manager;
     [SerializeField] private float increment = 0.1f;
 
-    [SerializeField] private GameObject handMenuPanel;
+    [SerializeField] public GameObject handMenuPanel;
 
     [SerializeField] private TMP_Text componentNameText;
     [SerializeField] private TMP_Text positionXText;
@@ -36,7 +36,7 @@ public class HandMenuManager : MonoBehaviour
     [SerializeField] private Button saveComponentButton;
     [SerializeField] private Button modifyButton;
     [SerializeField] private Button addStepButton;
-    [SerializeField] private Button groupSelectionButton;
+    [SerializeField] public Button groupSelectionButton;
     [SerializeField] private Button removeButton;
 
     [SerializeField] private Button groupSelectionButton2;
@@ -51,7 +51,7 @@ public class HandMenuManager : MonoBehaviour
     [SerializeField] private bool modifying = false;
     [SerializeField] private bool newStep = false;
 
-    [SerializeField] private GameObject groupPanel;
+    [SerializeField] public GameObject groupPanel;
 
     private XRInteractionManager interactionManager;
 
@@ -76,31 +76,31 @@ public class HandMenuManager : MonoBehaviour
         };
 
         // Set up button listeners
-        addPosXButton.onClick.AddListener(() => AddToPosition(Vector3.right * increment));
-        addPosYButton.onClick.AddListener(() => AddToPosition(Vector3.up * increment));
-        addPosZButton.onClick.AddListener(() => AddToPosition(Vector3.forward * increment));
-        addRotXButton.onClick.AddListener(() => AddToRotation(Vector3.right * increment));
-        addRotYButton.onClick.AddListener(() => AddToRotation(Vector3.up * increment));
-        addRotZButton.onClick.AddListener(() => AddToRotation(Vector3.forward * increment));
+        addPosXButton.onClick.AddListener(() => AddToPosition(Vector3.right * increment,manager.CurrentSelectedComponent));
+        addPosYButton.onClick.AddListener(() => AddToPosition(Vector3.up * increment, manager.CurrentSelectedComponent));
+        addPosZButton.onClick.AddListener(() => AddToPosition(Vector3.forward * increment, manager.CurrentSelectedComponent));
+        addRotXButton.onClick.AddListener(() => AddToRotation(Vector3.right * increment, manager.CurrentSelectedComponent));
+        addRotYButton.onClick.AddListener(() => AddToRotation(Vector3.up * increment, manager.CurrentSelectedComponent));
+        addRotZButton.onClick.AddListener(() => AddToRotation(Vector3.forward * increment, manager.CurrentSelectedComponent));
 
-        reducePosXButton.onClick.AddListener(() => AddToPosition(Vector3.left * increment));
-        reducePosYButton.onClick.AddListener(() => AddToPosition(Vector3.down * increment));
-        reducePosZButton.onClick.AddListener(() => AddToPosition(Vector3.back * increment));
-        reduceRotXButton.onClick.AddListener(() => AddToRotation(Vector3.left * increment));
-        reduceRotYButton.onClick.AddListener(() => AddToRotation(Vector3.down * increment));
-        reduceRotZButton.onClick.AddListener(() => AddToRotation(Vector3.back * increment));
+        reducePosXButton.onClick.AddListener(() => AddToPosition(Vector3.left * increment, manager.CurrentSelectedComponent));
+        reducePosYButton.onClick.AddListener(() => AddToPosition(Vector3.down * increment, manager.CurrentSelectedComponent));
+        reducePosZButton.onClick.AddListener(() => AddToPosition(Vector3.back * increment, manager.CurrentSelectedComponent));
+        reduceRotXButton.onClick.AddListener(() => AddToRotation(Vector3.left * increment, manager.CurrentSelectedComponent));
+        reduceRotYButton.onClick.AddListener(() => AddToRotation(Vector3.down * increment, manager.CurrentSelectedComponent));
+        reduceRotZButton.onClick.AddListener(() => AddToRotation(Vector3.back * increment, manager.CurrentSelectedComponent));
 
-        modifyButton.onClick.AddListener(() => ModifyComponent());
-        addStepButton.onClick.AddListener(() => ModifyComponent());
-        removeButton.onClick.AddListener(() => RemoveComponent());
-        modifyButton.onClick.AddListener(() => Modifying());
-        addStepButton.onClick.AddListener(() => NewStep());
+        modifyButton.onClick.AddListener(() => ModifyComponent(Manager.CurrentSelectedComponent));
+        addStepButton.onClick.AddListener(() => ModifyComponent(Manager.CurrentSelectedComponent));
+        removeButton.onClick.AddListener(() => RemoveComponent(Manager.CurrentSelectedComponent));
+        modifyButton.onClick.AddListener(() => SetModifyingTrue());
+        addStepButton.onClick.AddListener(() => SetNewStepTrue());
 
         groupSelectionButton.onClick.AddListener(() => GroupSelection());
 
         groupSelectionButton2.onClick.AddListener(() => GroupSelection());
 
-        saveComponentButton.onClick.AddListener(() => SaveComponent());
+        saveComponentButton.onClick.AddListener(() => SaveComponent(Manager.CurrentSelectedComponent));
 
         // Set up dropdown listener
         incrementDropdown.onValueChanged.AddListener(UpdateIncrement);
@@ -138,7 +138,7 @@ public class HandMenuManager : MonoBehaviour
                         addStepButton.gameObject.SetActive(true);
                         removeButton.gameObject.SetActive(true);
 
-                        SetTransformsButtonsActive(false);
+                        SetTransformsButtonsActive(false, allButtonsToDeactivate);
                     }
                     else
                     {
@@ -146,7 +146,7 @@ public class HandMenuManager : MonoBehaviour
                         addStepButton.gameObject.SetActive(false);
                         removeButton.gameObject.SetActive(false);
 
-                        SetTransformsButtonsActive(true);
+                        SetTransformsButtonsActive(true,allButtonsToDeactivate);
                     }
                 }
             }
@@ -164,7 +164,7 @@ public class HandMenuManager : MonoBehaviour
             modifyButton.gameObject.SetActive(false);
             addStepButton.gameObject.SetActive(false);
             removeButton.gameObject.SetActive(false);
-            SetTransformsButtonsActive(false);
+            SetTransformsButtonsActive(false,allButtonsToDeactivate);
         }
 
         if (group && group.transform.childCount > 0)
@@ -177,17 +177,17 @@ public class HandMenuManager : MonoBehaviour
         }
     }
 
-    private void Modifying()
+    public void SetModifyingTrue()
     {
         modifying = true;
     }
 
-    private void NewStep()
+    public void SetNewStepTrue()
     {
         newStep = true;
     }
 
-    private void SetTransformsButtonsActive(bool isActive)
+    public void SetTransformsButtonsActive(bool isActive, List<Button> allButtonsToDeactivate)
     {
         foreach (var button in allButtonsToDeactivate)
         {
@@ -196,25 +196,24 @@ public class HandMenuManager : MonoBehaviour
     }
 
 
-    private void AddToPosition(Vector3 increment)
+    public void AddToPosition(Vector3 increment, GameObject currentSelectedComponent)
     {
-        if (manager.CurrentSelectedComponent != null)
+        if (currentSelectedComponent != null)
         {
-            manager.CurrentSelectedComponent.transform.position += increment;
+            currentSelectedComponent.transform.position += increment;
         }
     }
 
-    private void AddToRotation(Vector3 increment)
+    public void AddToRotation(Vector3 increment, GameObject currentSelectedComponent)
     {
-        if (manager.CurrentSelectedComponent != null)
+        if (currentSelectedComponent != null)
         {
-            manager.CurrentSelectedComponent.transform.eulerAngles += increment;
+            currentSelectedComponent.transform.eulerAngles += increment;
         }
     }
 
-    private void ModifyComponent()
+    public void ModifyComponent(GameObject currentSelectedComponent)
     {
-        GameObject currentSelectedComponent = manager.CurrentSelectedComponent;
 
         if (currentSelectedComponent != null)
         {
@@ -238,15 +237,14 @@ public class HandMenuManager : MonoBehaviour
         }
     }
 
-    private void RemoveComponent()
+    public void RemoveComponent(GameObject currentSelectedComponent)
     {
-        ModifyComponent();
+        ModifyComponent(currentSelectedComponent);
         manager.RemoveComponentFromSequence();
     }
 
-    private void SaveComponent()
+    public void SaveComponent(GameObject currentSelectedComponent)
     {
-        GameObject currentSelectedComponent = manager.CurrentSelectedComponent;
 
         if (currentSelectedComponent != null)
         {
@@ -295,7 +293,7 @@ public class HandMenuManager : MonoBehaviour
         }
     }
 
-    private void GroupSelection()
+    public void GroupSelection()
     {
         if (group != null)
         {
@@ -353,8 +351,12 @@ public class HandMenuManager : MonoBehaviour
                 grabInteractable.selectMode = InteractableSelectMode.Multiple;
                 grabInteractable.useDynamicAttach = true;
                 grabInteractable.throwOnDetach = false;
-                grabInteractable.selectEntered.AddListener(manager.OnSelectEnter);
-                grabInteractable.selectExited.AddListener(manager.OnSelectExit);
+
+                if(manager != null) {
+                    grabInteractable.selectEntered.AddListener(manager.OnSelectEnter);
+                    grabInteractable.selectExited.AddListener(manager.OnSelectExit);
+                }
+               
              
 
                 grabInteractable.colliders.Clear();
@@ -406,7 +408,15 @@ public class HandMenuManager : MonoBehaviour
 
     private static readonly float[] Increments = { 0.1f, 0.05f, 0.01f, 1f };
 
-    private void UpdateIncrement(int index)
+    public float Increment { get => increment; set => increment = value; }
+    public GameObject Group { get => group; set => group = value; }
+    public XRInteractionManager InteractionManager { get => interactionManager; set => interactionManager = value; }
+    public bool IsGrabInteractableEnabled { get => isGrabInteractableEnabled; set => isGrabInteractableEnabled = value; }
+    public Manager Manager { get => manager; set => manager = value; }
+    public bool NewStep { get => newStep; set => newStep = value; }
+    public bool Modifying { get => modifying; set => modifying = value; }
+
+    public void UpdateIncrement(int index)
     {
         if (index >= 0 && index < Increments.Length)
         {
