@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <CoverageSession xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" Version="0.0.0.0">
-  <Summary numSequencePoints="121" visitedSequencePoints="98" numBranchPoints="0" visitedBranchPoints="0" sequenceCoverage="80.99" branchCoverage="0.0" maxCyclomaticComplexity="5" minCyclomaticComplexity="1" maxCrapScore="6" minCrapScore="1" visitedClasses="9" numClasses="9" visitedMethods="25" numMethods="26" />
+  <Summary numSequencePoints="122" visitedSequencePoints="99" numBranchPoints="0" visitedBranchPoints="0" sequenceCoverage="81.15" branchCoverage="0.0" maxCyclomaticComplexity="5" minCyclomaticComplexity="1" maxCrapScore="6" minCrapScore="1" visitedClasses="9" numClasses="9" visitedMethods="25" numMethods="26" />
   <Modules>
     <Module>
-      <Summary numSequencePoints="121" visitedSequencePoints="98" numBranchPoints="0" visitedBranchPoints="0" sequenceCoverage="80.99" branchCoverage="0.0" maxCyclomaticComplexity="5" minCyclomaticComplexity="1" maxCrapScore="6" minCrapScore="1" visitedClasses="9" numClasses="9" visitedMethods="25" numMethods="26" />
+      <Summary numSequencePoints="122" visitedSequencePoints="99" numBranchPoints="0" visitedBranchPoints="0" sequenceCoverage="81.15" branchCoverage="0.0" maxCyclomaticComplexity="5" minCyclomaticComplexity="1" maxCrapScore="6" minCrapScore="1" visitedClasses="9" numClasses="9" visitedMethods="25" numMethods="26" />
       <ModuleTime>0001-01-01T00:00:00</ModuleTime>
       <ModuleName>Scripts</ModuleName>
       <Files>
@@ -503,7 +503,7 @@
           </Methods>
         </Class>
         <Class>
-          <Summary numSequencePoints="35" visitedSequencePoints="22" numBranchPoints="0" visitedBranchPoints="0" sequenceCoverage="62.86" branchCoverage="0.0" maxCyclomaticComplexity="3" minCyclomaticComplexity="1" maxCrapScore="6" minCrapScore="1" visitedClasses="1" numClasses="1" visitedMethods="9" numMethods="10" />
+          <Summary numSequencePoints="36" visitedSequencePoints="23" numBranchPoints="0" visitedBranchPoints="0" sequenceCoverage="63.89" branchCoverage="0.0" maxCyclomaticComplexity="3" minCyclomaticComplexity="1" maxCrapScore="6" minCrapScore="1" visitedClasses="1" numClasses="1" visitedMethods="9" numMethods="10" />
           <FullName>Manager</FullName>
           <Methods>
             <Method visited="true" cyclomaticComplexity="1" nPathComplexity="0" sequenceCoverage="100.0" branchCoverage="0" crapScore="1" isConstructor="false" isStatic="true" isGetter="true" isSetter="false">
@@ -669,23 +669,28 @@
               </SequencePoints>
               <BranchPoints />
             </Method>
-            <Method visited="true" cyclomaticComplexity="1" nPathComplexity="0" sequenceCoverage="100.0" branchCoverage="0" crapScore="1" isConstructor="false" isStatic="false" isGetter="false" isSetter="false">
-              <Summary numSequencePoints="3" visitedSequencePoints="3" numBranchPoints="0" visitedBranchPoints="0" sequenceCoverage="100.0" branchCoverage="0" maxCyclomaticComplexity="1" minCyclomaticComplexity="1" maxCrapScore="1" minCrapScore="1" visitedClasses="0" numClasses="0" visitedMethods="1" numMethods="1" />
-              <MetadataToken>100663596</MetadataToken>
-              <Name>System.Void Manager::OnSelectExit(UnityEngine.XR.Interaction.Toolkit.SelectExitEventArgs)</Name>
+            <Method visited="true" cyclomaticComplexity="2" nPathComplexity="0" sequenceCoverage="100.0" branchCoverage="0" crapScore="2" isConstructor="false" isStatic="false" isGetter="false" isSetter="false">
+              <Summary numSequencePoints="4" visitedSequencePoints="4" numBranchPoints="0" visitedBranchPoints="0" sequenceCoverage="100.0" branchCoverage="0" maxCyclomaticComplexity="2" minCyclomaticComplexity="2" maxCrapScore="2" minCrapScore="2" visitedClasses="0" numClasses="0" visitedMethods="1" numMethods="1" />
+              <MetadataToken>100663599</MetadataToken>
+              <Name>System.Void Manager::InitializeSequence(System.Collections.Generic.List[ComponentData])</Name>
               <FileRef uid="24" />
               <SequencePoints>
-                <SequencePoint vc="1" uspid="424147" ordinal="0" offset="0" sl="185" sc="5" el="185" ec="5" bec="0" bev="0" fileid="24">
+                <SequencePoint vc="1" uspid="424156" ordinal="0" offset="0" sl="202" sc="5" el="202" ec="5" bec="0" bev="0" fileid="24">
                   <TrackedMethodRefs>
                     <TrackedMethodRef uid="0" vc="1" />
                   </TrackedMethodRefs>
                 </SequencePoint>
-                <SequencePoint vc="1" uspid="424148" ordinal="0" offset="1" sl="186" sc="9" el="186" ec="9" bec="0" bev="0" fileid="24">
+                <SequencePoint vc="1" uspid="424157" ordinal="0" offset="1" sl="203" sc="9" el="203" ec="9" bec="0" bev="0" fileid="24">
                   <TrackedMethodRefs>
                     <TrackedMethodRef uid="0" vc="1" />
                   </TrackedMethodRefs>
                 </SequencePoint>
-                <SequencePoint vc="1" uspid="424149" ordinal="0" offset="14" sl="188" sc="5" el="188" ec="5" bec="0" bev="0" fileid="24">
+                <SequencePoint vc="1" uspid="424158" ordinal="0" offset="17" sl="204" sc="13" el="204" ec="13" bec="0" bev="0" fileid="24">
+                  <TrackedMethodRefs>
+                    <TrackedMethodRef uid="0" vc="1" />
+                  </TrackedMethodRefs>
+                </SequencePoint>
+                <SequencePoint vc="1" uspid="424159" ordinal="0" offset="30" sl="205" sc="5" el="205" ec="5" bec="0" bev="0" fileid="24">
                   <TrackedMethodRefs>
                     <TrackedMethodRef uid="0" vc="1" />
                   </TrackedMethodRefs>
@@ -947,7 +952,7 @@
         </Class>
       </Classes>
       <TrackedMethods>
-        <TrackedMethod uid="0" token="100663581" name="System.Void ManagerTests::OnSelectExit_ShouldCallOnSelectExitOnInteractionManager()" strategy="Test" />
+        <TrackedMethod uid="0" token="100663598" name="System.Void ManagerTests::InitializeSequence_ShouldCallInitializeSequenceOnSequenceManager()" strategy="Test" />
       </TrackedMethods>
     </Module>
   </Modules>

@@ -37,7 +37,7 @@ public class HintManager : MonoBehaviour
         }
     }
 
-    private void ShowSnapPoint(SnapToPosition interactor, int currentStep)
+    public void ShowSnapPoint(SnapToPosition interactor, int currentStep)
     {
         // Find the snappoint with the same name as the current component
         Transform correctSnappoint = interactor.transform.GetChild(currentStep);
@@ -66,7 +66,7 @@ public class HintManager : MonoBehaviour
         }
     }
 
-    private IEnumerator HandleHintCooldown(GameObject component)
+    public IEnumerator HandleHintCooldown(GameObject component)
     {
         isWaiting = true;
 
@@ -79,7 +79,7 @@ public class HintManager : MonoBehaviour
         isWaiting = false;
     }
 
-    private IEnumerator ChangeColorTemporarily(GameObject component)
+    public IEnumerator ChangeColorTemporarily(GameObject component)
     {
         MeshRenderer meshRenderer = component.GetComponent<MeshRenderer>();
         if (meshRenderer != null)
