@@ -35,7 +35,7 @@ public class AutomaticPlacementManager : MonoBehaviour
         }
     }
 
-    public void PlaceAllComponentsGradually(float delayBetweenComponents, SnapToPosition interactor, List<ComponentData> assemblySequence, List<Transform> components, ToolManager toolManager)
+    public virtual void PlaceAllComponentsGradually(float delayBetweenComponents, SnapToPosition interactor, List<ComponentData> assemblySequence, List<Transform> components, ToolManager toolManager)
     {
         // Clean up any previous clones before starting again
         CleanupPreviousClones();

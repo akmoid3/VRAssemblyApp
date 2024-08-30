@@ -10,7 +10,7 @@ public class InteractionManager : MonoBehaviour
     [SerializeField] private float outlineWidth = 1.0f;
 
 
-    public void OnSelectEnter(SelectEnterEventArgs args)
+    public virtual void OnSelectEnter(SelectEnterEventArgs args)
     {
         if (args.interactorObject as XRBaseControllerInteractor)
         {
@@ -29,7 +29,7 @@ public class InteractionManager : MonoBehaviour
         }
     }
 
-    public void OnSelectExit(SelectExitEventArgs args)
+    public virtual void OnSelectExit(SelectExitEventArgs args)
     {
         if (args.interactorObject as XRBaseControllerInteractor)
         {
@@ -74,13 +74,13 @@ public class InteractionManager : MonoBehaviour
         outline.enabled = enable;
     }
 
-    public void OnHoverEnter(HoverEnterEventArgs args)
+    public virtual void OnHoverEnter(HoverEnterEventArgs args)
     {
         if (canHover)
             ConfigureOutline(args.interactableObject.transform.gameObject, true);
     }
 
-    public void OnHoverExit(HoverExitEventArgs args)
+    public virtual void OnHoverExit(HoverExitEventArgs args)
     {
         ConfigureOutline(args.interactableObject.transform.gameObject, false);
     }

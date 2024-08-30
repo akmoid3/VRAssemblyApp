@@ -15,7 +15,7 @@ public class HintManager : MonoBehaviour
     public static event Action<int> OnHintCountChanged;
 
 
-    public void ShowHint(List<ComponentData> assemblySequence, int currentStep, List<Transform> components, SnapToPosition interactor)
+    public virtual void ShowHint(List<ComponentData> assemblySequence, int currentStep, List<Transform> components, SnapToPosition interactor)
     {
         var currentComponentName = assemblySequence[currentStep].componentName;
 

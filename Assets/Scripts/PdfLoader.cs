@@ -37,8 +37,10 @@ public class PdfLoader : MonoBehaviour
 
     private void OnDestroy()
     {
+        if(nextPageButton != null)
         nextPageButton.onClick.RemoveListener(NextPage);
-        previousPageButton.onClick.RemoveListener(PreviousPage);
+        if (previousPageButton != null)
+            previousPageButton.onClick.RemoveListener(PreviousPage);
 
         StateManager.OnStateChanged -= HandleStateChanged;
     }
@@ -49,7 +51,7 @@ public class PdfLoader : MonoBehaviour
         pdfPanel.SetActive(shouldActivatePanel);
     }
 
-    public void LoadPDF(string fileName)
+    public virtual void LoadPDF(string fileName)
     {
         // Append ".pdf" extension if not already present
         fileName = fileName.EndsWith(".pdf") ? fileName : fileName + ".pdf";

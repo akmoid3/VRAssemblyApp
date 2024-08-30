@@ -61,7 +61,7 @@ public class MakeGrabbable : MonoBehaviour
         originalInteractables.AddRange(GetComponents<XRBaseInteractable>());
         originalColliders.AddRange(GetComponents<Collider>());
     }
-    public void MakeObjectGrabbable()
+    public virtual void MakeObjectGrabbable()
     {
         if (gameObject.GetComponent<XRGrabInteractable>() != null)
             return;
@@ -129,7 +129,7 @@ public class MakeGrabbable : MonoBehaviour
             Destroy(interactable as MonoBehaviour);
         }
     }
-    public void MakeObjectNonGrabbable()
+    public virtual void MakeObjectNonGrabbable()
     {
         if(gameObject.GetComponent<XRSimpleInteractable>() != null)
             return;

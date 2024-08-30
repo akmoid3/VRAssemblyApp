@@ -16,7 +16,7 @@ public class SequenceManager : MonoBehaviour
     public static event Action<int> OnStepChanged;
 
     // Initializes the sequence with the given list
-    public void InitializeSequence(List<ComponentData> sequence)
+    public virtual void InitializeSequence(List<ComponentData> sequence)
     {
         assemblySequence = sequence;
         currentStep = 0;
@@ -24,21 +24,21 @@ public class SequenceManager : MonoBehaviour
     }
 
     // Moves to the next step in the sequence
-    public void IncrementCurrentStep()
+    public virtual void IncrementCurrentStep()
     {
         currentStep++;
         OnStepChanged?.Invoke(currentStep);
     }
 
     // Increments the error count and triggers the related event
-    public void IncrementCurrentError()
+    public virtual void IncrementCurrentError()
     {
         errorCount++;
         OnErrorCountChanged?.Invoke(errorCount);
     }
 
     // Saves the current sequence and component data
-    public void SaveBuildingSequence(GameObject currentSelectedComponent, string modelName)
+    public virtual void SaveBuildingSequence(GameObject currentSelectedComponent, string modelName)
     {
         if (saveSequence != null)
         {
@@ -52,7 +52,7 @@ public class SequenceManager : MonoBehaviour
     }
 
     // Modifies the current sequence and component data
-    public void ModifyBuildingSequence(GameObject currentSelectedComponent, string modelName)
+    public virtual void ModifyBuildingSequence(GameObject currentSelectedComponent, string modelName)
     {
         if (saveSequence != null)
         {
@@ -66,7 +66,7 @@ public class SequenceManager : MonoBehaviour
     }
 
     // Removes a component from the sequence
-    public void RemoveComponentFromSequence(GameObject currentSelectedComponent, string modelName)
+    public virtual void RemoveComponentFromSequence(GameObject currentSelectedComponent, string modelName)
     {
         if (saveSequence != null)
         {
@@ -80,7 +80,7 @@ public class SequenceManager : MonoBehaviour
     }
 
     // Checks the validity of the current component
-    public void ValidateComponent(GameObject component)
+    public virtual void ValidateComponent(GameObject component)
     {
         ComponentData expectedComponent = assemblySequence[currentStep];
         if (component.name != expectedComponent.componentName && component.GetComponent<ComponentObject>().GetGroup() != expectedComponent.group)
