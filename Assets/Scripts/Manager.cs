@@ -36,7 +36,7 @@ public class Manager : MonoBehaviour
     public int HintCount { get => hintManager.HintCount; set => hintManager.HintCount = value; }
 
     public int ErrorCount { get => sequenceManager.ErrorCount; set => sequenceManager.ErrorCount = value; }
-    public GameObject CurrentSelectedComponent { get => interactionManager.GetCurrentSelectedComponent(); set => interactionManager.SetCurrentSelectedComponent(value); }
+    public GameObject CurrentSelectedComponent { get => interactionManager?.GetCurrentSelectedComponent(); set => interactionManager?.SetCurrentSelectedComponent(value); }
 
     private void Awake()
     {

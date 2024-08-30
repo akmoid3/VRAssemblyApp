@@ -11,37 +11,37 @@ public class HandMenuManager : MonoBehaviour
 
     [SerializeField] public GameObject handMenuPanel;
 
-    [SerializeField] private TMP_Text componentNameText;
-    [SerializeField] private TMP_Text positionXText;
-    [SerializeField] private TMP_Text positionYText;
-    [SerializeField] private TMP_Text positionZText;
-    [SerializeField] private TMP_Text rotationXText;
-    [SerializeField] private TMP_Text rotationYText;
-    [SerializeField] private TMP_Text rotationZText;
+    [SerializeField] public TMP_Text componentNameText;
+    [SerializeField] public TMP_Text positionXText;
+    [SerializeField] public TMP_Text positionYText;
+    [SerializeField] public TMP_Text positionZText;
+    [SerializeField] public TMP_Text rotationXText;
+    [SerializeField] public TMP_Text rotationYText;
+    [SerializeField] public TMP_Text rotationZText;
 
-    [SerializeField] private Button addPosXButton;
-    [SerializeField] private Button addPosYButton;
-    [SerializeField] private Button addPosZButton;
-    [SerializeField] private Button addRotXButton;
-    [SerializeField] private Button addRotYButton;
-    [SerializeField] private Button addRotZButton;
+    [SerializeField] public Button addPosXButton;
+    [SerializeField] public Button addPosYButton;
+    [SerializeField] public Button addPosZButton;
+    [SerializeField] public Button addRotXButton;
+    [SerializeField] public Button addRotYButton;
+    [SerializeField] public Button addRotZButton;
 
-    [SerializeField] private Button reducePosXButton;
-    [SerializeField] private Button reducePosYButton;
-    [SerializeField] private Button reducePosZButton;
-    [SerializeField] private Button reduceRotXButton;
-    [SerializeField] private Button reduceRotYButton;
-    [SerializeField] private Button reduceRotZButton;
+    [SerializeField] public Button reducePosXButton;
+    [SerializeField] public Button reducePosYButton;
+    [SerializeField] public Button reducePosZButton;
+    [SerializeField] public Button reduceRotXButton;
+    [SerializeField] public Button reduceRotYButton;
+    [SerializeField] public Button reduceRotZButton;
 
-    [SerializeField] private Button saveComponentButton;
-    [SerializeField] private Button modifyButton;
-    [SerializeField] private Button addStepButton;
+    [SerializeField] public Button saveComponentButton;
+    [SerializeField] public Button modifyButton;
+    [SerializeField] public Button addStepButton;
     [SerializeField] public Button groupSelectionButton;
-    [SerializeField] private Button removeButton;
+    [SerializeField] public Button removeButton;
 
-    [SerializeField] private Button groupSelectionButton2;
+    [SerializeField] public Button groupSelectionButton2;
 
-    [SerializeField] private TMP_Dropdown incrementDropdown;
+    [SerializeField] public TMP_Dropdown incrementDropdown;
 
     private MakeGrabbable makeGrabbable;
 
@@ -60,7 +60,7 @@ public class HandMenuManager : MonoBehaviour
 
     private List<Collider> clonedColliders = new List<Collider>();
 
-    private void Start()
+    public void Start()
     {
         groupPanel.SetActive(false);
         handMenuPanel.SetActive(true);
@@ -109,64 +109,81 @@ public class HandMenuManager : MonoBehaviour
         interactionManager = FindObjectOfType<XRInteractionManager>();
     }
 
-    void Update()
+    public void Update()
     {
         GameObject currentSelectedComponent = manager.CurrentSelectedComponent;
+
         if (currentSelectedComponent != null)
         {
-            Vector3 position = currentSelectedComponent.transform.position;
-            Vector3 rotation = currentSelectedComponent.transform.eulerAngles;
-
-            componentNameText.text = currentSelectedComponent.name;
-            positionXText.text = $"{position.x:F2}";
-            positionYText.text = $"{position.y:F2}";
-            positionZText.text = $"{position.z:F2}";
-            rotationXText.text = $"{rotation.x:F2}";
-            rotationYText.text = $"{rotation.y:F2}";
-            rotationZText.text = $"{rotation.z:F2}";
-
-            if (currentSelectedComponent.name != "Group")
-            {
-               
-                ComponentObject componentObject = currentSelectedComponent.GetComponent<ComponentObject>();
-
-                if (componentObject)
-                {
-                    if (componentObject.GetIsPlaced())
-                    {
-                        modifyButton.gameObject.SetActive(true);
-                        addStepButton.gameObject.SetActive(true);
-                        removeButton.gameObject.SetActive(true);
-
-                        SetTransformsButtonsActive(false, allButtonsToDeactivate);
-                    }
-                    else
-                    {
-                        modifyButton.gameObject.SetActive(false);
-                        addStepButton.gameObject.SetActive(false);
-                        removeButton.gameObject.SetActive(false);
-
-                        SetTransformsButtonsActive(true,allButtonsToDeactivate);
-                    }
-                }
-            }
-         
+            UpdateComponentUI(currentSelectedComponent);
+            HandleComponentObject(currentSelectedComponent);
         }
         else
         {
-            positionXText.text = "N/A";
-            positionYText.text = "N/A";
-            positionZText.text = "N/A";
-            rotationXText.text = "N/A";
-            rotationYText.text = "N/A";
-            rotationZText.text = "N/A";
-
-            modifyButton.gameObject.SetActive(false);
-            addStepButton.gameObject.SetActive(false);
-            removeButton.gameObject.SetActive(false);
-            SetTransformsButtonsActive(false,allButtonsToDeactivate);
+            ResetUIForNoSelection();
         }
 
+        UpdateGroupSelectionButton();
+    }
+
+    public void UpdateComponentUI(GameObject component)
+    {
+        Vector3 position = component.transform.position;
+        Vector3 rotation = component.transform.eulerAngles;
+
+        componentNameText.text = component.name;
+        positionXText.text = $"{position.x:F2}";
+        positionYText.text = $"{position.y:F2}";
+        positionZText.text = $"{position.z:F2}";
+        rotationXText.text = $"{rotation.x:F2}";
+        rotationYText.text = $"{rotation.y:F2}";
+        rotationZText.text = $"{rotation.z:F2}";
+    }
+
+    public void HandleComponentObject(GameObject component)
+    {
+        if (component.name != "Group")
+        {
+            ComponentObject componentObject = component.GetComponent<ComponentObject>();
+
+            if (componentObject)
+            {
+                if (componentObject.GetIsPlaced())
+                {
+                    SetComponentModificationUI(true);
+                    SetTransformsButtonsActive(false, allButtonsToDeactivate);
+                }
+                else
+                {
+                    SetComponentModificationUI(false);
+                    SetTransformsButtonsActive(true, allButtonsToDeactivate);
+                }
+            }
+        }
+    }
+
+    public void SetComponentModificationUI(bool isPlaced)
+    {
+        modifyButton.gameObject.SetActive(isPlaced);
+        addStepButton.gameObject.SetActive(isPlaced);
+        removeButton.gameObject.SetActive(isPlaced);
+    }
+
+    public void ResetUIForNoSelection()
+    {
+        positionXText.text = "N/A";
+        positionYText.text = "N/A";
+        positionZText.text = "N/A";
+        rotationXText.text = "N/A";
+        rotationYText.text = "N/A";
+        rotationZText.text = "N/A";
+
+        SetComponentModificationUI(false);
+        SetTransformsButtonsActive(false, allButtonsToDeactivate);
+    }
+
+    public void UpdateGroupSelectionButton()
+    {
         if (group && group.transform.childCount > 0)
         {
             groupSelectionButton.gameObject.SetActive(true);
@@ -176,6 +193,7 @@ public class HandMenuManager : MonoBehaviour
             groupSelectionButton.gameObject.SetActive(false);
         }
     }
+
 
     public void SetModifyingTrue()
     {
@@ -415,6 +433,7 @@ public class HandMenuManager : MonoBehaviour
     public Manager Manager { get => manager; set => manager = value; }
     public bool NewStep { get => newStep; set => newStep = value; }
     public bool Modifying { get => modifying; set => modifying = value; }
+    public List<Button> AllButtonsToDeactivate { get => allButtonsToDeactivate; set => allButtonsToDeactivate = value; }
 
     public void UpdateIncrement(int index)
     {
