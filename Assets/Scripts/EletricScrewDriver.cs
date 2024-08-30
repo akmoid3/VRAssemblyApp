@@ -5,9 +5,11 @@ public class ElectricScrewDriver : BaseScrewDriver
 {
     private AudioSource audioSource;
     private bool isPlayingSound = false;
+    private float triggerValue;
 
     public AudioSource AudioSource { get => audioSource; set => audioSource = value; }
     public bool IsPlayingSound { get => isPlayingSound; set => isPlayingSound = value; }
+    public float TriggerValue { get => triggerValue; set => triggerValue = value; }
 
     private void Start()
     {
@@ -28,33 +30,12 @@ public class ElectricScrewDriver : BaseScrewDriver
         {
             if (isSelected)
             {
-                RotateScrewDriver();
 
                 if (firstInteractorSelecting is XRBaseControllerInteractor interactor)
                 {
-                    float triggerValue = interactor.xrController.activateInteractionState.value;
-
-                    // Adjust the audio volume and pitch based on the trigger value
-                    if (audioSource != null)
-                    {
-                        if (triggerValue > 0f)
-                        {
-                            if (!isPlayingSound)
-                            {
-                                audioSource.Play();
-                                isPlayingSound = true;
-                            }
-
-                            audioSource.volume = Mathf.Clamp(triggerValue, 0f, 1f); // Fade in based on trigger value
-
-                            // Adjust pitch based on trigger value
-                            audioSource.pitch = Mathf.Lerp(1f, 3f, triggerValue); // Adjust the range as needed
-                        }
-                        else if (triggerValue == 0f && isPlayingSound)
-                        {
-                            StopScrewDriverSound();
-                        }
-                    }
+                    TriggerValue = interactor.xrController.activateInteractionState.value;
+                    ActivateAudio(TriggerValue);
+                    RotateScrewDriver();
                 }
             }
             else
@@ -64,14 +45,35 @@ public class ElectricScrewDriver : BaseScrewDriver
         }
     }
 
+    public void ActivateAudio(float triggerValue)
+    {
+        // Adjust the audio volume and pitch based on the trigger value
+        if (audioSource != null)
+        {
+            if (triggerValue > 0f)
+            {
+                if (!isPlayingSound)
+                {
+                    audioSource.Play();
+                    isPlayingSound = true;
+                }
+
+                audioSource.volume = Mathf.Clamp(triggerValue, 0f, 1f); // Fade in based on trigger value
+
+                // Adjust pitch based on trigger value
+                audioSource.pitch = Mathf.Lerp(1f, 3f, triggerValue); // Adjust the range as needed
+            }
+            else if (triggerValue == 0f && isPlayingSound)
+            {
+                StopScrewDriverSound();
+            }
+        }
+    }
+
     public override void RotateScrewDriver()
     {
-        if (firstInteractorSelecting is XRBaseControllerInteractor interactor)
-        {
-            InteractionState activateState = interactor.xrController.activateInteractionState;
-            currentRotationSpeed = activateState.value * SpeedMultiplier;
-            ScrewDriver.Rotate(Vector3.forward * currentRotationSpeed * Time.deltaTime * -1.0f);
-        }
+        currentRotationSpeed = TriggerValue * SpeedMultiplier;
+        ScrewDriver.Rotate(Vector3.forward * currentRotationSpeed * Time.deltaTime * -1.0f);
     }
 
     public void StopScrewDriverSound()
@@ -84,4 +86,5 @@ public class ElectricScrewDriver : BaseScrewDriver
             isPlayingSound = false;
         }
     }
+
 }

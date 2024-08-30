@@ -1,25 +1,25 @@
 ﻿# Summary
 |||
 |:---|:---|
-| Generated on: | 30/08/2024 - 17:18:49 |
-| Parser: | MultiReportParser (218x OpenCoverParser) |
+| Generated on: | 30/08/2024 - 18:19:51 |
+| Parser: | MultiReportParser (221x OpenCoverParser) |
 | Assemblies: | 1 |
 | Classes: | 45 |
 | Files: | 43 |
-| Covered lines: | 2111 |
-| Uncovered lines: | 652 |
-| Coverable lines: | 2763 |
-| Total lines: | 4660 |
-| Line coverage: | 76.4% (2111 of 2763) |
+| Covered lines: | 2130 |
+| Uncovered lines: | 646 |
+| Coverable lines: | 2776 |
+| Total lines: | 4664 |
+| Line coverage: | 76.7% (2130 of 2776) |
 | Covered branches: | 0 |
 | Total branches: | 0 |
-| Covered methods: | 350 |
-| Total methods: | 417 |
-| Method coverage: | 83.9% (350 of 417) |
+| Covered methods: | 353 |
+| Total methods: | 420 |
+| Method coverage: | 84% (353 of 420) |
 
 |**Name**|**Covered**|**Uncovered**|**Coverable**|**Total**|**Line coverage**|**Covered**|**Total**|**Branch coverage**|**Covered**|**Total**|**Method coverage**|
 |:---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|
-|**Scripts**|**2111**|**652**|**2763**|**4899**|**76.4%**|**0**|**0**|****|**350**|**417**|**83.9%**|
+|**Scripts**|**2130**|**646**|**2776**|**4903**|**76.7%**|**0**|**0**|****|**353**|**420**|**84%**|
 |ApplicationQuit|3|0|3|17|100%|0|0||1|1|100%|
 |AudioManager|49|0|49|77|100%|0|0||7|7|100%|
 |AutomaticPlacementManager|95|17|112|179|84.8%|0|0||10|10|100%|
@@ -29,7 +29,7 @@
 |ComponentPositioner|129|93|222|319|58.1%|0|0||27|27|100%|
 |ConveyerLights|40|0|40|66|100%|0|0||8|8|100%|
 |DropDownManager|14|8|22|41|63.6%|0|0||2|3|66.6%|
-|ElectricScrewDriver|31|32|63|87|49.2%|0|0||8|9|88.8%|
+|ElectricScrewDriver|50|26|76|91|65.7%|0|0||11|12|91.6%|
 |Extensions|27|0|27|38|100%|0|0||1|1|100%|
 |Fastener|100|31|131|210|76.3%|0|0||22|22|100%|
 |FileBrowserManager|30|6|36|81|83.3%|0|0||3|3|100%|

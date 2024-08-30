@@ -173,6 +173,7 @@ public class AutomaticPlacementManager : MonoBehaviour
         }
 
         // Ensure the final position and rotation are set correctly
+        component.gameObject.SetActive(true);
         component.position = targetPosition;
         component.rotation = targetRotation;
     }

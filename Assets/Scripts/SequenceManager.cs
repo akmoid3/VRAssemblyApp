@@ -87,13 +87,6 @@ public class SequenceManager : MonoBehaviour
         {
             IncrementCurrentError();
         }
-
-        var nextStep = currentStep + 1;
-        if (nextStep >= assemblySequence.Count)
-        {
-            StateManager.Instance.UpdateState(State.Finish);
-            return;
-        }
     }
 
     public List<ComponentData> AssemblySequence { get => assemblySequence; set => assemblySequence = value; }
