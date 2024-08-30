@@ -15,10 +15,14 @@ public class ModeChooserManager : MonoBehaviour
     private void Awake()
     {
         StateManager.OnStateChanged += SetPanelActive;
-        playBackButton.onClick.AddListener(OnPlayBackButtonClicked);
-        recordButton.onClick.AddListener(OnRecordButtonClicked);
-        initializeButton.onClick.AddListener(OnInitializeClicked);
-        returnBackButton.onClick.AddListener(OnReturnBackClicked);
+        if (playBackButton != null)
+            playBackButton.onClick.AddListener(OnPlayBackButtonClicked);
+        if (recordButton != null)
+            recordButton.onClick.AddListener(OnRecordButtonClicked);
+        if (initializeButton != null)
+            initializeButton.onClick.AddListener(OnInitializeClicked);
+        if (returnBackButton != null)
+            returnBackButton.onClick.AddListener(OnReturnBackClicked);
 
     }
 
@@ -32,7 +36,7 @@ public class ModeChooserManager : MonoBehaviour
 
     }
 
-    private void SetPanelActive(State state)
+    public void SetPanelActive(State state)
     {
         modeSelectionPanel.SetActive(state == State.SelectingMode);
         if (state == State.SelectingMode)
@@ -41,7 +45,7 @@ public class ModeChooserManager : MonoBehaviour
         }
     }
 
-    private void UpdateButtonStates()
+    public void UpdateButtonStates()
     {
         string modelName = Manager.Instance.Model.name;
         string initializedModelsPath = Path.Combine(Application.persistentDataPath, "InitializedModels", modelName + ".json");
@@ -51,17 +55,17 @@ public class ModeChooserManager : MonoBehaviour
         playBackButton.interactable = File.Exists(savedBuildDataPath);
     }
 
-    private void OnInitializeClicked()
+    public void OnInitializeClicked()
     {
         StateManager.Instance.UpdateState(State.Initialize);
     }
 
-    private void OnPlayBackButtonClicked()
+    public void OnPlayBackButtonClicked()
     {
         StateManager.Instance.UpdateState(State.PlayBack);
     }
 
-    private void OnRecordButtonClicked()
+    public void OnRecordButtonClicked()
     {
         StateManager.Instance.UpdateState(State.Record);
     }

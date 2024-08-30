@@ -13,10 +13,11 @@ public class FinishManager : MonoBehaviour
     private void Awake()
     {
         StateManager.OnStateChanged += SetPanelActive;
+        if(finishButton != null)
         finishButton.onClick.AddListener(OnFinishClicked);
     }
 
-    private void Update()
+    public void Update()
     {
         if (StateManager.Instance.CurrentState == State.Finish && timerText.text == "00:00")
             timerText.text = Manager.Instance.FinishTime;
@@ -27,7 +28,7 @@ public class FinishManager : MonoBehaviour
         finishButton.onClick.RemoveListener(OnFinishClicked);
     }
 
-    private void SetPanelActive(State state)
+    public void SetPanelActive(State state)
     {
         finishPanel.SetActive(state == State.Finish);
         if (state == State.Finish)
@@ -37,7 +38,7 @@ public class FinishManager : MonoBehaviour
         }
     }
 
-    private void OnFinishClicked()
+    public void OnFinishClicked()
     {
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }

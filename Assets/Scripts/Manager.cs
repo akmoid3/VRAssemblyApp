@@ -30,7 +30,7 @@ public class Manager : MonoBehaviour
     public GameObject Model { get => model; set => model = value; }
     public List<Transform> Components { get => components; set => components = value; }
 
-    public List<ComponentData> AssemblySequence { get => sequenceManager.AssemblySequence; set => sequenceManager.AssemblySequence = value; }
+    public List<ComponentData> AssemblySequence { get => sequenceManager?.AssemblySequence; set => sequenceManager.AssemblySequence = value; }
     public int CurrentStep { get => sequenceManager.CurrentStep; set => sequenceManager.CurrentStep = value; }
     public string FinishTime { get => sequenceManager.FinishTime; set => sequenceManager.FinishTime = value; }
     public int HintCount { get => hintManager.HintCount; set => hintManager.HintCount = value; }
@@ -257,6 +257,7 @@ public class Manager : MonoBehaviour
 
     private void LoadPDF()
     {
+        if(pdfLoader != null)
         pdfLoader.LoadPDF(model.name);
     }
 
@@ -363,6 +364,7 @@ public class Manager : MonoBehaviour
 
     public void PlaceInitialComponent()
     {
+        if(automaticPlacementManager != null)
         automaticPlacementManager.PlaceInitialComponent(AssemblySequence, components, interactor);
     }
 
