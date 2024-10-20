@@ -21,6 +21,7 @@ public class InitializeComponentManager : MonoBehaviour
     public void Awake()
     {
         StateManager.OnStateChanged += SetPanelActive;
+        StateManager.OnStateChanged += OnStateChanged; // Subscribe to state changes
         if (finishedButton != null)
             finishedButton.onClick.AddListener(OnFinishedButtonClick);
         if (loadInstructionPDF != null)
@@ -42,6 +43,7 @@ public class InitializeComponentManager : MonoBehaviour
     private void OnDestroy()
     {
         StateManager.OnStateChanged -= SetPanelActive;
+        StateManager.OnStateChanged -= OnStateChanged; // Unsubscribe from state changes
         if (finishedButton != null)
             finishedButton.onClick.RemoveListener(OnFinishedButtonClick);
         if (loadInstructionPDF != null)
@@ -53,6 +55,14 @@ public class InitializeComponentManager : MonoBehaviour
     private void SetPanelActive(State state)
     {
         canvasInit.SetActive(state == State.Initialize);
+    }
+
+    private void OnStateChanged(State state)
+    {
+        if (state == State.Initialize)
+        {
+            PopulateGroupsFromComponents();
+        }
     }
 
     public void Start()
@@ -136,6 +146,33 @@ public class InitializeComponentManager : MonoBehaviour
                 componentObject.SetGroup(selectedGroup);
             }
         }
+    }
+    public void PopulateGroupsFromComponents()
+    {
+        foreach (Transform component in Manager.Instance.Components)
+        {
+            ComponentObject componentObject = component.GetComponent<ComponentObject>();
+            if (componentObject != null)
+            {
+                string group = componentObject.GetGroup();
+                if (!groups.Contains(group))
+                {
+                    groups.Add(group);
+                }
+            }
+        }
+
+        // Sort the groups list except the first element
+        if (groups.Count > 1)
+        {
+            List<string> groupsToSort = groups.GetRange(1, groups.Count - 1);
+            groupsToSort.Sort();
+            groups = new List<string> { groups[0] }; // Keep the first element
+            groups.AddRange(groupsToSort); // Add the sorted elements back
+        }
+
+        // Update the group dropdown with the new groups
+        PopulateGroupDropdown();
     }
 
     public void CreateNextGroup()
