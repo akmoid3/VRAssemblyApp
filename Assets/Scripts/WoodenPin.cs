@@ -3,9 +3,9 @@ using UnityEngine;
 public class WoodenPin : Fastener
 {
     private SimpleHammer hammerScript;
+
     [SerializeField] private float forceScalingFactor = 0.5f;
     [SerializeField] private float minimumImpactForce = 2f;
-
     [SerializeField] private float moveCooldown = 0.5f;
 
     private float lastMoveTime = 0f;
@@ -34,7 +34,6 @@ public class WoodenPin : Fastener
 
         if (hammerForce >= minimumImpactForce)
         {
-
             float potentialMovement = hammerForce * Time.fixedDeltaTime * forceScalingFactor;
             float currentDistance = Vector3.Distance(socketTransform.localPosition, initialSocketPosition);
             float remainingDistance = distanceToTravel - currentDistance;
@@ -49,7 +48,7 @@ public class WoodenPin : Fastener
                 // Move the socketTransform based on the impact
                 socketTransform.Translate(Vector3.forward * actualMovement);
 
-                hammerScript.PlayHammerSound();
+                AudioManager.Instance.PlaySound(audioSource, "Hammer", false, 1.0f);
 
                 // Check if the nail has reached or exceeded the distanceToTravel
                 if (currentDistance + actualMovement >= distanceToTravel)
@@ -60,7 +59,6 @@ public class WoodenPin : Fastener
 
                 lastMoveTime = Time.time;
             }
-
         }
     }
 
@@ -71,8 +69,6 @@ public class WoodenPin : Fastener
 
         if (hammerForce >= minimumImpactForce)
         {
-
-
             float potentialMovement = hammerForce * Time.fixedDeltaTime * forceScalingFactor;
             float currentDistance = Vector3.Distance(transform.localPosition, initialZPosition);
             float remainingDistance = distanceToTravel - currentDistance;
@@ -87,7 +83,7 @@ public class WoodenPin : Fastener
                 // Move the transform based on the impact
                 transform.Translate(Vector3.forward * actualMovement);
 
-                hammerScript.PlayHammerSound();
+                AudioManager.Instance.PlaySound(audioSource, "Hammer", false, 1.0f);
 
                 // Check if the nail has reached or exceeded the distanceToTravel
                 if (currentDistance + actualMovement >= distanceToTravel)
@@ -98,14 +94,12 @@ public class WoodenPin : Fastener
 
                 lastMoveTime = Time.time;
             }
-
         }
     }
 
     protected override void OnToolCollisionEnter(Collider other)
     {
         hammerScript = other.GetComponentInParent<SimpleHammer>();
-
     }
 
     protected override void OnToolCollisionExit(Collider other)

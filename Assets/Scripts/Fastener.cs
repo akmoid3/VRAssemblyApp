@@ -47,6 +47,8 @@ public abstract class Fastener : MonoBehaviour
         return tool;
     }
 
+    protected AudioSource audioSource;
+
     protected virtual void Start()
     {
         fastenerRenderer = GetComponent<Renderer>();
@@ -55,6 +57,13 @@ public abstract class Fastener : MonoBehaviour
         // Length of the mesh
         fastenerLength = GetComponent<Renderer>().bounds.size.z;
         distanceToTravel = fastenerLength - headSize;
+
+        // Initialize the AudioSource
+        audioSource = GetComponent<AudioSource>();
+        if (audioSource == null)
+        {
+            audioSource = gameObject.AddComponent<AudioSource>();
+        }
     }
 
     protected virtual void FixedUpdate()
@@ -66,7 +75,6 @@ public abstract class Fastener : MonoBehaviour
 
         if (!canStop && !isStopped && !IsAligned && StateManager.Instance.CurrentState == State.Record)
             PerformComponentRaycast();
-
     }
 
     protected abstract void HandleInteraction();
@@ -143,7 +151,6 @@ public abstract class Fastener : MonoBehaviour
                     isAligned = false;
                 }
             }
-
         }
         else
         {
@@ -154,6 +161,7 @@ public abstract class Fastener : MonoBehaviour
             fastenerRenderer.material.color = defaultColor;
         }
     }
+
     protected void AlignWithComponent(Vector3 contactPoint, Vector3 contactNormal)
     {
         Quaternion targetRotation = Quaternion.LookRotation(-contactNormal);
@@ -176,14 +184,11 @@ public abstract class Fastener : MonoBehaviour
         else if (isPivotAfterCenter)
         {
             targetPosition = contactPoint + directionToMove * (fastenerLength / 2.0f - Vector3.Distance(boundsCenter, pivotPoint));
-
-
         }
         else
         {
             targetPosition = contactPoint + directionToMove * (fastenerLength / 2.0f);
         }
-
 
         transform.SetPositionAndRotation(targetPosition, targetRotation);
 
@@ -192,7 +197,6 @@ public abstract class Fastener : MonoBehaviour
 
         isAligned = true;
     }
-
 
     public void SetSocketTransform(Transform socket)
     {
@@ -206,5 +210,23 @@ public abstract class Fastener : MonoBehaviour
         return socketTransform;
     }
 
+    protected void PlaySound(string clipName, bool loop = false, float volume = 1.0f)
+    {
+        AudioManager.Instance.PlaySound(audioSource, clipName, loop, volume);
+    }
 
+    protected void StopSound()
+    {
+        AudioManager.Instance.StopSound(audioSource);
+    }
+
+    protected void SetPitch(float pitch)
+    {
+        AudioManager.Instance.SetPitch(audioSource, pitch);
+    }
+
+    public void PlayBuildPopSound()
+    {
+        AudioManager.Instance.PlaySound(audioSource, "BuildPop", false, 1f);
+    }
 }

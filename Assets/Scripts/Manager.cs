@@ -107,7 +107,7 @@ public class Manager : MonoBehaviour
 
     private bool IsTargetComponent(Transform component, ComponentData componentData, ComponentObject componentObject)
     {
-        return component.name == componentData.componentName || componentObject.GetGroup() != ComponentObject.Group.None;
+        return component.name == componentData.componentName || componentObject.GetGroup() != "None";
     }
 
     private void HandleComponentFastening(Transform component, ComponentData componentData)
@@ -138,7 +138,8 @@ public class Manager : MonoBehaviour
             HideCorrectSnapPoint();
         }
 
-        AudioManager.Instance.PlayPopSound();
+        fastener.PlayBuildPopSound();
+
         ValidateComponent(component.gameObject);
         IncrementCurrentStep();
     }
@@ -387,12 +388,3 @@ public class Manager : MonoBehaviour
     }
 }
 
-public enum State
-{
-    ChoosingModel,
-    SelectingMode,
-    Initialize,
-    Record,
-    PlayBack,
-    Finish
-}

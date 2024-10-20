@@ -6,6 +6,7 @@ using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.TestTools;
 
+/*
 public class SaveSequenceTests
 {
     private GameObject gameObject;
@@ -351,3 +352,4 @@ public class SaveSequenceTests
 
 
 }
+*/

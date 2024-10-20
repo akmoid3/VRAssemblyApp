@@ -3,8 +3,10 @@ using UnityEngine;
 public class Screw : Fastener
 {
     private BaseScrewDriver screwdriverScript;
+
     [SerializeField] protected float pitch = 0.1f;
     private bool isScrewing = false;
+
     protected override void HandleInteraction()
     {
         if (StateManager.Instance.CurrentState == State.PlayBack)
@@ -32,7 +34,7 @@ public class Screw : Fastener
 
                 if (!isScrewing && linearMovement > 0.0f)
                 {
-                    AudioManager.Instance.PlayScrewSound();
+                    AudioManager.Instance.PlaySound(audioSource, "screw", true, 1f);
                     isScrewing = true;
                 }
                 else
@@ -42,7 +44,7 @@ public class Screw : Fastener
 
                 // Update pitch based on linear movement
                 float pitchAudio = Mathf.Clamp(linearMovement * 10.0f, 0.5f, 2.0f);
-                AudioManager.Instance.SetPitch(pitchAudio);
+                AudioManager.Instance.SetPitch(audioSource, pitchAudio);
 
                 socketTransform.Rotate(Vector3.forward, rotationSpeed * Time.deltaTime * -1.0f);
                 socketTransform.Translate(Vector3.forward * linearMovement);
@@ -72,7 +74,7 @@ public class Screw : Fastener
 
             if (!isScrewing && linearMovement > 0.0f)
             {
-                AudioManager.Instance.PlayScrewSound();
+                AudioManager.Instance.PlaySound(audioSource, "screw", true, 1f);
                 isScrewing = true;
             }
             else
@@ -82,7 +84,7 @@ public class Screw : Fastener
 
             // Update pitch based on linear movement
             float pitchAudio = Mathf.Clamp(linearMovement * 10.0f, 0.5f, 2.0f);
-            AudioManager.Instance.SetPitch(pitchAudio);
+            AudioManager.Instance.SetPitch(audioSource, pitchAudio);
 
             transform.Rotate(Vector3.forward, rotationSpeed * Time.deltaTime * -1.0f);
             transform.Translate(Vector3.forward * linearMovement);
@@ -111,7 +113,7 @@ public class Screw : Fastener
 
     private void StopScrewSound()
     {
-        AudioManager.Instance.StopSound();
+        AudioManager.Instance.StopSound(audioSource);
         isScrewing = false;
     }
 }

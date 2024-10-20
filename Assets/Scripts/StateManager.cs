@@ -27,3 +27,13 @@ public class StateManager : MonoBehaviour
         OnStateChanged?.Invoke(newState);
     }
 }
+
+public enum State
+{
+    ChoosingModel,
+    SelectingMode,
+    Initialize,
+    Record,
+    PlayBack,
+    Finish
+}

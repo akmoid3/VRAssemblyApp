@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
@@ -8,11 +7,14 @@ public class InitializeComponentManager : MonoBehaviour
 {
     public TMP_Dropdown componentDropdown;
     public TMP_Dropdown groupDropdown;
+    public Button plusGroupButton; // Button to automatically create new group
     public GameObject canvasInit;
     public Button finishedButton;
     public Button loadInstructionPDF;
     public TextMeshProUGUI componentName;
     [SerializeField] private FileBrowserManager fileBrowserManager;
+
+    private List<string> groups = new List<string> { "None" }; // Initial group list
 
     public FileBrowserManager FileBrowserManager { get => fileBrowserManager; set => fileBrowserManager = value; }
 
@@ -22,8 +24,9 @@ public class InitializeComponentManager : MonoBehaviour
         if (finishedButton != null)
             finishedButton.onClick.AddListener(OnFinishedButtonClick);
         if (loadInstructionPDF != null)
-
             loadInstructionPDF.onClick.AddListener(OpenFileBrowser);
+        if (plusGroupButton != null)
+            plusGroupButton.onClick.AddListener(CreateNextGroup);
     }
 
     public void OpenFileBrowser()
@@ -40,12 +43,11 @@ public class InitializeComponentManager : MonoBehaviour
     {
         StateManager.OnStateChanged -= SetPanelActive;
         if (finishedButton != null)
-
             finishedButton.onClick.RemoveListener(OnFinishedButtonClick);
         if (loadInstructionPDF != null)
-
-        loadInstructionPDF.onClick.RemoveListener(OpenFileBrowser);
-
+            loadInstructionPDF.onClick.RemoveListener(OpenFileBrowser);
+        if (plusGroupButton != null)
+            plusGroupButton.onClick.RemoveListener(CreateNextGroup);
     }
 
     private void SetPanelActive(State state)
@@ -57,11 +59,11 @@ public class InitializeComponentManager : MonoBehaviour
     {
         // Populate the dropdown options
         PopulateComponentDropdown();
-        PopulateGroupDropdown();  // Populate the new group dropdown
+        PopulateGroupDropdown();
 
         // Add listeners to handle dropdown value changes
         componentDropdown.onValueChanged.AddListener(OnComponentDropdownValueChanged);
-        groupDropdown.onValueChanged.AddListener(OnGroupDropdownValueChanged);  // New group dropdown listener
+        groupDropdown.onValueChanged.AddListener(OnGroupDropdownValueChanged);
 
         // Update dropdowns to reflect the current component's type and group
         UpdateDropdownsForSelectedComponent(Manager.Instance.CurrentSelectedComponent);
@@ -98,15 +100,8 @@ public class InitializeComponentManager : MonoBehaviour
         // Clear existing options
         groupDropdown.ClearOptions();
 
-        // Create a new list of options
-        List<string> options = new List<string>();
-        foreach (ComponentObject.Group group in System.Enum.GetValues(typeof(ComponentObject.Group)))
-        {
-            options.Add(group.ToString());
-        }
-
         // Add options to the dropdown
-        groupDropdown.AddOptions(options);
+        groupDropdown.AddOptions(groups);
     }
 
     public void OnComponentDropdownValueChanged(int index)
@@ -129,7 +124,7 @@ public class InitializeComponentManager : MonoBehaviour
     public void OnGroupDropdownValueChanged(int index)
     {
         // Update selected component group based on dropdown selection
-        ComponentObject.Group selectedGroup = (ComponentObject.Group)index;
+        string selectedGroup = groupDropdown.options[index].text;
 
         GameObject selectedComponent = Manager.Instance.CurrentSelectedComponent;
         if (selectedComponent != null)
@@ -143,18 +138,37 @@ public class InitializeComponentManager : MonoBehaviour
         }
     }
 
+    public void CreateNextGroup()
+    {
+        int nextGroupNumber = groups.Count;
+        string newGroupName = $"Group{nextGroupNumber:D2}";
+
+        if (!groups.Contains(newGroupName))
+        {
+            groups.Add(newGroupName);
+            PopulateGroupDropdown();
+            groupDropdown.value = groups.IndexOf(newGroupName); // Select the newly created group
+        }
+    }
+
     public void UpdateDropdownsForSelectedComponent(GameObject selectedComponent)
     {
-
         if (selectedComponent != null)
         {
             ComponentObject componentObject = selectedComponent.GetComponent<ComponentObject>();
 
             if (componentObject != null)
             {
+                // Ensure the group is in the list
+                if (!groups.Contains(componentObject.GetGroup()))
+                {
+                    groups.Add(componentObject.GetGroup());
+                    PopulateGroupDropdown();
+                }
+
                 // Update the dropdown values to reflect the current component type and group
                 componentDropdown.value = (int)componentObject.GetComponentType();
-                groupDropdown.value = (int)componentObject.GetGroup();
+                groupDropdown.value = groups.IndexOf(componentObject.GetGroup());
             }
         }
     }

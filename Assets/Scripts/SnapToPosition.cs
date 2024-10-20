@@ -28,8 +28,8 @@ public class SnapToPosition : MonoBehaviour
     private void Awake()
     {
         interactionManager = FindObjectOfType<XRInteractionManager>();
-
     }
+
     private void Start()
     {
         snapPoints = new List<SnapPoint>();
@@ -55,7 +55,6 @@ public class SnapToPosition : MonoBehaviour
 
             snapPoints.Add(snapPoint);
         }
-
     }
 
     private void OnTriggerStay(Collider other)
@@ -75,13 +74,14 @@ public class SnapToPosition : MonoBehaviour
     {
         if (other == null)
             return;
-        foreach (var snapPoint in snapPoints)
+        ComponentObject componentObject = other.GetComponent<ComponentObject>();
+        var snapPoint = snapPoints[Manager.Instance.CurrentStep];
         {
-            ComponentObject componentObject = other.GetComponent<ComponentObject>();
-            if (componentObject != null )
+
+            if (componentObject != null)
             {
 
-                if (other.name == snapPoint.componentName || (componentObject.GetGroup() != ComponentObject.Group.None && componentObject.GetGroup() == snapPoint.componentObject.GetGroup() && componentObject.GetType() == snapPoint.componentObject.GetType()))
+                if (other.name == snapPoint.componentName || (componentObject.GetGroup() != "None" && componentObject.GetGroup() == snapPoint.componentObject.GetGroup() && componentObject.GetType() == snapPoint.componentObject.GetType()))
                 {
 
                     float distance = Vector3.Distance(other.transform.position, snapPoint.snapTransform.position);
@@ -94,7 +94,7 @@ public class SnapToPosition : MonoBehaviour
                         fastener.SetSocketTransform(snapPoint.snapTransform);
                     }
 
-                    if ((distance < snapDistance && angle < snapAngle) || (fastener && distance < snapDistance))
+                    if ((distance < snapDistance && angle < snapAngle) || (fastener && distance < 0.01f))
                     {
                         other.attachedRigidbody.isKinematic = false;
 
@@ -117,14 +117,14 @@ public class SnapToPosition : MonoBehaviour
 
                         other.transform.SetParent(snapPoint.snapTransform);
 
+                        componentObject.SetIsPlaced(true);
+
                         AddGrabbable(other);
 
                         OnComponentPlaced?.Invoke();
 
-                        AudioManager.Instance.PlayPopSound();
+                        componentObject.PlayBuildPopSound();
 
-
-                        break;
                     }
                 }
             }
@@ -166,3 +166,5 @@ public class SnapToPosition : MonoBehaviour
     }
 
 }
+
+

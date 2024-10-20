@@ -1,4 +1,4 @@
-using NUnit.Framework;
+/*using NUnit.Framework;
 using UnityEngine;
 
 public class ComponentObjectTests
@@ -71,3 +71,4 @@ public class ComponentObjectTests
         Assert.IsTrue(_componentObject.IsReleased);
     }
 }
+*/

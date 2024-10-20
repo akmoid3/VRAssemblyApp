@@ -1,4 +1,3 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -6,9 +5,7 @@ public class AudioManager : MonoBehaviour
 {
     public static AudioManager Instance { get; private set; }
 
-    [SerializeField] private AudioSource audioSource; 
-    [SerializeField] private AudioClip screwSound;
-    [SerializeField] private AudioClip popSound;
+    private Dictionary<string, AudioClip> audioClips;
 
     private void Awake()
     {
@@ -16,7 +13,7 @@ public class AudioManager : MonoBehaviour
         if (Instance == null)
         {
             Instance = this;
-            DontDestroyOnLoad(gameObject); 
+            DontDestroyOnLoad(gameObject);
         }
         else
         {
@@ -24,42 +21,37 @@ public class AudioManager : MonoBehaviour
             return;
         }
 
-        // Initialize the AudioSource if it's not assigned in the Inspector
-        if (audioSource == null)
-        {
-            audioSource = gameObject.AddComponent<AudioSource>();
-        }
+        // Load all audio clips from the Resources/Sounds folder
+        LoadAllAudioClips();
+    }
 
-        if (audioSource != null)
+    private void LoadAllAudioClips()
+    {
+        audioClips = new Dictionary<string, AudioClip>();
+        AudioClip[] clips = Resources.LoadAll<AudioClip>("Sounds");
+
+        foreach (AudioClip clip in clips)
         {
-            audioSource.loop = false; 
+            audioClips[clip.name] = clip;
         }
     }
 
-    public void PlayScrewSound()
+    public void PlaySound(AudioSource audioSource, string clipName, bool loop = false, float volume = 1.0f)
     {
-        if (audioSource != null && screwSound != null)
+        if (audioClips.ContainsKey(clipName))
         {
-            audioSource.clip = screwSound; 
-            audioSource.loop = true;
-            audioSource.volume = 0.5f;
+            audioSource.clip = audioClips[clipName];
+            audioSource.loop = loop;
+            audioSource.volume = volume;
             audioSource.Play();
         }
-    }
-
-    public void PlayPopSound()
-    {
-        if (audioSource != null && popSound != null)
+        else
         {
-            audioSource.clip = popSound;
-            audioSource.loop = false;
-            audioSource.volume = 1.0f;
-            audioSource.Play();
+            Debug.LogWarning($"AudioManager: Sound '{clipName}' not found!");
         }
     }
 
-
-    public void StopSound()
+    public void StopSound(AudioSource audioSource)
     {
         if (audioSource != null && audioSource.isPlaying)
         {
@@ -67,11 +59,19 @@ public class AudioManager : MonoBehaviour
         }
     }
 
-    public void SetPitch(float pitch)
+    public void SetPitch(AudioSource audioSource, float pitch)
     {
         if (audioSource != null)
         {
             audioSource.pitch = Mathf.Clamp(pitch, 0.1f, 3.0f);
+        }
+    }
+
+    public void SetVolume(AudioSource audioSource, float volume)
+    {
+        if (audioSource != null)
+        {
+            audioSource.volume = Mathf.Clamp(volume, 0f, 1f);
         }
     }
 }

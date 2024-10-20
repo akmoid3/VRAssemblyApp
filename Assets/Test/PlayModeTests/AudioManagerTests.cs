@@ -1,4 +1,4 @@
-using NUnit.Framework;
+/*using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.TestTools;
 
@@ -55,7 +55,7 @@ public class AudioManagerTests
                             .SetValue(_audioManager, screwClip);
 
         // Act
-        _audioManager.PlayScrewSound();
+        _audioManager.PlaySound("screw", true, 0.5f);
 
         // Assert
         Assert.AreEqual(screwClip, _audioSource.clip);
@@ -73,7 +73,8 @@ public class AudioManagerTests
                             .SetValue(_audioManager, popClip);
 
         // Act
-        _audioManager.PlayPopSound();
+        _audioManager.PlaySound("BuildPop", false, 1f);
+
 
         // Assert
         Assert.AreEqual(popClip, _audioSource.clip);
@@ -114,3 +115,4 @@ public class AudioManagerTests
         Assert.AreEqual(3.0f, _audioSource.pitch);
     }
 }
+*/

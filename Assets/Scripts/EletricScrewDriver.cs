@@ -3,22 +3,26 @@ using UnityEngine.XR.Interaction.Toolkit;
 
 public class ElectricScrewDriver : BaseScrewDriver
 {
-    private AudioSource audioSource;
     private bool isPlayingSound = false;
     private float triggerValue;
+    private AudioSource audioSource;
 
-    public AudioSource AudioSource { get => audioSource; set => audioSource = value; }
     public bool IsPlayingSound { get => isPlayingSound; set => isPlayingSound = value; }
     public float TriggerValue { get => triggerValue; set => triggerValue = value; }
 
     private void Start()
     {
-        audioSource = GetComponent<AudioSource>();
-        if (audioSource != null)
+        // Ensure AudioManager is initialized
+        if (AudioManager.Instance == null)
         {
-            audioSource.loop = true;
-            audioSource.volume = 0f;
-            audioSource.pitch = 1f; // Set initial pitch value
+            Debug.LogError("AudioManager instance is not found!");
+        }
+
+        // Reference the existing AudioSource or add one if missing
+        audioSource = GetComponent<AudioSource>();
+        if (audioSource == null)
+        {
+            audioSource = gameObject.AddComponent<AudioSource>();
         }
     }
 
@@ -30,7 +34,6 @@ public class ElectricScrewDriver : BaseScrewDriver
         {
             if (isSelected)
             {
-
                 if (firstInteractorSelecting is XRBaseControllerInteractor interactor)
                 {
                     TriggerValue = interactor.xrController.activateInteractionState.value;
@@ -48,25 +51,22 @@ public class ElectricScrewDriver : BaseScrewDriver
     public void ActivateAudio(float triggerValue)
     {
         // Adjust the audio volume and pitch based on the trigger value
-        if (audioSource != null)
+        if (triggerValue > 0f)
         {
-            if (triggerValue > 0f)
+            if (!isPlayingSound)
             {
-                if (!isPlayingSound)
-                {
-                    audioSource.Play();
-                    isPlayingSound = true;
-                }
-
-                audioSource.volume = Mathf.Clamp(triggerValue, 0f, 1f); // Fade in based on trigger value
-
-                // Adjust pitch based on trigger value
-                audioSource.pitch = Mathf.Lerp(1f, 3f, triggerValue); // Adjust the range as needed
+                AudioManager.Instance.PlaySound(audioSource, "Drill", true, Mathf.Clamp(triggerValue, 0f, 1f));
+                isPlayingSound = true;
             }
-            else if (triggerValue == 0f && isPlayingSound)
-            {
-                StopScrewDriverSound();
-            }
+
+            AudioManager.Instance.SetVolume(audioSource, Mathf.Lerp(0f, 1f, triggerValue));
+
+            // Adjust pitch based on trigger value
+            AudioManager.Instance.SetPitch(audioSource, Mathf.Lerp(1f, 3f, triggerValue));
+        }
+        else if (triggerValue == 0f && isPlayingSound)
+        {
+            StopScrewDriverSound();
         }
     }
 
@@ -78,13 +78,10 @@ public class ElectricScrewDriver : BaseScrewDriver
 
     public void StopScrewDriverSound()
     {
-        if (isPlayingSound && audioSource != null)
+        if (isPlayingSound)
         {
-            audioSource.Stop();
-            audioSource.volume = 0f;
-            audioSource.pitch = 1f; // Reset pitch
+            AudioManager.Instance.StopSound(audioSource);
             isPlayingSound = false;
         }
     }
-
 }

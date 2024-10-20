@@ -8,7 +8,7 @@ public class ComponentTypeData
 {
     public string componentName;
     public ComponentObject.ComponentType componentType;
-    public ComponentObject.Group componentGroup;
+    public string componentGroup;
 }
 
 public class JsonData

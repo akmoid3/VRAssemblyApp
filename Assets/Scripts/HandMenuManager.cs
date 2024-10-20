@@ -42,6 +42,7 @@ public class HandMenuManager : MonoBehaviour
     [SerializeField] public Button groupSelectionButton2;
 
     [SerializeField] public TMP_Dropdown incrementDropdown;
+    [SerializeField] private Transform buildingPosition;
 
     private MakeGrabbable makeGrabbable;
 
@@ -284,8 +285,8 @@ public class HandMenuManager : MonoBehaviour
                     if (group == null)
                     {
                         group = new GameObject("Group");
-                        group.transform.position = Vector3.zero;
-                        group.transform.rotation = Quaternion.identity;
+                        group.transform.position = buildingPosition.position;
+                        group.transform.rotation = buildingPosition.rotation;
                     }
 
                     // Change the parent of the current selected component

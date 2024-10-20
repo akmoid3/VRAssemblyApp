@@ -3,27 +3,20 @@ using UnityEngine;
 
 public class ToolManager : MonoBehaviour
 {
-    [SerializeField] private GameObject hammerPrefab;
-    [SerializeField] private GameObject drillPrefab;
-    [SerializeField] private GameObject screwDriverPrefab;
-
+    [SerializeField] private List<GameObject> toolPrefabsList;
     private Dictionary<string, GameObject> toolPrefabs;
     private Dictionary<GameObject, GameObject> toolInstances = new Dictionary<GameObject, GameObject>();
 
-    public GameObject HammerPrefab { get => hammerPrefab; set => hammerPrefab = value; }
-    public GameObject DrillPrefab { get => drillPrefab; set => drillPrefab = value; }
-    public GameObject ScrewDriverPrefab { get => screwDriverPrefab; set => screwDriverPrefab = value; }
     public Dictionary<GameObject, GameObject> ToolInstances { get => toolInstances; set => toolInstances = value; }
 
-    public void Start()
+    private void Awake()
     {
-        toolPrefabs = new Dictionary<string, GameObject>
+        // Initialize the tool prefabs dictionary
+        toolPrefabs = new Dictionary<string, GameObject>();
+        foreach (var toolPrefab in toolPrefabsList)
         {
-            { hammerPrefab.name, hammerPrefab },
-            { drillPrefab.name, drillPrefab },
-            { screwDriverPrefab.name, screwDriverPrefab }
-
-        };
+            toolPrefabs[toolPrefab.name] = toolPrefab;
+        }
     }
 
     public GameObject AttachToolToComponent(GameObject component, string toolName)
@@ -36,10 +29,10 @@ public class ToolManager : MonoBehaviour
             GameObject toolInstance = Instantiate(toolPrefab);
             toolInstance.name = toolName;
             toolInstance.transform.SetParent(component.transform); // Attach tool to component
-            toolInstance.transform.localPosition = Vector3.zero + new Vector3(0,0.5f,0); // Set local position relative to component
+            toolInstance.transform.localPosition = Vector3.zero + new Vector3(0, 0.5f, 0); // Set local position relative to component
             toolInstance.GetComponent<Rigidbody>().isKinematic = true;
-            toolInstance.transform.SetParent(null); // Attach tool to component
-            
+            toolInstance.transform.SetParent(null); // Detach tool from component
+
             // Store the tool instance for later management
             toolInstances[component] = toolInstance;
             return toolInstance;

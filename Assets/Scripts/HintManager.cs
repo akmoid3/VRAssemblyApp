@@ -59,7 +59,7 @@ public class HintManager : MonoBehaviour
         foreach (var component in components)
         {
             ComponentObject componentObject = component.GetComponent<ComponentObject>();
-            if (component.name == componentToPlaceName || (componentObject.GetGroup() != ComponentObject.Group.None && componentToPlaceGroup == componentObject.GetGroup()))
+            if (component.name == componentToPlaceName || (!componentObject.GetIsPlaced() && componentObject.GetGroup() != "None" && componentToPlaceGroup == componentObject.GetGroup()))
             {
                 StartCoroutine(HandleHintCooldown(component.gameObject));
             }

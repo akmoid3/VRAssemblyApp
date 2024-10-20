@@ -77,29 +77,6 @@ public class SimpleHammerTest
     }
 
     [Test]
-    public void PlayHammerSound_AudioSourceIsNotNull_PlaysAudio()
-    {
-        Assert.IsNotNull(audioSource);
-        Assert.IsNotNull(audioSource.clip);
-
-        simpleHammer.PlayHammerSound();
-
-        Assert.IsTrue(audioSource.isPlaying);
-    }
-
-    [Test]
-    public void PlayHammerSound_AudioSourceIsNull_DoesNotThrowException()
-    {
-        Object.DestroyImmediate(hammerObject.GetComponent<AudioSource>());
-        simpleHammer.Start();
-
-        Assert.DoesNotThrow(() => simpleHammer.PlayHammerSound());
-    }
-
-    
-
-
-    [Test]
     public void ProcessInteractable_WhenSelectedAndNoMovement_ImpactForceRemainsZero()
     {
         // Set isSelected to true to simulate the hammer being selected

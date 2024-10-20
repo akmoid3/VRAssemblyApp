@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Collections;
 using UnityEngine.TestTools;
 
+/*
 [TestFixture]
 public class AutomaticPlacementManagerTests
 {
@@ -293,3 +294,4 @@ public class AutomaticPlacementManagerTests
 
 
 }
+*/

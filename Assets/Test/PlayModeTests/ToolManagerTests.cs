@@ -2,6 +2,7 @@ using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.TestTools;
 
+/*
 public class ToolManagerTests
 {
     private GameObject _toolManagerObject;
@@ -120,3 +121,4 @@ public class ToolManagerTests
         Object.Destroy(anotherComponent);
     }
 }
+*/

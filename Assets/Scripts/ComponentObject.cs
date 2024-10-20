@@ -5,7 +5,6 @@ public class ComponentObject : MonoBehaviour
     private bool isPlaced = false;
     private bool isReleased = false;
 
-    
     public enum ComponentType
     {
         None,
@@ -14,21 +13,28 @@ public class ComponentObject : MonoBehaviour
         WoodenPin
     }
 
-    public enum Group
-    {
-        None,
-        Group01,
-        Group02,
-        Group03,
-        Group04
-    }
-
     [SerializeField] private ComponentType componentType = ComponentType.None;
-    [SerializeField] private Group componentGroup = Group.None;
-    
+    [SerializeField] private string componentGroup = "None";
 
     // Properties for component state
     public bool IsReleased { get => isReleased; set => isReleased = value; }
+
+    private AudioSource audioSource;
+
+    private void Start()
+    {
+        // Initialize the AudioSource
+        audioSource = GetComponent<AudioSource>();
+        if (audioSource == null)
+        {
+            audioSource = gameObject.AddComponent<AudioSource>();
+        }
+    }
+
+    public void PlayBuildPopSound()
+    {
+        AudioManager.Instance.PlaySound(audioSource, "BuildPop", false, 1f);
+    }
 
     public bool GetIsPlaced()
     {
@@ -45,15 +51,16 @@ public class ComponentObject : MonoBehaviour
         return componentType;
     }
 
-    public Group GetGroup()
+    public string GetGroup()
     {
         return componentGroup;
     }
 
-    public void SetGroup(Group group)
+    public void SetGroup(string group)
     {
         componentGroup = group;
     }
+
     public void SetComponentType(ComponentType type)
     {
         componentType = type;

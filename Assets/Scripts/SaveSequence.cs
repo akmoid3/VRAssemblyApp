@@ -10,7 +10,7 @@ public class ComponentData
     public Vector3 position;
     public Quaternion rotation;
     public string toolName;
-    public ComponentObject.Group group;
+    public string group;
     public ComponentObject.ComponentType type;
 
 }
