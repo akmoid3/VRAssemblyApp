@@ -39,7 +39,7 @@ public class Nail : Fastener
             float currentDistance = Vector3.Distance(socketTransform.localPosition, initialSocketPosition);
             float remainingDistance = distanceToTravel - currentDistance;
 
-            float direction = Vector3.Dot(impactDirection, selectedAxisDirection);
+            float direction = Vector3.Dot(impactDirection, MapSelectedAxisToTransformDirection(selectedAxisDirRaw));
 
             // Check if the impact direction matches the alignment
             if (direction >= 0.7f)

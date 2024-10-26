@@ -24,10 +24,12 @@ public class Screw : Fastener
     {
         if (screwdriverScript != null && socketTransform != null && screwdriverScript.gameObject.name == CorrectToolName)
         {
+            
             Vector3 screwdriverDir = screwdriverScript.transform.forward;
-            Vector3 screwDir = selectedAxisDirection;
-            float dotProduct = Vector3.Dot(screwdriverDir.normalized, screwDir.normalized);
+            Vector3 screwDir = MapSelectedAxisToTransformDirection(selectedAxisDirRaw);
 
+            float dotProduct = Vector3.Dot(screwdriverDir.normalized, screwDir.normalized);
+            Debug.Log(dotProduct);
             if (dotProduct >= maxAllowedDotProduct)
             {
                 float rotationSpeed = screwdriverScript.GetRotationSpeed();
@@ -66,7 +68,7 @@ public class Screw : Fastener
     private void HandleNormalInteraction()
     {
         Vector3 screwdriverDir = screwdriverScript.transform.forward;
-        Vector3 screwDir = selectedAxisDirection;
+        Vector3 screwDir = MapSelectedAxisToTransformDirection(selectedAxisDirRaw);
         float dotProduct = Vector3.Dot(screwdriverDir.normalized, screwDir.normalized);
 
         if (dotProduct >= maxAllowedDotProduct)

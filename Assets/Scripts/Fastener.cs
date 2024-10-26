@@ -343,7 +343,7 @@ public abstract class Fastener : MonoBehaviour
         AudioManager.Instance.PlaySound(audioSource, "BuildPop", false, 1f);
     }
 
-    private Vector3 MapSelectedAxisToTransformDirection(Vector3 selectedAxis)
+    public Vector3 MapSelectedAxisToTransformDirection(Vector3 selectedAxis)
     {
         if (selectedAxis == Vector3.forward)
             return transform.forward;
