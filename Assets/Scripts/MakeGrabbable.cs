@@ -76,7 +76,7 @@ public class MakeGrabbable : MonoBehaviour
         XRGrabInteractable grabInteractable = gameObject.AddComponent<XRGrabInteractable>();
         grabInteractable.enabled = false;
 
-        // Apply inspector-modifiable properties
+        
         grabInteractable.throwOnDetach = throwOnDetach;
         grabInteractable.movementType = movementType;
         grabInteractable.useDynamicAttach = useDynamicAttach;

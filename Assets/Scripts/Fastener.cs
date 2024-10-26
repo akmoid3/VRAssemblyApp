@@ -1,4 +1,6 @@
 using UnityEngine;
+using static UnityEditorInternal.VersionControl.ListControl;
+using static UnityEngine.GraphicsBuffer;
 
 public abstract class Fastener : MonoBehaviour
 {
@@ -22,7 +24,7 @@ public abstract class Fastener : MonoBehaviour
 
     protected Color defaultColor = Color.white;
 
-    protected Vector3 initialZPosition;
+    protected Vector3 initialPosition;
     protected float distanceToTravel;
 
     protected Collider colliderComponent;
@@ -42,6 +44,10 @@ public abstract class Fastener : MonoBehaviour
     public GameObject Tool { get => tool; set => tool = value; }
     public Renderer FastenerRenderer { get => fastenerRenderer; set => fastenerRenderer = value; }
 
+    protected Vector3 selectedAxisDirRaw;
+    protected Vector3 selectedAxisDirection;
+    protected float fastenerLengthAlongAxis;
+
     public GameObject getTool()
     {
         return tool;
@@ -54,16 +60,29 @@ public abstract class Fastener : MonoBehaviour
         fastenerRenderer = GetComponent<Renderer>();
         defaultColor = fastenerRenderer.material.color;
 
-        // Length of the mesh
-        fastenerLength = GetComponent<Renderer>().bounds.size.z;
-        distanceToTravel = fastenerLength - headSize;
-
         // Initialize the AudioSource
         audioSource = GetComponent<AudioSource>();
         if (audioSource == null)
         {
             audioSource = gameObject.AddComponent<AudioSource>();
         }
+
+        componentObject = GetComponent<ComponentObject>();
+
+        if (componentObject == null)
+        {
+            Debug.LogError("ComponentObject is not found on this Fastener.");
+        }
+
+        selectedAxisDirRaw = componentObject.GetSelectedAxis();
+
+        // Calculate the length of the fastener along the selected axis
+
+        fastenerLengthAlongAxis = Mathf.Abs(Vector3.Dot(selectedAxisDirRaw, fastenerRenderer.bounds.size));
+
+        distanceToTravel = fastenerLengthAlongAxis - headSize;
+
+
     }
 
     protected virtual void FixedUpdate()
@@ -75,6 +94,7 @@ public abstract class Fastener : MonoBehaviour
 
         if (!canStop && !isStopped && !IsAligned && StateManager.Instance.CurrentState == State.Record)
             PerformComponentRaycast();
+
     }
 
     protected abstract void HandleInteraction();
@@ -121,11 +141,15 @@ public abstract class Fastener : MonoBehaviour
 
     protected void PerformComponentRaycast()
     {
+        if (componentObject == null) return;
+
         isCollidingWithComponent = false;
 
         RaycastHit hit;
         Vector3 rayOrigin = transform.position;
-        Vector3 rayDirection = transform.forward;
+
+        // Use the selected axis and direction from the ComponentObject
+        Vector3 rayDirection = MapSelectedAxisToTransformDirection(componentObject.GetSelectedAxis());
 
         if (Physics.Raycast(rayOrigin, rayDirection, out hit, rayLength))
         {
@@ -133,14 +157,14 @@ public abstract class Fastener : MonoBehaviour
             {
                 isCollidingWithComponent = true;
 
-                // Check alignment with dot product
                 Vector3 normalAtContact = hit.normal;
-                float dotProduct = Vector3.Dot(transform.forward, -normalAtContact);
-                componentObject = GetComponent<ComponentObject>();
+                float dotProduct = Vector3.Dot(rayDirection, -normalAtContact);
+
                 if (dotProduct >= alignmentDotProductThreshold)
                 {
                     fastenerRenderer.material.color = alignedColor;
-                    if (componentObject && componentObject.IsReleased && !isAligned)
+
+                    if (componentObject.IsReleased && !isAligned)
                         AlignWithComponent(hit.point, normalAtContact);
                 }
                 else
@@ -162,41 +186,130 @@ public abstract class Fastener : MonoBehaviour
         }
     }
 
+    public static Quaternion OmniLookRotation(
+             Vector3 exactAxis, Vector3 exactTarget,
+             Vector3 approximateAxis, Vector3 approximateTarget
+)
+    {
+        // Compute a rotation that takes the z+ and y+ axes to our custom axes.
+        var zyToCustom = Quaternion.LookRotation(exactAxis, approximateAxis);
+        // Invert this, to map our custom axes to z+ and y+.
+        var customToZY = Quaternion.Inverse(zyToCustom);
+
+        // Compute a rotation that takes the z+ and y+ axes to our target directions.
+        var zyToTarget = Quaternion.LookRotation(exactTarget, approximateTarget);
+
+        // Chain these two rotations so that exactAxis maps to exactTarget,
+        // and approximateAxis maps as closely as it can to approximateTarget.
+        var customToTarget = zyToTarget * customToZY;
+
+        return customToTarget;
+    }
+
     protected void AlignWithComponent(Vector3 contactPoint, Vector3 contactNormal)
     {
-        Quaternion targetRotation = Quaternion.LookRotation(-contactNormal);
-        Vector3 directionToMove = -transform.forward;
+        if (componentObject == null) return;
 
-        Vector3 boundsCenter = fastenerRenderer.bounds.center;
+        // Map the selected axis to the actual transform direction
+        selectedAxisDirection = MapSelectedAxisToTransformDirection(componentObject.GetSelectedAxis());
 
-        Vector3 pivotPoint = transform.position;
+        
+        // Calculate the correct target rotation so the selected axis aligns with the contact normal
+        //Quaternion targetRotation = Quaternion.LookRotation(contactNormal, selectedAxisDirection);
+        Quaternion targetRotation;
 
-        Vector3 targetPosition;
-
-        bool isPivotBeforeCenter = Vector3.Dot(transform.forward, boundsCenter - pivotPoint) > 0;
-
-        bool isPivotAfterCenter = Vector3.Dot(transform.forward, boundsCenter - pivotPoint) < 0;
-
-        if (isPivotBeforeCenter)
+        if (componentObject.GetSelectedAxis() == Vector3.up)
         {
-            targetPosition = contactPoint + directionToMove * (fastenerLength / 2.0f + Vector3.Distance(boundsCenter, pivotPoint));
+            targetRotation = OmniLookRotation(
+                componentObject.GetSelectedAxis(), -contactNormal,
+                transform.right, transform.forward
+            );
         }
-        else if (isPivotAfterCenter)
+        else if (componentObject.GetSelectedAxis() == Vector3.down)
         {
-            targetPosition = contactPoint + directionToMove * (fastenerLength / 2.0f - Vector3.Distance(boundsCenter, pivotPoint));
+            targetRotation = OmniLookRotation(
+                componentObject.GetSelectedAxis(), -contactNormal,
+                transform.right, -transform.forward
+            );
+        }
+        else if (componentObject.GetSelectedAxis() == Vector3.right)
+        {
+            targetRotation = OmniLookRotation(
+                componentObject.GetSelectedAxis(), -contactNormal,
+                transform.up, transform.forward
+            );
+        }
+        else if (componentObject.GetSelectedAxis() == Vector3.left)
+        {
+            targetRotation = OmniLookRotation(
+                componentObject.GetSelectedAxis(), -contactNormal,
+                -transform.up, transform.forward
+            );
+        }
+        else if (componentObject.GetSelectedAxis() == Vector3.forward)
+        {
+            targetRotation = OmniLookRotation(
+                componentObject.GetSelectedAxis(), -contactNormal,
+                transform.up, transform.right
+            );
+        }
+        else if (componentObject.GetSelectedAxis() == Vector3.back)
+        {
+            targetRotation = OmniLookRotation(
+                componentObject.GetSelectedAxis(), -contactNormal,
+                transform.up, -transform.right
+            );
         }
         else
         {
-            targetPosition = contactPoint + directionToMove * (fastenerLength / 2.0f);
+            return; // Unsupported axis
         }
 
+
+        // Esegue una transizione verso la rotazione target
+        transform.rotation = Quaternion.Lerp(
+            transform.rotation,
+            targetRotation,
+            4 * Time.deltaTime
+        );
+        // Calculate the direction to move, based on selected axis and direction
+        Vector3 directionToMove = selectedAxisDirection ;
+
+        // Center of the fastener's bounds, used for alignment
+        Vector3 boundsCenter = fastenerRenderer.bounds.center;
+        Vector3 pivotPoint = transform.position;
+
+        // Calculate the distance from the pivot point to the center along the selected axis
+        float distanceFromPivotToCenter = Mathf.Abs(Vector3.Dot(boundsCenter - pivotPoint, selectedAxisDirection));
+
+        // Determine the target position based on whether the pivot point is before or after the center
+        Vector3 targetPosition;
+        bool isPivotBeforeCenter = Vector3.Dot(selectedAxisDirection, boundsCenter - pivotPoint) > 0;
+        bool isPivotAfterCenter = Vector3.Dot(selectedAxisDirection, boundsCenter - pivotPoint) < 0;
+        float offSet = 0.005f;
+
+        if (isPivotBeforeCenter)
+        {
+            targetPosition = contactPoint - directionToMove * (fastenerLengthAlongAxis / 2.0f + distanceFromPivotToCenter + offSet);
+        }
+        else if (isPivotAfterCenter)
+        {
+            targetPosition = contactPoint - directionToMove * (fastenerLengthAlongAxis / 2.0f - distanceFromPivotToCenter + offSet);
+        }
+        else
+        {
+            targetPosition = contactPoint - directionToMove * (fastenerLengthAlongAxis / 2.0f + offSet);
+        }
+
+        // Set the position and rotation of the fastener
         transform.SetPositionAndRotation(targetPosition, targetRotation);
 
-        // Set initial position at the point of contact
-        initialZPosition = transform.localPosition;
-
+        // Store the initial position for further movement along the selected axis
+        initialPosition = transform.localPosition;
         isAligned = true;
     }
+
+
 
     public void SetSocketTransform(Transform socket)
     {
@@ -229,4 +342,24 @@ public abstract class Fastener : MonoBehaviour
     {
         AudioManager.Instance.PlaySound(audioSource, "BuildPop", false, 1f);
     }
+
+    private Vector3 MapSelectedAxisToTransformDirection(Vector3 selectedAxis)
+    {
+        if (selectedAxis == Vector3.forward)
+            return transform.forward;
+        else if (selectedAxis == Vector3.right)
+            return transform.right;
+        else if (selectedAxis == Vector3.up)
+            return transform.up;
+        if (selectedAxis == Vector3.forward * -1.0f)
+            return transform.forward * -1.0f;
+        else if (selectedAxis == Vector3.right * -1.0f)
+            return transform.right * -1.0f;
+        else if (selectedAxis == Vector3.up * -1.0f)
+            return transform.up * -1.0f;
+
+
+        return transform.forward;
+    }
+
 }

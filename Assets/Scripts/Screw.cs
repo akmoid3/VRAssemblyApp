@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 public class Screw : Fastener
@@ -24,7 +25,7 @@ public class Screw : Fastener
         if (screwdriverScript != null && socketTransform != null && screwdriverScript.gameObject.name == CorrectToolName)
         {
             Vector3 screwdriverDir = screwdriverScript.transform.forward;
-            Vector3 screwDir = transform.forward;
+            Vector3 screwDir = selectedAxisDirection;
             float dotProduct = Vector3.Dot(screwdriverDir.normalized, screwDir.normalized);
 
             if (dotProduct >= maxAllowedDotProduct)
@@ -46,8 +47,8 @@ public class Screw : Fastener
                 float pitchAudio = Mathf.Clamp(linearMovement * 10.0f, 0.5f, 2.0f);
                 AudioManager.Instance.SetPitch(audioSource, pitchAudio);
 
-                socketTransform.Rotate(Vector3.forward, rotationSpeed * Time.deltaTime * -1.0f);
-                socketTransform.Translate(Vector3.forward * linearMovement);
+                socketTransform.Rotate(selectedAxisDirRaw, rotationSpeed * Time.deltaTime * -1.0f);
+                socketTransform.Translate(selectedAxisDirRaw * linearMovement);
 
                 float distanceTraveled = Mathf.Abs(Vector3.Distance(socketTransform.localPosition, initialSocketPosition));
 
@@ -58,13 +59,14 @@ public class Screw : Fastener
                     StopScrewSound();
                 }
             }
+        
         }
     }
 
     private void HandleNormalInteraction()
     {
         Vector3 screwdriverDir = screwdriverScript.transform.forward;
-        Vector3 screwDir = transform.forward;
+        Vector3 screwDir = selectedAxisDirection;
         float dotProduct = Vector3.Dot(screwdriverDir.normalized, screwDir.normalized);
 
         if (dotProduct >= maxAllowedDotProduct)
@@ -86,10 +88,10 @@ public class Screw : Fastener
             float pitchAudio = Mathf.Clamp(linearMovement * 10.0f, 0.5f, 2.0f);
             AudioManager.Instance.SetPitch(audioSource, pitchAudio);
 
-            transform.Rotate(Vector3.forward, rotationSpeed * Time.deltaTime * -1.0f);
-            transform.Translate(Vector3.forward * linearMovement);
+            transform.Rotate(selectedAxisDirRaw, rotationSpeed * Time.deltaTime * -1.0f);
+            transform.Translate(selectedAxisDirRaw * linearMovement);
 
-            float distanceTraveled = Mathf.Abs(Vector3.Distance(transform.localPosition, initialZPosition));
+            float distanceTraveled = Mathf.Abs(Vector3.Distance(transform.localPosition, initialPosition));
 
             if (distanceTraveled >= distanceToTravel)
             {

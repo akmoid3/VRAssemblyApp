@@ -1,5 +1,6 @@
 using UnityEngine;
 
+[RequireComponent(typeof(LineRenderer))]
 public class ComponentObject : MonoBehaviour
 {
     private bool isPlaced = false;
@@ -16,10 +17,13 @@ public class ComponentObject : MonoBehaviour
     [SerializeField] private ComponentType componentType = ComponentType.None;
     [SerializeField] private string componentGroup = "None";
 
+    [SerializeField] private Vector3 selectedAxis;
+
     // Properties for component state
     public bool IsReleased { get => isReleased; set => isReleased = value; }
 
     private AudioSource audioSource;
+    private LineRenderer lineRenderer;
 
     private void Start()
     {
@@ -29,6 +33,30 @@ public class ComponentObject : MonoBehaviour
         {
             audioSource = gameObject.AddComponent<AudioSource>();
         }
+
+        // Initialize the LineRenderer
+        lineRenderer = GetComponent<LineRenderer>();
+        if (lineRenderer == null)
+        {
+            lineRenderer = gameObject.AddComponent<LineRenderer>();
+        }
+
+        // Configure lineRenderer appearance
+        lineRenderer.startWidth = 0.01f;
+        lineRenderer.endWidth = 0.01f;
+        lineRenderer.material = new Material(Shader.Find("Sprites/Default"));
+        lineRenderer.startColor = Color.blue;
+        lineRenderer.endColor = Color.blue;
+        lineRenderer.positionCount = 2;
+    }
+
+    private void Update()
+    {
+        Vector3 startPosition = transform.position;
+        Vector3 endPosition = startPosition + transform.rotation * selectedAxis * 1f;
+
+        lineRenderer.SetPosition(0, startPosition);
+        lineRenderer.SetPosition(1, endPosition);
     }
 
     public void PlayBuildPopSound()
@@ -65,4 +93,15 @@ public class ComponentObject : MonoBehaviour
     {
         componentType = type;
     }
+
+    public Vector3 GetSelectedAxis()
+    {
+        return selectedAxis;
+    }
+
+    public void SetSelectedAxis(Vector3 axis)
+    {
+        selectedAxis = axis;
+    }
+
 }

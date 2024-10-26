@@ -14,6 +14,14 @@ public class InitializeComponentManager : MonoBehaviour
     public TextMeshProUGUI componentName;
     [SerializeField] private FileBrowserManager fileBrowserManager;
 
+    public TMP_Dropdown axisDropdown;
+
+    private Vector3 selectedAxis = Vector3.forward;
+    private int selectedDirection = 1;
+
+
+
+
     private List<string> groups = new List<string> { "None" }; // Initial group list
 
     public FileBrowserManager FileBrowserManager { get => fileBrowserManager; set => fileBrowserManager = value; }
@@ -77,6 +85,10 @@ public class InitializeComponentManager : MonoBehaviour
 
         // Update dropdowns to reflect the current component's type and group
         UpdateDropdownsForSelectedComponent(Manager.Instance.CurrentSelectedComponent);
+
+        PopulateAxisDropdown();
+
+        axisDropdown.onValueChanged.AddListener(OnAxisDropdownValueChanged);
     }
 
     public void Update()
@@ -206,7 +218,100 @@ public class InitializeComponentManager : MonoBehaviour
                 // Update the dropdown values to reflect the current component type and group
                 componentDropdown.value = (int)componentObject.GetComponentType();
                 groupDropdown.value = groups.IndexOf(componentObject.GetGroup());
+
+                // Check if the component is a Screw, Nail, or WoodenPin
+                if (componentObject.GetComponentType() == ComponentObject.ComponentType.Screw ||
+                    componentObject.GetComponentType() == ComponentObject.ComponentType.Nail ||
+                    componentObject.GetComponentType() == ComponentObject.ComponentType.WoodenPin)
+                {
+                    // Enable and update the axis and direction dropdowns
+                    axisDropdown.gameObject.SetActive(true);
+
+                    // Update the axis dropdown
+                    Vector3 currentAxis = componentObject.GetSelectedAxis();
+                    if (currentAxis == Vector3.right)
+                    {
+                        axisDropdown.value = 0; // X-axis
+                    }
+                    else if (currentAxis == Vector3.up)
+                    {
+                        axisDropdown.value = 1; // Y-axis
+                    }
+                    else if (currentAxis == Vector3.forward)
+                    {
+                        axisDropdown.value = 2; // Z-axis
+                    }
+                    else if(currentAxis == Vector3.right * -1.0f)
+                    {
+                        axisDropdown.value = 3; // X-axis
+                    }
+                    else if (currentAxis == Vector3.up * -1.0f)
+                    {
+                        axisDropdown.value = 4; // Y-axis
+                    }
+                    else if (currentAxis == Vector3.forward * -1.0f)
+                    {
+                        axisDropdown.value = 5; // Z-axis
+                    }
+
+                    // Update the direction dropdown
+                }
+                else
+                {
+                    // Hide the axis and direction dropdowns if not a Screw, Nail, or WoodenPin
+                    axisDropdown.gameObject.SetActive(false);
+                }
             }
         }
     }
+
+
+
+    private void PopulateAxisDropdown()
+    {
+        List<string> options = new List<string> { "X", "Y", "Z", "- X", "- Y", "- Z" };
+        axisDropdown.AddOptions(options);
+    }
+
+ 
+    private void OnAxisDropdownValueChanged(int index)
+    {
+        switch (index)
+        {
+            case 0: selectedAxis = Vector3.right; break;
+            case 1: selectedAxis = Vector3.up; break;
+            case 2: selectedAxis = Vector3.forward; break;
+            case 3: selectedAxis = Vector3.right * -1.0f; break;
+            case 4: selectedAxis = Vector3.up * -1.0f; break;
+            case 5: selectedAxis = Vector3.forward * -1.0f; break;
+
+
+
+        }
+        UpdateSelectedFastener();
+    }
+
+    private void UpdateSelectedFastener()
+    {
+        GameObject selectedComponent = Manager.Instance.CurrentSelectedComponent;
+
+        if (selectedComponent != null)
+        {
+
+            ComponentObject componentObject = selectedComponent.GetComponent<ComponentObject>();
+
+            if (componentObject != null)
+            {
+
+                if (componentObject.GetComponentType() == ComponentObject.ComponentType.Screw ||
+                    componentObject.GetComponentType() == ComponentObject.ComponentType.Nail ||
+                    componentObject.GetComponentType() == ComponentObject.ComponentType.WoodenPin)
+                {
+                    componentObject.SetSelectedAxis(selectedAxis);
+                }
+            }
+        }
+    }
+
+
 }

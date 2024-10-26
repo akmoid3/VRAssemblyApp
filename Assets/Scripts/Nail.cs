@@ -39,7 +39,7 @@ public class Nail : Fastener
             float currentDistance = Vector3.Distance(socketTransform.localPosition, initialSocketPosition);
             float remainingDistance = distanceToTravel - currentDistance;
 
-            float direction = Vector3.Dot(impactDirection, transform.forward);
+            float direction = Vector3.Dot(impactDirection, selectedAxisDirection);
 
             // Check if the impact direction matches the alignment
             if (direction >= 0.7f)
@@ -47,7 +47,7 @@ public class Nail : Fastener
                 float actualMovement = Mathf.Min(potentialMovement, remainingDistance);
 
                 // Move the socketTransform based on the impact
-                socketTransform.Translate(Vector3.forward * actualMovement);
+                socketTransform.Translate(selectedAxisDirRaw * actualMovement);
 
                 AudioManager.Instance.PlaySound(audioSource, "Hammer", false, 1.0f);
 
@@ -71,10 +71,10 @@ public class Nail : Fastener
         if (hammerForce >= minimumImpactForce)
         {
             float potentialMovement = hammerForce * Time.fixedDeltaTime * forceScalingFactor;
-            float currentDistance = Vector3.Distance(transform.localPosition, initialZPosition);
+            float currentDistance = Vector3.Distance(transform.localPosition, initialPosition);
             float remainingDistance = distanceToTravel - currentDistance;
 
-            float direction = Vector3.Dot(impactDirection, transform.forward);
+            float direction = Vector3.Dot(impactDirection, selectedAxisDirection);
 
             // Check if the impact direction matches the alignment
             if (direction >= 0.8f)
@@ -82,7 +82,7 @@ public class Nail : Fastener
                 float actualMovement = Mathf.Min(potentialMovement, remainingDistance);
 
                 // Move the transform based on the impact
-                transform.Translate(Vector3.forward * actualMovement);
+                transform.Translate(selectedAxisDirRaw * actualMovement);
 
                 AudioManager.Instance.PlaySound(audioSource, "Hammer", false, 1.0f);
 

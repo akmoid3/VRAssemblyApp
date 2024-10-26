@@ -1,7 +1,6 @@
+using UnityEngine;
 using System.Collections.Generic;
 using System.IO;
-using UnityEngine;
-
 
 [System.Serializable]
 public class ComponentTypeData
@@ -9,6 +8,8 @@ public class ComponentTypeData
     public string componentName;
     public ComponentObject.ComponentType componentType;
     public string componentGroup;
+    public Vector3 selectedAxis;         
+    public float selectedDirection;      
 }
 
 public class JsonData
@@ -24,10 +25,11 @@ public class InitializedDataManager : MonoBehaviour
     private string directory = "InitializedModels";
 
     private string directoryPath;
+
     void Start()
     {
         directoryPath = Path.Combine(Application.persistentDataPath, directory);
-        if(!Directory.Exists(directoryPath))
+        if (!Directory.Exists(directoryPath))
         {
             Directory.CreateDirectory(directoryPath);
         }
@@ -44,7 +46,7 @@ public class InitializedDataManager : MonoBehaviour
         string filePath = Path.Combine(directoryPath, fileName);
 
         JsonData data = new JsonData();
-        // Iterate through the children and save their data
+
         foreach (Transform child in components)
         {
             ComponentObject componentObject = child.GetComponent<ComponentObject>();
@@ -57,6 +59,14 @@ public class InitializedDataManager : MonoBehaviour
                     componentType = componentObject.GetComponentType(),
                     componentGroup = componentObject.GetGroup()
                 };
+
+                // If component is a fastener, add axis and direction
+                if (componentData.componentType == ComponentObject.ComponentType.Screw ||
+                    componentData.componentType == ComponentObject.ComponentType.Nail ||
+                    componentData.componentType == ComponentObject.ComponentType.WoodenPin)
+                {
+                    componentData.selectedAxis = componentObject.GetSelectedAxis();
+                }
 
                 data.components.Add(componentData);
             }
@@ -92,6 +102,14 @@ public class InitializedDataManager : MonoBehaviour
                 }
                 componentObject.SetComponentType(componentData.componentType);
                 componentObject.SetGroup(componentData.componentGroup);
+
+                // If the component is a fastener, set axis and direction
+                if (componentData.componentType == ComponentObject.ComponentType.Screw ||
+                    componentData.componentType == ComponentObject.ComponentType.Nail ||
+                    componentData.componentType == ComponentObject.ComponentType.WoodenPin)
+                {
+                    componentObject.SetSelectedAxis(componentData.selectedAxis);
+                }
             }
         }
     }
@@ -104,9 +122,7 @@ public class InitializedDataManager : MonoBehaviour
             {
                 return child;
             }
-            
         }
         return null;
     }
-
 }
