@@ -35,6 +35,39 @@ public class AutomaticPlacementManager : MonoBehaviour
         }
     }
 
+    public void PlaceCurrentStepComponent(int stepIndex, List<ComponentData> assemblySequence, List<Transform> components, SnapToPosition interactor)
+    {
+        // Ensure the step index is within bounds
+        if (assemblySequence == null || stepIndex < 0 || stepIndex >= assemblySequence.Count)
+        {
+            Debug.LogWarning("Invalid step index or empty assembly sequence.");
+            return;
+        }
+
+        // Get the component data for the current step
+        var componentData = assemblySequence[stepIndex];
+        var componentName = componentData.componentName;
+
+        // Find the corresponding component in the components list
+        var componentToPlace = components.Find(c => c.name == componentName);
+        if (componentToPlace == null)
+        {
+            Debug.LogWarning($"Component {componentName} not found in the components list.");
+            return;
+        }
+
+        // Find the correct snap point for this step in the interactor
+        Transform correctSnappoint = interactor.transform.GetChild(stepIndex);
+        if (correctSnappoint == null)
+        {
+            Debug.LogWarning($"Snap point for step index {stepIndex} not found in the interactor.");
+            return;
+        }
+
+        // Start the coroutine to smoothly move the component to its correct position
+        StartCoroutine(SmoothMoveComponent(componentToPlace, correctSnappoint.position, correctSnappoint.rotation, timeForFirstPlacement));
+    }
+
     public virtual void PlaceAllComponentsGradually(float delayBetweenComponents, SnapToPosition interactor, List<ComponentData> assemblySequence, List<Transform> components, ToolManager toolManager)
     {
         // Clean up any previous clones before starting again
@@ -173,8 +206,10 @@ public class AutomaticPlacementManager : MonoBehaviour
         }
 
         // Ensure the final position and rotation are set correctly
-        component.gameObject.SetActive(true);
         component.position = targetPosition;
         component.rotation = targetRotation;
     }
+
+   
+
 }

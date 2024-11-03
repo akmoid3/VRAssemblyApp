@@ -3,6 +3,7 @@ using UnityEngine;
 [RequireComponent(typeof(LineRenderer))]
 public class ComponentObject : MonoBehaviour
 {
+    [SerializeField]
     private bool isPlaced = false;
     private bool isReleased = false;
 
@@ -53,7 +54,7 @@ public class ComponentObject : MonoBehaviour
     private void Update()
     {
         Vector3 startPosition = transform.position;
-        Vector3 endPosition = startPosition + transform.rotation * selectedAxis * 1f;
+        Vector3 endPosition = startPosition + transform.rotation * selectedAxis * 0.5f;
 
         lineRenderer.SetPosition(0, startPosition);
         lineRenderer.SetPosition(1, endPosition);

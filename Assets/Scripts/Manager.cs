@@ -376,6 +376,13 @@ public class Manager : MonoBehaviour
         automaticPlacementManager.PlaceAllComponentsGradually(delayBetweenComponents, interactor, AssemblySequence, components, toolManager);
     }
 
+    public void PlaceCurrentComponent()
+    {
+        if (automaticPlacementManager != null)
+            automaticPlacementManager.PlaceCurrentStepComponent(CurrentStep, AssemblySequence, components, interactor);
+        IncrementCurrentStep();
+        hintManager.HideHints(interactor);
+    }
     public void ShowHint()
     {
         hintManager.ShowHint(AssemblySequence, CurrentStep, components, interactor);
