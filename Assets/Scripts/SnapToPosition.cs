@@ -69,63 +69,60 @@ public class SnapToPosition : MonoBehaviour
             CheckSnap(other);
         }
     }
-
     private void CheckSnap(Collider other)
     {
         if (other == null)
             return;
+
         ComponentObject componentObject = other.GetComponent<ComponentObject>();
         var snapPoint = snapPoints[Manager.Instance.CurrentStep];
+
+        if (componentObject != null)
         {
-
-            if (componentObject != null)
+            if (other.name == snapPoint.componentName ||
+                (componentObject.GetGroup() != "None" &&
+                 componentObject.GetGroup() == snapPoint.componentObject.GetGroup() &&
+                 componentObject.GetType() == snapPoint.componentObject.GetType()))
             {
+                float distance = Vector3.Distance(other.transform.position, snapPoint.snapTransform.position);
+                float angle = Quaternion.Angle(other.transform.rotation, snapPoint.snapTransform.rotation);
 
-                if (other.name == snapPoint.componentName || (componentObject.GetGroup() != "None" && componentObject.GetGroup() == snapPoint.componentObject.GetGroup() && componentObject.GetType() == snapPoint.componentObject.GetType()))
+                Fastener fastener = other.GetComponent<Fastener>();
+
+                if (fastener != null)
                 {
+                    fastener.SetSocketTransform(snapPoint.snapTransform);
+                }
 
-                    float distance = Vector3.Distance(other.transform.position, snapPoint.snapTransform.position);
-                    float angle = Quaternion.Angle(other.transform.rotation, snapPoint.snapTransform.rotation);
+                if ((distance < snapDistance && angle < snapAngle) || (fastener && distance < 0.01f))
+                {
+                    other.attachedRigidbody.isKinematic = false;
+                    snapPoint.meshRenderer.enabled = true;
 
-                    Fastener fastener = other.GetComponent<Fastener>();
+                    other.transform.SetPositionAndRotation(snapPoint.snapTransform.position, snapPoint.snapTransform.rotation);
 
-                    if (fastener != null)
+                    other.GetComponent<Rigidbody>().isKinematic = true;
+                    IXRInteractable xrInteractable = other.GetComponent<IXRInteractable>();
+                    if (xrInteractable != null)
                     {
-                        fastener.SetSocketTransform(snapPoint.snapTransform);
+                        interactionManager.RegisterInteractable(xrInteractable);
+                        Destroy(xrInteractable as MonoBehaviour);
                     }
 
-                    if ((distance < snapDistance && angle < snapAngle) || (fastener && distance < 0.01f))
-                    {
-                        other.attachedRigidbody.isKinematic = false;
+                    // Add the object to the snapped objects set
+                    snappedObjects.Add(other.gameObject);
 
-                        snapPoint.meshRenderer.enabled = true;
+                    snapPoint.meshRenderer.enabled = false;
 
-                        other.transform.SetPositionAndRotation(snapPoint.snapTransform.position, snapPoint.snapTransform.rotation);
+                    other.transform.SetParent(snapPoint.snapTransform);
 
-                        other.GetComponent<Rigidbody>().isKinematic = true;
-                        IXRInteractable xrInteractable = other.GetComponent<IXRInteractable>();
-                        if (xrInteractable != null)
-                        {
-                            interactionManager.RegisterInteractable(xrInteractable);
-                            Destroy(xrInteractable as MonoBehaviour);
-                        }
+                    componentObject.SetIsPlaced(true);
 
-                        // Add the object to the snapped objects set
-                        snappedObjects.Add(other.gameObject);
+                    AddGrabbable(other);
 
-                        snapPoint.meshRenderer.enabled = false;
+                    OnComponentPlaced?.Invoke();
 
-                        other.transform.SetParent(snapPoint.snapTransform);
-
-                        componentObject.SetIsPlaced(true);
-
-                        AddGrabbable(other);
-
-                        OnComponentPlaced?.Invoke();
-
-                        componentObject.PlayBuildPopSound();
-
-                    }
+                    componentObject.PlayBuildPopSound();
                 }
             }
         }

@@ -35,6 +35,9 @@ public class AutomaticPlacementManager : MonoBehaviour
         }
     }
 
+    // Dictionary to track the count of each component placed
+    private Dictionary<string, int> componentPlacementCounts = new Dictionary<string, int>();
+
     public void PlaceCurrentStepComponent(int stepIndex, List<ComponentData> assemblySequence, List<Transform> components, SnapToPosition interactor)
     {
         // Ensure the step index is within bounds
@@ -48,12 +51,29 @@ public class AutomaticPlacementManager : MonoBehaviour
         var componentData = assemblySequence[stepIndex];
         var componentName = componentData.componentName;
 
+        // Update and check the component placement count
+        if (!componentPlacementCounts.ContainsKey(componentName))
+        {
+            componentPlacementCounts[componentName] = 0; // Initialize if not in dictionary
+        }
+
+        componentPlacementCounts[componentName]++;
+
+
         // Find the corresponding component in the components list
         var componentToPlace = components.Find(c => c.name == componentName);
         if (componentToPlace == null)
         {
             Debug.LogWarning($"Component {componentName} not found in the components list.");
             return;
+        }
+
+
+        // If this is not the first time we're placing this component, log a message
+        if (componentPlacementCounts[componentName] > 1)
+        {
+            Debug.Log($"Placing component '{componentName}' for the {componentPlacementCounts[componentName]} time.");
+            componentToPlace.GetComponent<Fastener>().IsStopped = true;
         }
 
         // Find the correct snap point for this step in the interactor
@@ -67,6 +87,7 @@ public class AutomaticPlacementManager : MonoBehaviour
         // Start the coroutine to smoothly move the component to its correct position
         StartCoroutine(SmoothMoveComponent(componentToPlace, correctSnappoint.position, correctSnappoint.rotation, timeForFirstPlacement));
     }
+
 
     public virtual void PlaceAllComponentsGradually(float delayBetweenComponents, SnapToPosition interactor, List<ComponentData> assemblySequence, List<Transform> components, ToolManager toolManager)
     {
@@ -94,7 +115,7 @@ public class AutomaticPlacementManager : MonoBehaviour
             // Ensure childClone does not carry over any deeper children
             foreach (Transform grandchild in childClone.transform)
             {
-                Destroy(grandchild.gameObject); // Remove nested children
+                Destroy(grandchild.gameObject);
             }
         }
 
@@ -209,7 +230,5 @@ public class AutomaticPlacementManager : MonoBehaviour
         component.position = targetPosition;
         component.rotation = targetRotation;
     }
-
-   
 
 }

@@ -380,7 +380,6 @@ public class Manager : MonoBehaviour
     {
         if (automaticPlacementManager != null)
             automaticPlacementManager.PlaceCurrentStepComponent(CurrentStep, AssemblySequence, components, interactor);
-        IncrementCurrentStep();
         hintManager.HideHints(interactor);
     }
     public void ShowHint()
