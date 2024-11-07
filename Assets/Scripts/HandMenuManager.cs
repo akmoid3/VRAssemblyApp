@@ -304,10 +304,9 @@ public class HandMenuManager : MonoBehaviour
                 manager.SaveBuildingSequence();
                 newStep = false;
             }
-            else
+            else if(!newStep)
             {
                 manager.SaveBuildingSequence();
-
             }
         }
     }

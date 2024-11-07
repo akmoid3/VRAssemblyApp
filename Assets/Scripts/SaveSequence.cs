@@ -6,13 +6,13 @@ using UnityEngine;
 [System.Serializable]
 public class ComponentData
 {
+    public int id;
     public string componentName;
     public Vector3 position;
     public Quaternion rotation;
     public string toolName;
     public string group;
     public ComponentObject.ComponentType type;
-
 }
 
 // A class to hold the data for all components
@@ -71,9 +71,15 @@ public class SaveSequence : MonoBehaviour
             }
 
         }
+
+        ComponentObject componentObject = component.GetComponent<ComponentObject>();
+        if(componentObject == null)
+            return;
+
         // Create new component data
         ComponentData newData = new ComponentData
         {
+            id = componentObject.Id,
             componentName = component.name,
             position = component.transform.localPosition,
             rotation = component.transform.localRotation,

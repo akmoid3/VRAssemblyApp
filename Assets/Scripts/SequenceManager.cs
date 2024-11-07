@@ -49,6 +49,7 @@ public class SequenceManager : MonoBehaviour
         {
             Debug.LogError("SaveSequence reference is not set.");
         }
+
     }
 
     // Modifies the current sequence and component data
@@ -82,13 +83,11 @@ public class SequenceManager : MonoBehaviour
     // Checks the validity of the current component
     public virtual void ValidateComponent(GameObject component)
     {
-
         ComponentData expectedComponent = assemblySequence[currentStep];
         if (component.name != expectedComponent.componentName && ( component.GetComponent<ComponentObject>().GetGroup() != "None" && !component.GetComponent<ComponentObject>().GetGroup().Equals(expectedComponent.group)))
         {
             IncrementCurrentError();
         }
-
     }
 
     public List<ComponentData> AssemblySequence { get => assemblySequence; set => assemblySequence = value; }
