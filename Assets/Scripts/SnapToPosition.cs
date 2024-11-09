@@ -116,20 +116,33 @@ public class SnapToPosition : MonoBehaviour
 
                     other.transform.SetParent(snapPoint.snapTransform);
 
+                   
+
+
                     componentObject.SetIsPlaced(true);
 
-                    AddGrabbable(other);
+                    AddGrabbable(other as MeshCollider);
 
                     OnComponentPlaced?.Invoke();
 
                     componentObject.PlayBuildPopSound();
+
+                    int currentStepId = Manager.Instance.AssemblySequence[Manager.Instance.CurrentStep - 1].stepId;
+
+                    if (!Manager.Instance.CurrentAssembledSequence.ContainsKey(currentStepId))
+                    {
+                        Manager.Instance.CurrentAssembledSequence.Add(currentStepId, other.gameObject);
+                    }
+
+                    Manager.Instance.HideHint();
                 }
             }
         }
     }
 
-    private void AddGrabbable(Collider collider)
+    private void AddGrabbable(MeshCollider collider)
     {
+
         XRGrabInteractable xrGrabInteractable = GetComponent<XRGrabInteractable>();
 
         if (xrGrabInteractable)
@@ -154,11 +167,13 @@ public class SnapToPosition : MonoBehaviour
             xrGrabInteractable.useDynamicAttach = true;
             xrGrabInteractable.selectMode = InteractableSelectMode.Multiple;
             xrGrabInteractable.movementType = XRBaseInteractable.MovementType.VelocityTracking;
+            xrGrabInteractable.colliders.Add(collider);
 
             // Register the newly added interactable
             interactionManager.RegisterInteractable(xrGrabInteractable as IXRInteractable);
         }
 
+        
         xrGrabInteractable.enabled = true;
     }
 

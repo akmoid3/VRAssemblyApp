@@ -3,10 +3,6 @@ using UnityEngine;
 [RequireComponent(typeof(LineRenderer))]
 public class ComponentObject : MonoBehaviour
 {
-    private static int nextId = 1; 
-
-    [SerializeField]
-    private int id;  
 
     [SerializeField]
     private bool isPlaced = false;
@@ -25,19 +21,15 @@ public class ComponentObject : MonoBehaviour
 
     [SerializeField] private Vector3 selectedAxis;
 
-   
+
 
     private AudioSource audioSource;
     private LineRenderer lineRenderer;
 
     // Properties for component state
     public bool IsReleased { get => isReleased; set => isReleased = value; }
-    public int Id { get => id; }
 
-    private void Awake()
-    {
-        id = nextId++;
-    }
+
 
     private void Start()
     {
@@ -66,11 +58,20 @@ public class ComponentObject : MonoBehaviour
 
     private void Update()
     {
-        Vector3 startPosition = transform.position;
-        Vector3 endPosition = startPosition + transform.rotation * selectedAxis * 0.5f;
+        if (StateManager.Instance.CurrentState == State.Initialize && !lineRenderer.enabled)
+        {
+            lineRenderer.enabled = true;
+            Vector3 startPosition = transform.position;
+            Vector3 endPosition = startPosition + transform.rotation * selectedAxis * 0.2f;
 
-        lineRenderer.SetPosition(0, startPosition);
-        lineRenderer.SetPosition(1, endPosition);
+            lineRenderer.SetPosition(0, startPosition);
+            lineRenderer.SetPosition(1, endPosition);
+        }
+        else if (StateManager.Instance.CurrentState != State.Initialize && lineRenderer.enabled)
+        {
+
+            lineRenderer.enabled = false;
+        }
     }
 
     public void PlayBuildPopSound()

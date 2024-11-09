@@ -1,12 +1,13 @@
 using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 // A class to hold the data for each component
 [System.Serializable]
 public class ComponentData
 {
-    public int id;
+    public int stepId;
     public string componentName;
     public Vector3 position;
     public Quaternion rotation;
@@ -28,6 +29,8 @@ public class SaveSequence : MonoBehaviour
 
     private string folderName = "SavedBuildData";
     private string directoryPath;
+    private Dictionary<GameObject, int> componentIdMap = new Dictionary<GameObject, int>();
+    private static int stepCounter = 0;
 
     public ObjectData ObjectData { get => objectData; set => objectData = value; }
 
@@ -60,34 +63,41 @@ public class SaveSequence : MonoBehaviour
     // Method to save components
     public virtual void SaveComponent(GameObject component)
     {
-        string name = "null";
+        string toolName = "null";
         Fastener fastener = component.GetComponent<Fastener>();
         if (fastener != null)
         {
             GameObject tool = fastener.getTool();
             if (tool != null)
             {
-                name = tool.name;
+                toolName = tool.name;
             }
-
         }
 
         ComponentObject componentObject = component.GetComponent<ComponentObject>();
-        if(componentObject == null)
+        if (componentObject == null)
             return;
 
-        // Create new component data
+        // Check if the GameObject already has an assigned stepId in the dictionary
+        if (!componentIdMap.TryGetValue(component, out int stepId))
+        {
+            // If not, assign a new unique ID and store it in the dictionary
+            stepId = stepCounter++;
+            componentIdMap[component] = stepId;
+        }
+
+        // Create new component data using the determined stepId
         ComponentData newData = new ComponentData
         {
-            id = componentObject.Id,
+            stepId = stepId,
             componentName = component.name,
             position = component.transform.localPosition,
             rotation = component.transform.localRotation,
-            toolName = name,
-            group = component.GetComponent<ComponentObject>().GetGroup(),
-            type = component.GetComponent<ComponentObject>().GetComponentType()
-
+            toolName = toolName,
+            group = componentObject.GetGroup(),
+            type = componentObject.GetComponentType()
         };
+
         objectData.components.Add(newData);
     }
 

@@ -29,7 +29,6 @@ public class Screw : Fastener
             Vector3 screwDir = MapSelectedAxisToTransformDirection(selectedAxisDirRaw);
 
             float dotProduct = Vector3.Dot(screwdriverDir.normalized, screwDir.normalized);
-            Debug.Log(dotProduct);
             if (dotProduct >= maxAllowedDotProduct)
             {
                 float rotationSpeed = screwdriverScript.GetRotationSpeed();

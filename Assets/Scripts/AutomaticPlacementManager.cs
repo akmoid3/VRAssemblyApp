@@ -1,5 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.ComponentModel;
+using System.Linq;
 using UnityEngine;
 
 public class AutomaticPlacementManager : MonoBehaviour
@@ -45,10 +47,13 @@ public class AutomaticPlacementManager : MonoBehaviour
             return;
         }
 
-        isPlacingComponent = true;  // Set the flag to true to indicate placement has started
+        isPlacingComponent = true;
 
         var componentData = assemblySequence[stepIndex];
-        var componentName = componentData.componentName;
+        int stepID = assemblySequence[stepIndex].stepId;
+        string componentName = componentData.componentName;
+        var componentGroup = componentData.group;
+
 
         if (!componentPlacementCounts.ContainsKey(componentName))
         {
@@ -56,7 +61,19 @@ public class AutomaticPlacementManager : MonoBehaviour
         }
         componentPlacementCounts[componentName]++;
 
-        var componentToPlace = components.Find(c => c.name == componentName);
+
+
+        Transform componentToPlace;
+
+        if (!Manager.Instance.CurrentAssembledSequence.TryGetValue(stepID, out var currentComponent))
+        {
+            componentToPlace = components.FirstOrDefault(component => component.name == componentName || component.GetComponent<ComponentObject>().GetGroup() == componentGroup);
+        }
+        else
+        {
+            componentToPlace = currentComponent.transform;
+        }
+
         if (componentToPlace == null)
         {
             Debug.LogWarning($"Component {componentName} not found in the components list.");

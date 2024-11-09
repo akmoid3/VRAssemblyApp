@@ -22,6 +22,7 @@ public class Manager : MonoBehaviour
 
     SnapToPosition interactor;
 
+    private static Dictionary<int, GameObject> currentAssembledSequence;
 
     // Singleton
     public static Manager Instance { get; private set; }
@@ -37,6 +38,11 @@ public class Manager : MonoBehaviour
 
     public int ErrorCount { get => sequenceManager.ErrorCount; set => sequenceManager.ErrorCount = value; }
     public GameObject CurrentSelectedComponent { get => interactionManager?.GetCurrentSelectedComponent(); set => interactionManager?.SetCurrentSelectedComponent(value); }
+
+    public Dictionary<int, GameObject> CurrentAssembledSequence { get => currentAssembledSequence; set => currentAssembledSequence = value; }
+
+    List<Fastener> fasteners = new List<Fastener>();
+
 
     private void Awake()
     {
@@ -65,9 +71,9 @@ public class Manager : MonoBehaviour
     {
         stateManager = StateManager.Instance;
         stateManager.UpdateState(State.ChoosingModel);
+        currentAssembledSequence = new Dictionary<int, GameObject>();
     }
 
-    List<Fastener> fasteners = new List<Fastener>();
 
     private void Update()
     {
@@ -385,6 +391,11 @@ public class Manager : MonoBehaviour
     public void ShowHint()
     {
         hintManager.ShowHint(AssemblySequence, CurrentStep, components, interactor);
+    }
+
+    public void HideHint()
+    {
+        hintManager.HideHints(interactor);
     }
 
     public void CloseApp()

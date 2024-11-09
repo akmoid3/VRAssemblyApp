@@ -9,7 +9,7 @@ public class HintManager : MonoBehaviour
     [SerializeField] private float hintCooldown = 1.0f;
     [SerializeField] private int hintCount;
     [SerializeField] private Material highlightMaterial;
-    [SerializeField] private Material lineMaterial;
+    private Material lineMaterial;
 
     private Dictionary<int, bool> hintShownForStep = new Dictionary<int, bool>();
     private bool isWaiting = false;
@@ -18,6 +18,8 @@ public class HintManager : MonoBehaviour
     private LineRenderer currentLineRenderer; 
     private Transform currentComponentTransform;
     private Transform currentSnapPointTransform;
+
+    private bool canChangeLine = false;
 
     private void Start()
     {
@@ -65,6 +67,8 @@ public class HintManager : MonoBehaviour
 
     private void Update()
     {
+        if (canChangeLine && Manager.Instance.CurrentSelectedComponent != null && Manager.Instance.AssemblySequence[Manager.Instance.CurrentStep].group == Manager.Instance.CurrentSelectedComponent.GetComponent<ComponentObject>().GetGroup())
+            currentComponentTransform = Manager.Instance.CurrentSelectedComponent.transform;
         if (currentLineRenderer != null && currentComponentTransform != null && currentSnapPointTransform != null)
         {
             DrawCurvedLine(currentComponentTransform.position, currentSnapPointTransform.position);
@@ -122,24 +126,46 @@ public class HintManager : MonoBehaviour
         if (isWaiting)
             return;
 
-        var componentToPlaceName = assemblySequence[currentStep].componentName;
-        var componentToPlaceGroup = assemblySequence[currentStep].group;
+        int stepID = assemblySequence[currentStep].stepId;
+        string componentToPlaceName = assemblySequence[currentStep].componentName;
+        string componentToPlaceGroup = assemblySequence[currentStep].group;
 
-        foreach (var component in components)
+      
+
+        if (!Manager.Instance.CurrentAssembledSequence.TryGetValue(stepID, out var currentComponent))
         {
-            ComponentObject componentObject = component.GetComponent<ComponentObject>();
-            if (component.name == componentToPlaceName || (!componentObject.GetIsPlaced() && componentObject.GetGroup() != "None" && componentToPlaceGroup == componentObject.GetGroup()))
+            foreach (var component in components)
             {
-                StartCoroutine(HandleHintCooldown(component.gameObject));
+                ComponentObject componentObject = component.GetComponent<ComponentObject>();
+                if (component.name == componentToPlaceName || (!componentObject.GetIsPlaced() && componentObject.GetGroup() != "None" && componentToPlaceGroup == componentObject.GetGroup()))
+                {
+                    StartCoroutine(HandleHintCooldown(component.gameObject));
+                }
             }
+        }
+        else
+        {
+            StartCoroutine(HandleHintCooldown(currentComponent.gameObject));
+
         }
     }
 
     private void CurvedHint(List<Transform> components, List<ComponentData> assemblySequence, int currentStep, SnapToPosition interactor)
     {
-        string componentName = assemblySequence[currentStep].componentName;
+        int componentID = assemblySequence[currentStep].stepId;
 
-        currentComponentTransform = components.FirstOrDefault(component => component.name == componentName);
+
+        if(!Manager.Instance.CurrentAssembledSequence.TryGetValue(componentID, out var currentComponent))
+        {
+            string componentName = assemblySequence[currentStep].componentName;
+            currentComponentTransform = components.FirstOrDefault(component => component.name == componentName || component.GetComponent<ComponentObject>().GetGroup() == assemblySequence[currentStep].group);
+            canChangeLine = true;
+        }
+        else
+        {
+            canChangeLine = false;
+            currentComponentTransform = currentComponent.transform;
+        }
 
         currentSnapPointTransform = interactor.transform.GetChild(currentStep);
 
