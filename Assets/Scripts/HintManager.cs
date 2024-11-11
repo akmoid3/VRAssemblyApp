@@ -130,14 +130,13 @@ public class HintManager : MonoBehaviour
         string componentToPlaceName = assemblySequence[currentStep].componentName;
         string componentToPlaceGroup = assemblySequence[currentStep].group;
 
-      
 
         if (!Manager.Instance.CurrentAssembledSequence.TryGetValue(stepID, out var currentComponent))
         {
             foreach (var component in components)
             {
                 ComponentObject componentObject = component.GetComponent<ComponentObject>();
-                if (component.name == componentToPlaceName || (!componentObject.GetIsPlaced() && componentObject.GetGroup() != "None" && componentToPlaceGroup == componentObject.GetGroup()))
+                if ((component.name == componentToPlaceName && !componentObject.GetIsPlaced()) || (!componentObject.GetIsPlaced() && componentObject.GetGroup() != "None" && componentToPlaceGroup == componentObject.GetGroup()))
                 {
                     StartCoroutine(HandleHintCooldown(component.gameObject));
                 }
