@@ -67,7 +67,7 @@ public class AutomaticPlacementManager : MonoBehaviour
 
         if (!Manager.Instance.CurrentAssembledSequence.TryGetValue(stepID, out var currentComponent))
         {
-            componentToPlace = components.FirstOrDefault(component => component.name == componentName || component.GetComponent<ComponentObject>().GetGroup() == componentGroup);
+            componentToPlace = components.FirstOrDefault(component => (!component.GetComponent<ComponentObject>().GetIsPlaced() && component.name == componentName) || (component.GetComponent<ComponentObject>().GetGroup() == componentGroup && !component.GetComponent<ComponentObject>().GetIsPlaced()));
         }
         else
         {
