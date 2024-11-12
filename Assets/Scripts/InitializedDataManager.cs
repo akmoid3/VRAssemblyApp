@@ -9,7 +9,9 @@ public class ComponentTypeData
     public ComponentObject.ComponentType componentType;
     public string componentGroup;
     public Vector3 selectedAxis;         
-    public float selectedDirection;      
+    public float selectedDirection;   
+    public bool destroyed;
+
 }
 
 public class JsonData
@@ -49,26 +51,66 @@ public class InitializedDataManager : MonoBehaviour
 
         foreach (Transform child in components)
         {
-            ComponentObject componentObject = child.GetComponent<ComponentObject>();
-
-            if (componentObject != null)
+            if(child != null)
             {
-                ComponentTypeData componentData = new ComponentTypeData
+                bool isDeleted = false;
+                if (!child.gameObject.activeSelf)
                 {
-                    componentName = child.name,
-                    componentType = componentObject.GetComponentType(),
-                    componentGroup = componentObject.GetGroup()
-                };
-
-                // If component is a fastener, add axis and direction
-                if (componentData.componentType == ComponentObject.ComponentType.Screw ||
-                    componentData.componentType == ComponentObject.ComponentType.Nail ||
-                    componentData.componentType == ComponentObject.ComponentType.WoodenPin)
-                {
-                    componentData.selectedAxis = componentObject.GetSelectedAxis();
+                    isDeleted = true;
+                    child.gameObject.SetActive(true);
                 }
+                ComponentObject componentObject = child.GetComponent<ComponentObject>();
 
-                data.components.Add(componentData);
+                if (componentObject != null)
+                {
+                    ComponentTypeData componentData = new ComponentTypeData
+                    {
+                        componentName = child.name,
+                        componentType = componentObject.GetComponentType(),
+                        componentGroup = componentObject.GetGroup(),
+                        destroyed = componentObject.IsDestroyed
+                    };
+
+                    // If component is a fastener, add axis and direction
+                    if (componentData.componentType == ComponentObject.ComponentType.Screw ||
+                        componentData.componentType == ComponentObject.ComponentType.Nail ||
+                        componentData.componentType == ComponentObject.ComponentType.WoodenPin)
+                    {
+                        componentData.selectedAxis = componentObject.GetSelectedAxis();
+                    }
+
+                    data.components.Add(componentData);
+
+                }
+            }
+        }
+
+        foreach (Transform child in Manager.Instance.RemovedComponents)
+        {
+            if (child != null)
+            {
+                ComponentObject componentObject = child.GetComponent<ComponentObject>();
+
+                if (componentObject != null)
+                {
+                    ComponentTypeData componentData = new ComponentTypeData
+                    {
+                        componentName = child.name,
+                        componentType = componentObject.GetComponentType(),
+                        componentGroup = componentObject.GetGroup(),
+                        destroyed = componentObject.IsDestroyed
+                    };
+
+                    // If component is a fastener, add axis and direction
+                    if (componentData.componentType == ComponentObject.ComponentType.Screw ||
+                        componentData.componentType == ComponentObject.ComponentType.Nail ||
+                        componentData.componentType == ComponentObject.ComponentType.WoodenPin)
+                    {
+                        componentData.selectedAxis = componentObject.GetSelectedAxis();
+                    }
+
+                    data.components.Add(componentData);
+                }
             }
         }
 
@@ -102,6 +144,7 @@ public class InitializedDataManager : MonoBehaviour
                 }
                 componentObject.SetComponentType(componentData.componentType);
                 componentObject.SetGroup(componentData.componentGroup);
+                componentObject.IsDestroyed = componentData.destroyed;
 
                 // If the component is a fastener, set axis and direction
                 if (componentData.componentType == ComponentObject.ComponentType.Screw ||
@@ -110,8 +153,17 @@ public class InitializedDataManager : MonoBehaviour
                 {
                     componentObject.SetSelectedAxis(componentData.selectedAxis);
                 }
+
+                if (componentObject.IsDestroyed)
+                {
+                    child.gameObject.SetActive(false);
+                    components.Remove(child);
+                    Manager.Instance.RemovedComponents.Add(child);
+                }
             }
         }
+
+
     }
 
     private Transform FindChildByName(List<Transform> components, string name)

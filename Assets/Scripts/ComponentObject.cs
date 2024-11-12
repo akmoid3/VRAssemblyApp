@@ -7,6 +7,7 @@ public class ComponentObject : MonoBehaviour
     [SerializeField]
     private bool isPlaced = false;
     private bool isReleased = false;
+    private bool isDestroyed = false;
 
     public enum ComponentType
     {
@@ -28,6 +29,7 @@ public class ComponentObject : MonoBehaviour
 
     // Properties for component state
     public bool IsReleased { get => isReleased; set => isReleased = value; }
+    public bool IsDestroyed { get => isDestroyed; set => isDestroyed = value; }
 
 
 

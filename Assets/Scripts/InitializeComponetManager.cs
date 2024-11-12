@@ -8,6 +8,7 @@ public class InitializeComponentManager : MonoBehaviour
     public TMP_Dropdown componentDropdown;
     public TMP_Dropdown groupDropdown;
     public Button plusGroupButton; // Button to automatically create new group
+    public Button deleteComponent; // Button to delete components
     public GameObject canvasInit;
     public Button finishedButton;
     public Button loadInstructionPDF;
@@ -159,6 +160,7 @@ public class InitializeComponentManager : MonoBehaviour
             }
         }
     }
+
     public void PopulateGroupsFromComponents()
     {
         foreach (Transform component in Manager.Instance.Components)
@@ -199,6 +201,43 @@ public class InitializeComponentManager : MonoBehaviour
             groupDropdown.value = groups.IndexOf(newGroupName); // Select the newly created group
         }
     }
+
+    public void DeleteComponent()
+    {
+        var component = Manager.Instance.CurrentSelectedComponent;
+        if (component)
+        {
+            ComponentObject componentObject = component.GetComponent<ComponentObject>();
+            if (componentObject != null)
+                componentObject.IsDestroyed = true;
+            component.gameObject.SetActive(false);
+            Manager.Instance.Components.Remove(component.transform);
+            Manager.Instance.RemovedComponents.Add(component.transform);
+        }
+    }
+    public void RestoreDeletedComponents()
+    {
+        var removedComponents = Manager.Instance.RemovedComponents;
+        var componentsToRestore = new List<Transform>(); 
+
+        foreach (var component in removedComponents)
+        {
+            ComponentObject componentObject = component.GetComponent<ComponentObject>();
+            if (componentObject != null)
+            {
+                componentsToRestore.Add(component.transform); 
+                componentObject.IsDestroyed = false;
+                component.gameObject.SetActive(true);
+                Manager.Instance.Components.Add(component);
+            }
+        }
+
+        foreach (var component in componentsToRestore)
+        {
+            removedComponents.Remove(component);
+        }
+    }
+
 
     public void UpdateDropdownsForSelectedComponent(GameObject selectedComponent)
     {
@@ -241,7 +280,7 @@ public class InitializeComponentManager : MonoBehaviour
                     {
                         axisDropdown.value = 2; // Z-axis
                     }
-                    else if(currentAxis == Vector3.right * -1.0f)
+                    else if (currentAxis == Vector3.right * -1.0f)
                     {
                         axisDropdown.value = 3; // X-axis
                     }
@@ -265,15 +304,12 @@ public class InitializeComponentManager : MonoBehaviour
         }
     }
 
-
-
     private void PopulateAxisDropdown()
     {
         List<string> options = new List<string> { "X", "Y", "Z", "- X", "- Y", "- Z" };
         axisDropdown.AddOptions(options);
     }
 
- 
     private void OnAxisDropdownValueChanged(int index)
     {
         switch (index)
@@ -312,6 +348,4 @@ public class InitializeComponentManager : MonoBehaviour
             }
         }
     }
-
-
 }

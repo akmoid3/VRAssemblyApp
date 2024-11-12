@@ -166,9 +166,9 @@ public class ComponentPositioner : MonoBehaviour
     {
         Transform rightmostChild = null;
         float rightmostX = float.MinValue;
-
+        var components = Manager.Instance.Components;
         // Scroll all children to the left and find the rightmost child
-        foreach (Transform child in parent.transform)
+        foreach (Transform child in components)
         {
             Vector3 position = child.position;
             position.x -= scrollSpeed * Time.deltaTime;
@@ -188,11 +188,11 @@ public class ComponentPositioner : MonoBehaviour
         {
             float startPosition = tableBounds.max.x;
             float currentX = startPosition;
-            int childCount = parent.transform.childCount;
+            int childCount = components.Count;
 
             for (int i = 0; i < childCount; i++)
             {
-                Transform child = parent.transform.GetChild(i);
+                Transform child = components[i];
                 Renderer renderer = child.GetComponent<Renderer>();
                 if (renderer != null)
                 {
@@ -211,7 +211,7 @@ public class ComponentPositioner : MonoBehaviour
         }
 
         // Activate or deactivate children based on their position relative to the table bounds
-        foreach (Transform child in parent.transform)
+        foreach (Transform child in components)
         {
             if (child.position.x < tableBounds.min.x || child.position.x > tableBounds.max.x)
             {
@@ -228,9 +228,10 @@ public class ComponentPositioner : MonoBehaviour
     {
         Transform leftmostChild = null;
         float leftmostX = float.MaxValue;
+        var components = Manager.Instance.Components;
 
         // Scroll all children to the right and find the leftmost child
-        foreach (Transform child in parent.transform)
+        foreach (Transform child in components)
         {
             Vector3 position = child.position;
             position.x += scrollSpeed * Time.deltaTime;
@@ -250,11 +251,11 @@ public class ComponentPositioner : MonoBehaviour
         {
             float startPosition = tableBounds.min.x;
             float currentX = startPosition;
-            int childCount = parent.transform.childCount;
+            int childCount = components.Count;
 
             for (int i = childCount - 1; i >= 0; i--)
             {
-                Transform child = parent.transform.GetChild(i);
+                Transform child = components[i];
                 Renderer renderer = child.GetComponent<Renderer>();
                 if (renderer != null)
                 {
@@ -273,7 +274,7 @@ public class ComponentPositioner : MonoBehaviour
         }
 
         // Activate or deactivate children based on their position relative to the table bounds
-        foreach (Transform child in parent.transform)
+        foreach (Transform child in components)
         {
             if (child.position.x < tableBounds.min.x || child.position.x > tableBounds.max.x)
             {

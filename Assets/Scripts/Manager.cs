@@ -18,6 +18,8 @@ public class Manager : MonoBehaviour
 
     [SerializeField] private GameObject model;
     [SerializeField] private List<Transform> components = new List<Transform>();
+    [SerializeField] private List<Transform> removedComponents = new List<Transform>();
+
 
 
     SnapToPosition interactor;
@@ -30,6 +32,8 @@ public class Manager : MonoBehaviour
 
     public GameObject Model { get => model; set => model = value; }
     public List<Transform> Components { get => components; set => components = value; }
+    public List<Transform> RemovedComponents { get => removedComponents; set => removedComponents = value; }
+
 
     public List<ComponentData> AssemblySequence { get => sequenceManager?.AssemblySequence; set => sequenceManager.AssemblySequence = value; }
     public int CurrentStep { get => sequenceManager.CurrentStep; set => sequenceManager.CurrentStep = value; }
@@ -292,27 +296,36 @@ public class Manager : MonoBehaviour
         foreach (Transform component in components)
         {
             ComponentObject componentObject = component.GetComponent<ComponentObject>();
-            // Remove existing components of type Screw or Nail
-            RemoveExistingScripts<Screw>(component.gameObject);
-            RemoveExistingScripts<Nail>(component.gameObject);
-            RemoveExistingScripts<WoodenPin>(component.gameObject);
 
-            component.tag = "Untagged";
-            // Add the selected component script
-            switch (componentObject.GetComponentType())
+            if(componentObject != null)
             {
-                case ComponentObject.ComponentType.Screw:
-                    component.gameObject.AddComponent<Screw>();
-                    break;
-                case ComponentObject.ComponentType.Nail:
-                    component.gameObject.AddComponent<Nail>();
-                    break;
-                case ComponentObject.ComponentType.WoodenPin:
-                    component.gameObject.AddComponent<WoodenPin>();
-                    break;
-                case ComponentObject.ComponentType.None:
-                    component.tag = "Component";
-                    break;
+                if (componentObject.IsDestroyed)
+                {
+                    Destroy(componentObject.gameObject);
+                    return;
+                }
+                // Remove existing components of type Screw or Nail
+                RemoveExistingScripts<Screw>(component.gameObject);
+                RemoveExistingScripts<Nail>(component.gameObject);
+                RemoveExistingScripts<WoodenPin>(component.gameObject);
+
+                component.tag = "Untagged";
+                // Add the selected component script
+                switch (componentObject.GetComponentType())
+                {
+                    case ComponentObject.ComponentType.Screw:
+                        component.gameObject.AddComponent<Screw>();
+                        break;
+                    case ComponentObject.ComponentType.Nail:
+                        component.gameObject.AddComponent<Nail>();
+                        break;
+                    case ComponentObject.ComponentType.WoodenPin:
+                        component.gameObject.AddComponent<WoodenPin>();
+                        break;
+                    case ComponentObject.ComponentType.None:
+                        component.tag = "Component";
+                        break;
+                }
             }
         }
     }
