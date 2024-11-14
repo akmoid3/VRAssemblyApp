@@ -4,6 +4,7 @@ using UnityEngine;
 using TMPro;
 using UnityEngine.UI;
 using Newtonsoft.Json;
+using System;
 
 [System.Serializable]
 public class TableComponentData
@@ -22,6 +23,7 @@ public class TableComponentList
 
 public class TableUIManager : MonoBehaviour
 {
+    public GameObject panelContainer;
     public TMP_Dropdown dropdownComponentTypes;
     public Transform prefabButtonsContainer;
     public GameObject prefabButtonPrefab;
@@ -35,11 +37,22 @@ public class TableUIManager : MonoBehaviour
     private List<TMP_Dropdown> dynamicDropdowns = new List<TMP_Dropdown>();
 
 
+    private void Awake()
+    {
+        StateManager.OnStateChanged += HandleStateChanged;
+
+    }
     void Start()
     {
         LoadComponentData();
         PopulateComponentDropdown();
         dropdownComponentTypes.onValueChanged.AddListener(delegate { OnComponentSelected(); });
+    }
+
+    private void HandleStateChanged(State newState)
+    {
+        if(panelContainer)
+            panelContainer.SetActive(newState == State.Record);
     }
 
     void LoadComponentData()
@@ -64,10 +77,14 @@ public class TableUIManager : MonoBehaviour
     void OnComponentSelected()
     {
         string selectedType = dropdownComponentTypes.options[dropdownComponentTypes.value].text;
+
+        prefabButtonsContainer.parent.gameObject.SetActive(selectedType != "None");
+
         selectedComponent = componentList.components.Find(c => c.type == selectedType);
         PopulateAttributesUI(selectedType);
         PopulatePrefabButtons(selectedType);
     }
+
 
     void PopulateAttributesUI(string selectedType)
     {
