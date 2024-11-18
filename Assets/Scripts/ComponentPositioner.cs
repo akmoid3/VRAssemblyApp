@@ -108,17 +108,18 @@ public class ComponentPositioner : MonoBehaviour
         if (prefab != null)
         {
             GameObject instantiatedPrefab = Instantiate(prefab, transform.position, Quaternion.identity, null);
+            List<Transform> allChildrenWithMesh = new List<Transform>();
+            CollectChildrenWithMesh(instantiatedPrefab.transform, allChildrenWithMesh);
+
             Vector3 newPosition;
             float width;
             float height;
             float startPosition = tableBounds.min.x + 0.2f;
             float currentX = startPosition;
-            float childCount = instantiatedPrefab.transform.childCount;
 
             // Position the components within the bounds of the table
-            for (int i = 0; i < childCount; i++)
+            foreach (Transform child in allChildrenWithMesh)
             {
-                Transform child = instantiatedPrefab.transform.GetChild(i);
                 child.rotation = Quaternion.identity;
                 Renderer renderer = child.GetComponent<Renderer>();
                 if (renderer != null)
@@ -128,7 +129,7 @@ public class ComponentPositioner : MonoBehaviour
 
                     width = childBounds.size.x;
                     height = childBounds.size.y;
-                    newPosition = new Vector3(currentX + width / 2, tableBounds.max.y + height / 2, tableBounds.center.z);
+                    newPosition = new Vector3(currentX + width / 2, tableBounds.max.y + height / 2 + 0.01f, tableBounds.center.z);
 
                     newPosition += pivotOffset;
 
@@ -154,11 +155,29 @@ public class ComponentPositioner : MonoBehaviour
 
             Manager.Instance.Components = spawnedChildren;
 
-            for (int i = 0; i < childCount; i++)
+            foreach (Transform child in spawnedChildren)
             {
-                spawnedChildren[i].SetParent(parent.transform);
+                child.SetParent(parent.transform);
             }
+
             Destroy(instantiatedPrefab);
+        }
+    }
+
+    private void CollectChildrenWithMesh(Transform parent, List<Transform> resultList)
+    {
+        foreach (Transform child in parent)
+        {
+            if (child.GetComponent<MeshRenderer>())
+            {
+                resultList.Add(child);
+            }
+
+            // Recursive call for nested children
+            if (child.childCount > 0)
+            {
+                CollectChildrenWithMesh(child, resultList);
+            }
         }
     }
 
@@ -201,7 +220,7 @@ public class ComponentPositioner : MonoBehaviour
 
                     float width = childBounds.size.x;
                     float height = childBounds.size.y;
-                    Vector3 newPosition = new Vector3(currentX + width / 2, tableBounds.max.y + height / 2, tableBounds.center.z);
+                    Vector3 newPosition = new Vector3(currentX + width / 2, tableBounds.max.y + height / 2 + 0.01f, tableBounds.center.z);
 
                     newPosition += pivotOffset;
                     child.position = newPosition;
@@ -264,7 +283,7 @@ public class ComponentPositioner : MonoBehaviour
 
                     float width = childBounds.size.x;
                     float height = childBounds.size.y;
-                    Vector3 newPosition = new Vector3(currentX - width / 2, tableBounds.max.y + height / 2, tableBounds.center.z);
+                    Vector3 newPosition = new Vector3(currentX - width / 2, tableBounds.max.y + height / 2 + 0.01f, tableBounds.center.z);
 
                     newPosition += pivotOffset;
                     child.position = newPosition;
