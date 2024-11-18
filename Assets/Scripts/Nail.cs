@@ -49,7 +49,7 @@ public class Nail : Fastener
                 // Move the socketTransform based on the impact
                 socketTransform.Translate(selectedAxisDirRaw * actualMovement);
 
-                AudioManager.Instance.PlaySound(audioSource, "Hammer", false, 1.0f);
+                AudioManager.Instance.PlayOneShot(audioSource, "Hammer", 1.0f);
 
                 // Check if the nail has reached or exceeded the distanceToTravel
                 if (currentDistance + actualMovement >= distanceToTravel)
@@ -84,7 +84,7 @@ public class Nail : Fastener
                 // Move the transform based on the impact
                 transform.Translate(selectedAxisDirRaw * actualMovement);
 
-                AudioManager.Instance.PlaySound(audioSource, "Hammer", false, 1.0f);
+                AudioManager.Instance.PlayOneShot(audioSource, "Hammer", 1.0f);
 
                 // Check if the nail has reached or exceeded the distanceToTravel
                 if (currentDistance + actualMovement >= distanceToTravel)

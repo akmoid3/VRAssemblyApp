@@ -50,6 +50,17 @@ public class AudioManager : MonoBehaviour
             Debug.LogWarning($"AudioManager: Sound '{clipName}' not found!");
         }
     }
+    public void PlayOneShot(AudioSource audioSource, string clipName, float volume = 1.0f)
+    {
+        if (audioClips.ContainsKey(clipName))
+        {
+            audioSource.PlayOneShot(audioClips[clipName], volume);
+        }
+        else
+        {
+            Debug.LogWarning($"AudioManager: Sound '{clipName}' not found!");
+        }
+    }
 
     public void StopSound(AudioSource audioSource)
     {

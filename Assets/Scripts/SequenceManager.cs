@@ -34,6 +34,7 @@ public class SequenceManager : MonoBehaviour
     public virtual void IncrementCurrentError()
     {
         errorCount++;
+        AudioManager.Instance.PlayOneShot(GetComponent<AudioSource>(),"Error");
         OnErrorCountChanged?.Invoke(errorCount);
     }
 
@@ -84,9 +85,26 @@ public class SequenceManager : MonoBehaviour
     public virtual void ValidateComponent(GameObject component)
     {
         ComponentData expectedComponent = assemblySequence[currentStep];
-        if (component.name != expectedComponent.componentName && ( component.GetComponent<ComponentObject>().GetGroup() != "None" && !component.GetComponent<ComponentObject>().GetGroup().Equals(expectedComponent.group)))
+        
+
+        int stepID = AssemblySequence[CurrentStep].stepId;
+        string componentToPlaceName = AssemblySequence[CurrentStep].componentName;
+        string componentToPlaceGroup = AssemblySequence[CurrentStep].group;
+        ComponentObject componentObject = component.GetComponent<ComponentObject>();
+
+        if (!Manager.Instance.CurrentAssembledSequence.TryGetValue(stepID, out var currentComponent))
         {
-            IncrementCurrentError();
+            if ((component.name != componentToPlaceName && componentObject.GetGroup() == "None") || (componentObject.GetGroup() != "None" && !componentObject.GetGroup().Equals(componentToPlaceGroup)))
+            {
+                IncrementCurrentError();
+            }
+        }
+        else
+        {
+            if (component!= currentComponent)
+            {
+                IncrementCurrentError();
+            }
         }
     }
 

@@ -94,7 +94,7 @@ public class SnapToPosition : MonoBehaviour
                     fastener.SetSocketTransform(snapPoint.snapTransform);
                 }
 
-                if ((distance < snapDistance && angle < snapAngle) || (fastener && distance < 0.01f))
+                if ( (fastener && distance < 0.01f) || (distance < snapDistance && angle < snapAngle && !componentObject.GetIsPlaced()))
                 {
                     other.attachedRigidbody.isKinematic = false;
                     snapPoint.meshRenderer.enabled = true;

@@ -165,11 +165,54 @@ public class Manager : MonoBehaviour
     }
 
 
+    private void MakeComponentGrabbableForStep()
+    {
+        int stepID = AssemblySequence[CurrentStep].stepId;
+        string componentToPlaceName = AssemblySequence[CurrentStep].componentName;
+        string componentToPlaceGroup = AssemblySequence[CurrentStep].group;
+
+
+        if (!Manager.Instance.CurrentAssembledSequence.TryGetValue(stepID, out var currentComponent))
+        {
+            foreach (var component in components)
+            {
+                ComponentObject componentObject = component.GetComponent<ComponentObject>();
+                MakeGrabbable makeGrabbable = component.GetComponent<MakeGrabbable>();
+
+                if (componentObject.GetIsPlaced())
+                    continue;
+                if ((component.name == componentToPlaceName && !componentObject.GetIsPlaced()) || (!componentObject.GetIsPlaced() && componentObject.GetGroup() != "None" && componentToPlaceGroup == componentObject.GetGroup()))
+                {
+                    makeGrabbable.MakeObjectGrabbable();
+                    continue;
+                }
+                makeGrabbable.MakeObjectNonGrabbable();
+            }
+        }
+        else
+        {
+            foreach (var component in components)
+            {
+                ComponentObject componentObject = component.GetComponent<ComponentObject>();
+                MakeGrabbable makeGrabbable = component.GetComponent<MakeGrabbable>();
+                if (componentObject.GetIsPlaced())
+                    continue;
+                if (component == currentComponent)
+                {
+                    makeGrabbable.MakeObjectGrabbable();
+                    continue;
+                }
+                makeGrabbable.MakeObjectNonGrabbable();
+            }
+
+        }
+    }
     private void IncrementCurrentStep()
     {
         if (sequenceManager)
         {
             sequenceManager.IncrementCurrentStep();
+            MakeComponentGrabbableForStep();
             if (AssemblySequence != null && CurrentStep >= AssemblySequence.Count)
             {
                 StateManager.Instance.UpdateState(State.Finish);
@@ -268,8 +311,8 @@ public class Manager : MonoBehaviour
 
     private void LoadPDF()
     {
-        if(pdfLoader != null)
-        pdfLoader.LoadPDF(model.name);
+        if (pdfLoader != null)
+            pdfLoader.LoadPDF(model.name);
     }
 
     private void MakeComponentsGrabbable()
@@ -297,7 +340,7 @@ public class Manager : MonoBehaviour
         {
             ComponentObject componentObject = component.GetComponent<ComponentObject>();
 
-            if(componentObject != null)
+            if (componentObject != null)
             {
                 if (componentObject.IsDestroyed)
                 {
@@ -384,15 +427,15 @@ public class Manager : MonoBehaviour
 
     public void PlaceInitialComponent()
     {
-        if(automaticPlacementManager != null)
-        automaticPlacementManager.PlaceInitialComponent(AssemblySequence, components, interactor);
+        if (automaticPlacementManager != null)
+            automaticPlacementManager.PlaceInitialComponent(AssemblySequence, components, interactor);
     }
 
 
     public void PlaceAllComponentsGradually(float delayBetweenComponents)
     {
-        if(automaticPlacementManager != null)
-        automaticPlacementManager.PlaceAllComponentsGradually(delayBetweenComponents, interactor, AssemblySequence, components, toolManager);
+        if (automaticPlacementManager != null)
+            automaticPlacementManager.PlaceAllComponentsGradually(delayBetweenComponents, interactor, AssemblySequence, components, toolManager);
     }
 
     public void PlaceCurrentComponent()

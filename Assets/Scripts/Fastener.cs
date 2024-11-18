@@ -339,7 +339,7 @@ public abstract class Fastener : MonoBehaviour
 
     public void PlayBuildPopSound()
     {
-        AudioManager.Instance.PlaySound(audioSource, "BuildPop", false, 1f);
+        AudioManager.Instance.PlayOneShot(audioSource, "BuildPop", 1f);
     }
 
     public Vector3 MapSelectedAxisToTransformDirection(Vector3 selectedAxis)

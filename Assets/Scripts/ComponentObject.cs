@@ -78,7 +78,7 @@ public class ComponentObject : MonoBehaviour
 
     public void PlayBuildPopSound()
     {
-        AudioManager.Instance.PlaySound(audioSource, "BuildPop", false, 1f);
+        AudioManager.Instance.PlayOneShot(audioSource, "BuildPop", 1f);
     }
 
     public bool GetIsPlaced()
