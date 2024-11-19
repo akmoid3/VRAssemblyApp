@@ -229,6 +229,9 @@ public class InitializeComponentManager : MonoBehaviour
                 componentObject.IsDestroyed = false;
                 component.gameObject.SetActive(true);
                 Manager.Instance.Components.Add(component);
+                MakeGrabbable makeGrabbable = componentObject.gameObject.GetComponent<MakeGrabbable>();
+                if (makeGrabbable != null)
+                    makeGrabbable.MakeObjectNonGrabbable();
             }
         }
 

@@ -212,12 +212,12 @@ public class Manager : MonoBehaviour
         if (sequenceManager)
         {
             sequenceManager.IncrementCurrentStep();
-            MakeComponentGrabbableForStep();
             if (AssemblySequence != null && CurrentStep >= AssemblySequence.Count)
             {
                 StateManager.Instance.UpdateState(State.Finish);
                 return;
             }
+            MakeComponentGrabbableForStep();
         }
     }
 

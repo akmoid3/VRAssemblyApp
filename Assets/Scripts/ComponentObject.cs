@@ -60,7 +60,7 @@ public class ComponentObject : MonoBehaviour
 
     private void Update()
     {
-        if (StateManager.Instance.CurrentState == State.Initialize && !lineRenderer.enabled)
+        if (StateManager.Instance.CurrentState == State.Initialize)
         {
             lineRenderer.enabled = true;
             Vector3 startPosition = transform.position;
@@ -69,7 +69,7 @@ public class ComponentObject : MonoBehaviour
             lineRenderer.SetPosition(0, startPosition);
             lineRenderer.SetPosition(1, endPosition);
         }
-        else if (StateManager.Instance.CurrentState != State.Initialize && lineRenderer.enabled)
+        else if (StateManager.Instance.CurrentState != State.Initialize)
         {
 
             lineRenderer.enabled = false;

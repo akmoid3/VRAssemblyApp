@@ -25,10 +25,10 @@ public class PlayBackManager : MonoBehaviour
         SequenceManager.OnErrorCountChanged += IncrementErrorCount;
         HintManager.OnHintCountChanged += IncrementHintCount;
         SequenceManager.OnStepChanged += IncrementStepCount;
-        if(showSolutionButton != null)
-        showSolutionButton.onClick.AddListener(OnShowSolutionClicked);
-        if(finishButton != null) 
-        finishButton.onClick.AddListener(OnFinishClicked);
+        if (showSolutionButton != null)
+            showSolutionButton.onClick.AddListener(OnShowSolutionClicked);
+        if (finishButton != null)
+            finishButton.onClick.AddListener(OnFinishClicked);
     }
 
     public void IncrementErrorCount(int n)
@@ -42,7 +42,7 @@ public class PlayBackManager : MonoBehaviour
     }
     public void IncrementStepCount(int n)
     {
-        int totalSteps = Manager.Instance.AssemblySequence.Count;
+        int totalSteps = Manager.Instance.AssemblySequence.Count - 1;
         stepsText.text = $"{n}/{totalSteps}";
     }
     public void OnDestroy()

@@ -15,7 +15,7 @@ public class HintManager : MonoBehaviour
     private bool isWaiting = false;
     public static event Action<int> OnHintCountChanged;
 
-    private LineRenderer currentLineRenderer; 
+    private LineRenderer currentLineRenderer;
     private Transform currentComponentTransform;
     private Transform currentSnapPointTransform;
 
@@ -67,15 +67,20 @@ public class HintManager : MonoBehaviour
 
     private void Update()
     {
-        if (canChangeLine && Manager.Instance.CurrentSelectedComponent != null && Manager.Instance.AssemblySequence[Manager.Instance.CurrentStep].group == Manager.Instance.CurrentSelectedComponent.GetComponent<ComponentObject>().GetGroup())
-            currentComponentTransform = Manager.Instance.CurrentSelectedComponent.transform;
-        if (currentLineRenderer != null && currentComponentTransform != null && currentSnapPointTransform != null)
+        if (StateManager.Instance.CurrentState == State.PlayBack)
         {
-            DrawCurvedLine(currentComponentTransform.position, currentSnapPointTransform.position);
 
-            currentLineRenderer.material.mainTextureOffset -= new Vector2(Time.deltaTime * 2f, 0);
+            if (canChangeLine && Manager.Instance.CurrentSelectedComponent != null && Manager.Instance.AssemblySequence[Manager.Instance.CurrentStep].group == Manager.Instance.CurrentSelectedComponent.GetComponent<ComponentObject>().GetGroup())
+                currentComponentTransform = Manager.Instance.CurrentSelectedComponent.transform;
+            if (currentLineRenderer != null && currentComponentTransform != null && currentSnapPointTransform != null)
+            {
+                DrawCurvedLine(currentComponentTransform.position, currentSnapPointTransform.position);
 
+                currentLineRenderer.material.mainTextureOffset -= new Vector2(Time.deltaTime * 2f, 0);
+
+            }
         }
+
     }
 
     private void DrawCurvedLine(Vector3 startPoint, Vector3 endPoint)
@@ -154,7 +159,7 @@ public class HintManager : MonoBehaviour
         int componentID = assemblySequence[currentStep].stepId;
 
 
-        if(!Manager.Instance.CurrentAssembledSequence.TryGetValue(componentID, out var currentComponent))
+        if (!Manager.Instance.CurrentAssembledSequence.TryGetValue(componentID, out var currentComponent))
         {
             string componentName = assemblySequence[currentStep].componentName;
             currentComponentTransform = components.FirstOrDefault(component => component.name == componentName || component.GetComponent<ComponentObject>().GetGroup() == assemblySequence[currentStep].group);
@@ -204,7 +209,7 @@ public class HintManager : MonoBehaviour
 
     private void ClearHintLines()
     {
-       currentLineRenderer.enabled = false;
+        currentLineRenderer.enabled = false;
     }
 
     private void HideSnappoints(SnapToPosition interactor)
