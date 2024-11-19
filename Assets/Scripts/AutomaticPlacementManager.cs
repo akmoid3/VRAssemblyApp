@@ -83,7 +83,6 @@ public class AutomaticPlacementManager : MonoBehaviour
 
         if (componentPlacementCounts[componentName] > 1)
         {
-            Debug.Log($"Placing component '{componentName}' for the {componentPlacementCounts[componentName]} time.");
             componentToPlace.GetComponent<Fastener>().IsStopped = true;
         }
 

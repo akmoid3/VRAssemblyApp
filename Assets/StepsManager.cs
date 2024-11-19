@@ -1,8 +1,12 @@
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 
 public class StepsManager : MonoBehaviour
 {
+    public GameObject stepPrefab;  
+    public Transform stepParent;
+
     public class StepData
     {
         public int StepNumber { get; set; }
@@ -99,7 +103,19 @@ public class StepsManager : MonoBehaviour
         {
             foreach (var step in stepsData)
             {
-                Debug.Log($"Step {step.StepNumber}: Errors = {step.Errors}, Hints = {step.Hints}, Time = {step.TimeSpent:F2}s");
+                if(step.TimeSpent == 0)
+                    continue;
+                GameObject stepObject = Instantiate(stepPrefab, stepParent);
+
+                TextMeshProUGUI stepText = stepObject.transform.Find("Steps").GetComponent<TextMeshProUGUI>();
+                TextMeshProUGUI errorText = stepObject.transform.Find("Errors").GetComponent<TextMeshProUGUI>();
+                TextMeshProUGUI hintText = stepObject.transform.Find("Hint").GetComponent<TextMeshProUGUI>();
+                TextMeshProUGUI timeText = stepObject.transform.Find("Time").GetComponent<TextMeshProUGUI>();
+
+                stepText.text = $"Step {step.StepNumber}";
+                errorText.text = $"Errors: {step.Errors}";
+                hintText.text = $"Hints: {step.Hints}";
+                timeText.text = $"Time: {step.TimeSpent:F2}s";
             }
         }
     }

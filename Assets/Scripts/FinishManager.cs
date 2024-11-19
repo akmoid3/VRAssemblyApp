@@ -20,7 +20,7 @@ public class FinishManager : MonoBehaviour
     public void Update()
     {
         if (StateManager.Instance.CurrentState == State.Finish && timerText.text == "00:00")
-            timerText.text = Manager.Instance.FinishTime;
+            timerText.text = $"Time: {Manager.Instance.FinishTime}";
     }
     private void OnDestroy()
     {
@@ -35,6 +35,9 @@ public class FinishManager : MonoBehaviour
         {
             errorCountText.text = Manager.Instance.ErrorCount.ToString();
             hintCountText.text = Manager.Instance.HintCount.ToString();
+
+            errorCountText.text = $"Errors: {Manager.Instance.ErrorCount}";
+            hintCountText.text = $"Hints: {Manager.Instance.HintCount}";
         }
     }
 
