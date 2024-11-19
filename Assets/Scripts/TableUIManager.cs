@@ -34,7 +34,7 @@ public class TableUIManager : MonoBehaviour
 
     private TableComponentList componentList;
     private TableComponentData selectedComponent;
-    private List<TMP_Dropdown> dynamicDropdowns = new List<TMP_Dropdown>();
+    private List<GameObject> dynamicDropdowns = new List<GameObject>();
 
 
     private void Awake()
@@ -88,13 +88,14 @@ public class TableUIManager : MonoBehaviour
 
     void PopulateAttributesUI(string selectedType)
     {
+        // Clear any previous dropdowns
         foreach (var dropdown in dynamicDropdowns)
         {
             Destroy(dropdown.gameObject);
         }
         dynamicDropdowns.Clear();
 
-        Dictionary<string, TMP_Dropdown> existingDropdowns = new Dictionary<string, TMP_Dropdown>();
+        Dictionary<string, GameObject> existingDropdowns = new Dictionary<string, GameObject>();
 
         if (selectedComponent != null)
         {
@@ -104,28 +105,34 @@ public class TableUIManager : MonoBehaviour
             {
                 foreach (var attribute in component.attributes)
                 {
+                    // Check if a dropdown for this attribute already exists
                     if (!existingDropdowns.ContainsKey(attribute.Key))
                     {
+                        // Instantiate the dropdown prefab
                         GameObject dropdownObject = Instantiate(dropdownPrefab, attributesContainer);
-                        TMP_Dropdown dropdown = dropdownObject.GetComponent<TMP_Dropdown>();
+                        TMP_Dropdown dropdown = dropdownObject.transform.Find("Dropdown").GetComponent<TMP_Dropdown>();
 
-                        TMP_Text label = dropdownObject.transform.Find("Label").GetComponent<TMP_Text>();
-                        label.text = attribute.Key;
+                        // Access the label inside the prefab
+                        TMP_Text label = dropdownObject.transform.Find("Text").GetComponent<TMP_Text>();
+                        label.text = attribute.Key; // Set the label text to the attribute key
 
                         dropdown.ClearOptions();
                         dropdown.AddOptions(new List<string> { "None", attribute.Value });
 
-                        existingDropdowns[attribute.Key] = dropdown;
-                        dynamicDropdowns.Add(dropdown);
+                        // Store the dropdown in the dictionary and in the list
+                        existingDropdowns[attribute.Key] = dropdownObject;
+                        dynamicDropdowns.Add(dropdownObject);
+
+                        // Add a listener to update the prefab buttons when the dropdown value changes
                         dropdown.onValueChanged.AddListener(delegate { UpdatePrefabButtons(selectedType); });
                     }
                     else
                     {
-                        TMP_Dropdown existingDropdown = existingDropdowns[attribute.Key];
-
-                        if (!existingDropdown.options.Exists(option => option.text == attribute.Value))
+                        // If dropdown for this attribute already exists, add new value if necessary
+                        GameObject existingDropdown = existingDropdowns[attribute.Key];
+                        if (!existingDropdown.transform.Find("Dropdown").GetComponent<TMP_Dropdown>().options.Exists(option => option.text == attribute.Value))
                         {
-                            existingDropdown.options.Add(new TMP_Dropdown.OptionData(attribute.Value));
+                            existingDropdown.transform.Find("Dropdown").GetComponent<TMP_Dropdown>().options.Add(new TMP_Dropdown.OptionData(attribute.Value));
                         }
                     }
                 }
@@ -182,9 +189,9 @@ public class TableUIManager : MonoBehaviour
 
         foreach (var dropdown in dynamicDropdowns)
         {
-            if (dropdown != null && dropdown.options.Count > 0)
+            if (dropdown != null && dropdown.transform.Find("Dropdown").GetComponent<TMP_Dropdown>().options.Count > 0)
             {
-                string selectedValue = dropdown.options[dropdown.value].text;
+                string selectedValue = dropdown.transform.Find("Dropdown").GetComponent<TMP_Dropdown>().options[dropdown.transform.Find("Dropdown").GetComponent<TMP_Dropdown>().value].text;
 
                 if (selectedValue != "None")
                 {
