@@ -123,11 +123,9 @@ public class SnapToPosition : MonoBehaviour
 
                     AddGrabbable(other as MeshCollider);
 
-                    OnComponentPlaced?.Invoke();
-
                     componentObject.PlayBuildPopSound();
 
-                    int currentStepId = Manager.Instance.AssemblySequence[Manager.Instance.CurrentStep - 1].stepId;
+                    int currentStepId = Manager.Instance.AssemblySequence[Manager.Instance.CurrentStep].stepId;
 
                     if (!Manager.Instance.CurrentAssembledSequence.ContainsKey(currentStepId))
                     {
@@ -135,6 +133,10 @@ public class SnapToPosition : MonoBehaviour
                     }
 
                     Manager.Instance.HideHint();
+
+                    OnComponentPlaced?.Invoke();
+
+                    
                 }
             }
         }

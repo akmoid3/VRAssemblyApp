@@ -204,7 +204,6 @@ public class Manager : MonoBehaviour
                 }
                 makeGrabbable.MakeObjectNonGrabbable();
             }
-
         }
     }
     private void IncrementCurrentStep()

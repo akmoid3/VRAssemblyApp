@@ -157,6 +157,9 @@ public class SequenceReader : MonoBehaviour
                 meshRenderer.sharedMaterial = holographicMaterial;
                 meshRenderer.enabled = false;
             }
+
+            obj.transform.localScale = prefabChild.transform.localScale;
+
         }
     }
 

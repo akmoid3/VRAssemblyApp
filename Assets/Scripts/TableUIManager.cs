@@ -169,7 +169,10 @@ public class TableUIManager : MonoBehaviour
             GameObject prefab = Resources.Load<GameObject>("TableUIComponents/" + component.prefab);
             if (prefab != null)
             {
-                Instantiate(prefab, spawnPoint.position, Quaternion.identity);
+                GameObject spawnedObject = Instantiate(prefab, spawnPoint.position, Quaternion.identity);
+                MakeGrabbable makeGrabbable = spawnedObject.AddComponent<MakeGrabbable>();
+                makeGrabbable.MakeObjectGrabbable();
+                InitializeComponentType(spawnedObject);
             }
         }
     }
@@ -214,4 +217,28 @@ public class TableUIManager : MonoBehaviour
     }
 
 
+
+    public void InitializeComponentType(GameObject component)
+    {
+            ComponentObject componentObject = component.GetComponent<ComponentObject>();
+
+            if (componentObject != null)
+            {
+                // Add the selected component script
+                switch (componentObject.GetComponentType())
+                {
+                    case ComponentObject.ComponentType.Screw:
+                        component.gameObject.AddComponent<Screw>();
+                        break;
+                    case ComponentObject.ComponentType.Nail:
+                        component.gameObject.AddComponent<Nail>();
+                        break;
+                    case ComponentObject.ComponentType.WoodenPin:
+                        component.gameObject.AddComponent<WoodenPin>();
+                        break;
+                    default:
+                        break;
+                }
+        }
+    }
 }
