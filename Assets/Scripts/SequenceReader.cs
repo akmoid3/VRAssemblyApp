@@ -94,7 +94,23 @@ public class SequenceReader : MonoBehaviour
             SetTransform(obj, component);
             obj.transform.SetParent(parent.transform);
 
-            GameObject prefabChild = prefab.transform.Find(component.componentName).gameObject;
+            // Attempt to find the prefab child in the given prefab
+            GameObject prefabChild = prefab.transform.Find(component.componentName)?.gameObject;
+
+            // If not found, try loading it from Resources/TableUIComponents
+            if (prefabChild == null)
+            {
+                string resourcePath = $"TableUIComponents/{component.componentName}";
+                prefabChild = Resources.Load<GameObject>(resourcePath);
+
+                if (prefabChild == null)
+                {
+                    Debug.LogError($"Failed to find component: {component.componentName} in prefab or Resources/{resourcePath}. Skipping this component.");
+                    continue;
+                }
+            }
+
+            // Copy mesh and material from the found prefab child to the created object
             CopyMeshAndMaterial(prefabChild, obj);
 
             // Add the child's position to the list
@@ -112,6 +128,7 @@ public class SequenceReader : MonoBehaviour
 
         return parent;
     }
+
 
     private Vector3 CalculateCenter(List<Vector3> positions)
     {

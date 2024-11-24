@@ -76,6 +76,20 @@ public class ComponentObject : MonoBehaviour
         }
     }
 
+    public void CopyFrom(ComponentObject other)
+    {
+        if (other == null) return;
+
+        // Copying properties from the other ComponentObject to this one
+        this.componentType = other.componentType;
+        this.componentGroup = other.componentGroup;
+        this.selectedAxis = other.selectedAxis;
+        this.isPlaced = other.isPlaced;
+        this.isReleased = other.isReleased;
+        this.isDestroyed = other.isDestroyed;
+
+    }
+
     public void PlayBuildPopSound()
     {
         AudioManager.Instance.PlayOneShot(audioSource, "BuildPop", 1f);

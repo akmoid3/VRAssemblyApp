@@ -1,6 +1,5 @@
-using System;
-using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.XR.Interaction.Toolkit;
 
@@ -19,7 +18,7 @@ public class Manager : MonoBehaviour
     [SerializeField] private GameObject model;
     [SerializeField] private List<Transform> components = new List<Transform>();
     [SerializeField] private List<Transform> removedComponents = new List<Transform>();
-
+    [SerializeField] private ComponentPositioner componentPositioner;
 
 
     SnapToPosition interactor;
@@ -172,7 +171,7 @@ public class Manager : MonoBehaviour
         string componentToPlaceGroup = AssemblySequence[CurrentStep].group;
 
 
-        if (!Manager.Instance.CurrentAssembledSequence.TryGetValue(stepID, out var currentComponent))
+        if (!CurrentAssembledSequence.TryGetValue(stepID, out var currentComponent))
         {
             foreach (var component in components)
             {
@@ -219,6 +218,7 @@ public class Manager : MonoBehaviour
             MakeComponentGrabbableForStep();
         }
     }
+
 
     public void IncrementCurrentError()
     {
@@ -275,6 +275,119 @@ public class Manager : MonoBehaviour
             sequenceManager.RemoveComponentFromSequence(CurrentSelectedComponent, model.name);
     }
 
+    public void RepositionComponentsOnTable()
+    {
+        componentPositioner.RepositionComponentsOnTable();
+    }
+
+    public void PlaybackSpawnComponents()
+    {
+        // Create a dictionary to track the count of each component in the components list
+        Dictionary<string, int> componentsCount = new Dictionary<string, int>();
+
+        // Iterate through the components list and count occurrences of each component
+        foreach (Transform component in components)
+        {
+            if (componentsCount.ContainsKey(component.name))
+            {
+                componentsCount[component.name]++;
+            }
+            else
+            {
+                componentsCount[component.name] = 1;
+            }
+        }
+
+        // Group components by stepId to handle each step individually
+        var groupedByStep = AssemblySequence
+        .GroupBy(c => c.stepId)
+        .ToDictionary(
+         g => g.Key,
+         g => g.GroupBy(c => c.componentName).Select(grp => grp.First()).ToList()
+     );
+
+
+        // Iterate through each stepId to spawn the components
+        foreach (var stepGroup in groupedByStep)
+        {
+            int stepId = stepGroup.Key;
+            List<ComponentData> stepComponents = stepGroup.Value;
+
+            // Create a dictionary to track the components required for this step
+            Dictionary<string, int> stepComponentCounts = new Dictionary<string, int>();
+
+            // Count the required components for this step based on AssemblySequence
+            foreach (var componentData in stepComponents)
+            {
+                string componentName = componentData.componentName;
+
+                // Count how many times each unique component appears for the current stepId
+                if (stepComponentCounts.ContainsKey(componentName))
+                {
+                    stepComponentCounts[componentName]++;
+                }
+                else
+                {
+                    stepComponentCounts[componentName] = 1;
+                }
+            }
+
+            // Iterate through the unique components for this step
+            foreach (var componentData in stepComponents)
+            {
+                string componentName = componentData.componentName;
+                int requiredCount = stepComponentCounts[componentName]; // How many times this component is required in this step
+                int componentCount = componentsCount.ContainsKey(componentName) ? componentsCount[componentName] : 0; // How many of this component exist in the scene
+
+                // Calculate the number of missing components for this step
+                int missingCount = requiredCount - componentCount;
+
+                // Spawn the missing components
+                for (int i = 0; i < missingCount; i++)
+                {
+                    // Try to load the prefab from Resources/TableUIComponents
+                    GameObject prefab = Resources.Load<GameObject>("TableUIComponents/" + componentName);
+                    if (prefab != null)
+                    {
+                        // Instantiate the prefab at the specified position and rotation from the AssemblySequence
+                        GameObject instantiatedObject = Instantiate(prefab, componentData.position, componentData.rotation, interactor.transform);
+                        instantiatedObject.name = prefab.name; // Ensure name matches the prefab
+
+                        // Add the MakeGrabbable script to the instantiated object
+                        instantiatedObject.AddComponent<MakeGrabbable>().MakeObjectGrabbable();
+
+                        // Attach the same ComponentObject script from the interactor's child to the new object
+                        Transform firstChild = interactor.transform.Find(componentName); // Find the first matching child with the same name
+                        if (firstChild != null)
+                        {
+                            ComponentObject originalComponentObject = firstChild.GetComponent<ComponentObject>();
+                            if (originalComponentObject != null)
+                            {
+                                ComponentObject newComponentObject = instantiatedObject.AddComponent<ComponentObject>();
+                                newComponentObject.CopyFrom(originalComponentObject); // Copy data from the original object
+                            }
+                        }
+
+                        InitializeSingleComponentType(instantiatedObject.transform);
+
+                        // Add the newly instantiated object to the components list
+                        components.Add(instantiatedObject.transform);
+                        Debug.Log($"Spawned missing component: {componentName}");
+                    }
+                    else
+                    {
+                        Debug.LogWarning($"Prefab for missing component {componentName} not found in Resources/TableUIComponents.");
+                    }
+                }
+            }
+        }
+
+        // Reposition components after ensuring all are present
+        componentPositioner.RepositionComponentsOnTable();
+    }
+
+
+
 
     public void HandleStateChange(State newState)
     {
@@ -296,6 +409,7 @@ public class Manager : MonoBehaviour
                 InitializeComponentsType();
                 MakeComponentsGrabbable();
                 interactor = FindObjectOfType<SnapToPosition>();
+                PlaybackSpawnComponents();
                 CopyComponentObjectToInteractor();
                 PlaceInitialComponent();
                 break;
@@ -368,6 +482,42 @@ public class Manager : MonoBehaviour
                         component.tag = "Component";
                         break;
                 }
+            }
+        }
+    }
+
+    private void InitializeSingleComponentType(Transform component)
+    {
+        ComponentObject componentObject = component.GetComponent<ComponentObject>();
+
+        if (componentObject != null)
+        {
+            if (componentObject.IsDestroyed)
+            {
+                Destroy(componentObject.gameObject);
+                return;
+            }
+            // Remove existing components of type Screw or Nail
+            RemoveExistingScripts<Screw>(component.gameObject);
+            RemoveExistingScripts<Nail>(component.gameObject);
+            RemoveExistingScripts<WoodenPin>(component.gameObject);
+
+            component.tag = "Untagged";
+            // Add the selected component script
+            switch (componentObject.GetComponentType())
+            {
+                case ComponentObject.ComponentType.Screw:
+                    component.gameObject.AddComponent<Screw>();
+                    break;
+                case ComponentObject.ComponentType.Nail:
+                    component.gameObject.AddComponent<Nail>();
+                    break;
+                case ComponentObject.ComponentType.WoodenPin:
+                    component.gameObject.AddComponent<WoodenPin>();
+                    break;
+                case ComponentObject.ComponentType.None:
+                    component.tag = "Component";
+                    break;
             }
         }
     }

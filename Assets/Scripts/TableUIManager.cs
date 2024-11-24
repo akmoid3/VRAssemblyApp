@@ -170,12 +170,24 @@ public class TableUIManager : MonoBehaviour
             if (prefab != null)
             {
                 GameObject spawnedObject = Instantiate(prefab, spawnPoint.position, Quaternion.identity);
+
+                spawnedObject.name = prefab.name;
+
                 MakeGrabbable makeGrabbable = spawnedObject.AddComponent<MakeGrabbable>();
                 makeGrabbable.MakeObjectGrabbable();
                 InitializeComponentType(spawnedObject);
             }
+            else
+            {
+                Debug.LogError($"Prefab not found in Resources/TableUIComponents/{component.prefab}");
+            }
+        }
+        else
+        {
+            Debug.LogError($"Component with ID {componentId} not found.");
         }
     }
+
     void UpdatePrefabButtons(string selectedType)
     {
         foreach (Transform child in prefabButtonsContainer)
