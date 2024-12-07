@@ -46,10 +46,17 @@ public class MakeGrabbable : MonoBehaviour
         if (GetComponent<XRGrabInteractable>())
             Destroy(GetComponent<XRGrabInteractable>());
 
-        if (GetComponent<MeshCollider>() == null)
+        MeshCollider collider = GetComponent<MeshCollider>();
+        if (collider == null)
         {
-            MeshCollider collider = this.gameObject.AddComponent<MeshCollider>();
+            collider = this.gameObject.AddComponent<MeshCollider>();
             collider.convex = true;
+        }
+        else
+        {
+            if(!collider.convex)
+                collider.convex = true;
+
         }
     }
 

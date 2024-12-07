@@ -95,7 +95,8 @@ public class SequenceReader : MonoBehaviour
             obj.transform.SetParent(parent.transform);
 
             // Attempt to find the prefab child in the given prefab
-            GameObject prefabChild = prefab.transform.Find(component.componentName)?.gameObject;
+            //GameObject prefabChild = prefab.transform.Find(component.componentName)?.gameObject;
+            GameObject prefabChild = FindChildRecursive(prefab.transform, component.componentName)?.gameObject;
 
             // If not found, try loading it from Resources/TableUIComponents
             if (prefabChild == null)
@@ -190,4 +191,24 @@ public class SequenceReader : MonoBehaviour
         Rigidbody rb = parent.AddComponent<Rigidbody>();
         rb.isKinematic = true;
     }
+
+    private Transform FindChildRecursive(Transform parent, string childName)
+    {
+        foreach (Transform child in parent)
+        {
+            if (child.name == childName)
+            {
+                return child;
+            }
+
+            // Recursive call to search in children
+            Transform found = FindChildRecursive(child, childName);
+            if (found != null)
+            {
+                return found;
+            }
+        }
+        return null; // Return null if not found
+    }
+
 }

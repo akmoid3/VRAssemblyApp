@@ -102,6 +102,8 @@ public class ComponentObject : MonoBehaviour
 
     public void SetIsPlaced(bool value)
     {
+        if(GetComponent<MeshCollider>() != null)
+            GetComponent<MeshCollider>().convex = !value;
         isPlaced = value;
     }
 
