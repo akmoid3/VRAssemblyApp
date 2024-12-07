@@ -83,7 +83,9 @@ public class AutomaticPlacementManager : MonoBehaviour
 
         if (componentPlacementCounts[componentName] > 1)
         {
-            componentToPlace.GetComponent<Fastener>().IsStopped = true;
+            Fastener fastener = componentToPlace.GetComponent<Fastener>();
+            if (fastener)
+                fastener.IsStopped = true;
         }
 
         Transform correctSnappoint = interactor.transform.GetChild(stepIndex);
