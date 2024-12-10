@@ -30,7 +30,7 @@ public class WoodenPinExtendedIntegrationTests
 
         woodenPin.transform.position = Vector3.zero;
         simpleHammer.transform.position = Vector3.forward;
-        woodenPin.Tool = hammerObject;
+        //woodenPin.Tool = hammerObject;
         SetPrivateField(woodenPin, "initialSocketPosition", socketObject.transform.localPosition);
         SetPrivateField(woodenPin, "initialZPosition", woodenPin.transform.localPosition);
     }

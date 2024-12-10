@@ -22,7 +22,7 @@ public class Screw : Fastener
 
     private void HandlePlayBackInteraction()
     {
-        if (screwdriverScript != null && socketTransform != null && screwdriverScript.gameObject.name == CorrectToolName)
+        if (screwdriverScript != null && socketTransform != null && screwdriverScript.ToolName == CorrectToolName)
         {
             
             Vector3 screwdriverDir = screwdriverScript.transform.forward;

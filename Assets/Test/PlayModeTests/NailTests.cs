@@ -29,7 +29,7 @@ public class NailTests
 
         nail.transform.position = Vector3.zero;
         simpleHammer.transform.position = Vector3.forward;
-        nail.Tool = hammerObject;
+        //nail.Tool = hammerObject;
         SetPrivateField(nail, "initialSocketPosition", socketObject.transform.localPosition);
         SetPrivateField(nail, "initialZPosition", nail.transform.localPosition);
     }

@@ -120,6 +120,8 @@ public class ComponentPositioner : MonoBehaviour
             // Position the components within the bounds of the table
             foreach (Transform child in allChildrenWithMesh)
             {
+                child.SetParent(parent.transform);
+
                 child.rotation = Quaternion.identity;
                 Renderer renderer = child.GetComponent<Renderer>();
                 if (renderer != null)
@@ -155,10 +157,7 @@ public class ComponentPositioner : MonoBehaviour
 
             Manager.Instance.Components = spawnedChildren;
 
-            foreach (Transform child in spawnedChildren)
-            {
-                child.SetParent(parent.transform);
-            }
+           
 
             Destroy(instantiatedPrefab);
         }

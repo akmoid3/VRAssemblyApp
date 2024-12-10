@@ -16,7 +16,7 @@ public abstract class Fastener : MonoBehaviour
 
     [SerializeField] protected Transform socketTransform;
     protected Vector3 initialSocketPosition;
-    private GameObject tool;
+    private Tool tool;
     protected Renderer fastenerRenderer;
     protected Color alignedColor = Color.green;
     protected Color notAlignedColor = Color.red;
@@ -40,14 +40,14 @@ public abstract class Fastener : MonoBehaviour
     public bool IsStopped { get => isStopped; set => isStopped = value; }
     public bool CanStop { get => canStop; set => canStop = value; }
     public string CorrectToolName { get => correctToolName; set => correctToolName = value; }
-    public GameObject Tool { get => tool; set => tool = value; }
+    public Tool Tool { get => tool; set => tool = value; }
     public Renderer FastenerRenderer { get => fastenerRenderer; set => fastenerRenderer = value; }
 
     protected Vector3 selectedAxisDirRaw;
     protected Vector3 selectedAxisDirection;
     protected float fastenerLengthAlongAxis;
 
-    public GameObject getTool()
+    public Tool getTool()
     {
         return tool;
     }
@@ -102,14 +102,16 @@ public abstract class Fastener : MonoBehaviour
     {
         if (other.CompareTag("Tool"))
         {
-            tool = other.gameObject;
+            tool = other.gameObject.GetComponent<Tool>();
+            if (tool == null)
+                tool = other.gameObject.GetComponentInParent<Tool>();
             isCollidingWithTool = true;
             OnToolCollisionEnter(other);
             canStop = true;
 
             if (StateManager.Instance.CurrentState == State.PlayBack)
             {
-                if (tool.name != CorrectToolName && isFirstError)
+                if (tool.ToolName != CorrectToolName && isFirstError)
                 {
                     Manager.Instance.IncrementCurrentError();
                     isFirstError = false;

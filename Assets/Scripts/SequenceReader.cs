@@ -91,7 +91,6 @@ public class SequenceReader : MonoBehaviour
             }
 
             GameObject obj = new GameObject(component.componentName);
-            SetTransform(obj, component);
             obj.transform.SetParent(parent.transform);
 
             // Attempt to find the prefab child in the given prefab
@@ -111,8 +110,11 @@ public class SequenceReader : MonoBehaviour
                 }
             }
 
-            // Copy mesh and material from the found prefab child to the created object
             CopyMeshAndMaterial(prefabChild, obj);
+
+            SetTransform(obj, component, prefabChild);
+
+            // Copy mesh and material from the found prefab child to the created object
 
             // Add the child's position to the list
             childPositions.Add(obj.transform.localPosition);
@@ -143,7 +145,7 @@ public class SequenceReader : MonoBehaviour
         return sum / positions.Count;
     }
 
-    private void SetTransform(GameObject obj, ComponentData component)
+    private void SetTransform(GameObject obj, ComponentData component, GameObject prefabChild)
     {
         if (component.position != null)
         {
@@ -153,6 +155,12 @@ public class SequenceReader : MonoBehaviour
         if (component.rotation != null)
         {
             obj.transform.localRotation = new Quaternion(component.rotation.x, component.rotation.y, component.rotation.z, component.rotation.w);
+        }
+
+        if (prefabChild != null)
+        {
+            Vector3 lossyScale = prefabChild.transform.lossyScale;
+            obj.GetComponent<Transform>().localScale = lossyScale;
         }
     }
 

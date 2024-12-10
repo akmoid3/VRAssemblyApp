@@ -12,6 +12,7 @@ public class ComponentData
     public Vector3 position;
     public Quaternion rotation;
     public string toolName;
+    public string force;
     public string group;
     public ComponentObject.ComponentType type;
 }
@@ -67,10 +68,10 @@ public class SaveSequence : MonoBehaviour
         Fastener fastener = component.GetComponent<Fastener>();
         if (fastener != null)
         {
-            GameObject tool = fastener.getTool();
+            Tool tool = fastener.getTool();
             if (tool != null)
             {
-                toolName = tool.name;
+                toolName = tool.ToolName;
             }
         }
 

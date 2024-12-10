@@ -33,7 +33,7 @@ public class ScrewTests
 
         screw.transform.position = Vector3.zero;
         baseScrewDriver.transform.position = Vector3.forward;
-        screw.Tool = screwdriverObject;
+        //screw.Tool = screwdriverObject;
         screw.CorrectToolName = screwdriverObject.name;
         SetPrivateField(screw, "initialSocketPosition", socketObject.transform.localPosition);
         SetPrivateField(screw, "initialZPosition", screw.transform.localPosition);

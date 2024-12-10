@@ -169,7 +169,7 @@ public class TableUIManager : MonoBehaviour
             GameObject prefab = Resources.Load<GameObject>("TableUIComponents/" + component.prefab);
             if (prefab != null)
             {
-                GameObject spawnedObject = Instantiate(prefab, spawnPoint.position, Quaternion.identity);
+                GameObject spawnedObject = Instantiate(prefab, spawnPoint.position, Quaternion.identity, spawnPoint);
 
                 spawnedObject.name = prefab.name;
 
