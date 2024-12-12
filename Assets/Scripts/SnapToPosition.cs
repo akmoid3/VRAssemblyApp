@@ -59,21 +59,17 @@ public class SnapToPosition : MonoBehaviour
 
     private void OnTriggerStay(Collider other)
     {
-
-        // Check if the object has already been snapped
-        if (snappedObjects.Contains(other.gameObject))
+         if (other == null || StateManager.Instance.CurrentState != State.PlayBack)
             return;
 
-        if (StateManager.Instance.CurrentState == State.PlayBack)
+        if (Manager.Instance.ComponentsThatCanSnap.Contains(other.transform))
         {
             CheckSnap(other);
         }
     }
     private void CheckSnap(Collider other)
     {
-        if (other == null)
-            return;
-
+     
         ComponentObject componentObject = other.GetComponent<ComponentObject>();
         var snapPoint = snapPoints[Manager.Instance.CurrentStep];
 
@@ -96,7 +92,7 @@ public class SnapToPosition : MonoBehaviour
 
                 if ( (fastener && distance < 0.01f) || (distance < snapDistance && angle < snapAngle && !componentObject.GetIsPlaced()))
                 {
-                    other.attachedRigidbody.isKinematic = false;
+                    other.attachedRigidbody.isKinematic = true;
                     snapPoint.meshRenderer.enabled = true;
 
                     other.transform.SetPositionAndRotation(snapPoint.snapTransform.position, snapPoint.snapTransform.rotation);
@@ -146,18 +142,20 @@ public class SnapToPosition : MonoBehaviour
     {
 
         XRGrabInteractable xrGrabInteractable = GetComponent<XRGrabInteractable>();
-
+        MakeGrabbable makeGrabbable = collider.GetComponent<MakeGrabbable>();
+        makeGrabbable.DestroyInteractables();
         if (xrGrabInteractable)
         {
             // Unregister the interactable from the interaction manager
             interactionManager.UnregisterInteractable(xrGrabInteractable as IXRInteractable);
 
-            // Reconfigure the existing component instead of destroying it
+            
             xrGrabInteractable.throwOnDetach = false;
             xrGrabInteractable.useDynamicAttach = true;
             xrGrabInteractable.selectMode = InteractableSelectMode.Multiple;
             xrGrabInteractable.movementType = XRBaseInteractable.MovementType.VelocityTracking;
-            xrGrabInteractable.colliders.Add(collider);
+            if(!xrGrabInteractable.colliders.Contains(collider))
+                xrGrabInteractable.colliders.Add(collider);
             // Re-register the interactable
             interactionManager.RegisterInteractable(xrGrabInteractable as IXRInteractable);
         }
@@ -169,7 +167,8 @@ public class SnapToPosition : MonoBehaviour
             xrGrabInteractable.useDynamicAttach = true;
             xrGrabInteractable.selectMode = InteractableSelectMode.Multiple;
             xrGrabInteractable.movementType = XRBaseInteractable.MovementType.VelocityTracking;
-            xrGrabInteractable.colliders.Add(collider);
+            if (!xrGrabInteractable.colliders.Contains(collider))
+                xrGrabInteractable.colliders.Add(collider);
 
             // Register the newly added interactable
             interactionManager.RegisterInteractable(xrGrabInteractable as IXRInteractable);

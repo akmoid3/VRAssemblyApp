@@ -9,84 +9,18 @@ public class AutomaticPlacementManager : MonoBehaviour
     [SerializeField] private float timeForFirstPlacement = 1.0f;
     [SerializeField] private Transform showSolutionPosition;
     private GameObject interactorClone;
-    private Dictionary<string, GameObject> instantiatedComponents = new Dictionary<string, GameObject>();
+    private readonly Dictionary<string, GameObject> instantiatedComponents = new Dictionary<string, GameObject>();
 
     private bool isPlacingComponent = false;
 
     public float TimeForFirstPlacement { get => timeForFirstPlacement; set => timeForFirstPlacement = value; }
-    public Dictionary<string, GameObject> InstantiatedComponents { get => instantiatedComponents; set => instantiatedComponents = value; }
 
-    public virtual void PlaceInitialComponent(List<ComponentData> assemblySequence, List<Transform> components, SnapToPosition interactor)
-    {
-        if (assemblySequence != null && assemblySequence.Count > 0)
-        {
-            var firstComponentName = assemblySequence[0].componentName;
-            var firstComponent = components.Find(c => c.name == firstComponentName);
-            if (firstComponent != null && interactor != null)
-            {
-                Transform correctSnappoint = interactor.transform.GetChild(0);
 
-                if (correctSnappoint != null)
-                {
-                    StartCoroutine(SmoothMoveComponent(firstComponent, correctSnappoint, timeForFirstPlacement));
-                }
-            }
-        }
-    }
-
-    private Dictionary<string, int> componentPlacementCounts = new Dictionary<string, int>();
-
-    public void PlaceCurrentStepComponent(int stepIndex, List<ComponentData> assemblySequence, List<Transform> components, SnapToPosition interactor)
+    public void PlaceCurrentStepComponent(int stepIndex, Transform componentToPlace, SnapToPosition interactor)
     {
         if (isPlacingComponent) return;  // Prevent spamming if placement is ongoing
 
-        // Ensure the step index is within bounds
-        if (assemblySequence == null || stepIndex < 0 || stepIndex >= assemblySequence.Count)
-        {
-            Debug.LogWarning("Invalid step index or empty assembly sequence.");
-            return;
-        }
-
         isPlacingComponent = true;
-
-        var componentData = assemblySequence[stepIndex];
-        int stepID = assemblySequence[stepIndex].stepId;
-        string componentName = componentData.componentName;
-        var componentGroup = componentData.group;
-
-
-        if (!componentPlacementCounts.ContainsKey(componentName))
-        {
-            componentPlacementCounts[componentName] = 0;
-        }
-        componentPlacementCounts[componentName]++;
-
-
-
-        Transform componentToPlace;
-
-        if (!Manager.Instance.CurrentAssembledSequence.TryGetValue(stepID, out var currentComponent))
-        {
-            componentToPlace = components.FirstOrDefault(component => (!component.GetComponent<ComponentObject>().GetIsPlaced() && component.name == componentName) || (component.GetComponent<ComponentObject>().GetGroup() == componentGroup && !component.GetComponent<ComponentObject>().GetIsPlaced()));
-        }
-        else
-        {
-            componentToPlace = currentComponent.transform;
-        }
-
-        if (componentToPlace == null)
-        {
-            Debug.LogWarning($"Component {componentName} not found in the components list.");
-            isPlacingComponent = false;  // Reset flag if component is not found
-            return;
-        }
-
-        if (componentPlacementCounts[componentName] > 1)
-        {
-            Fastener fastener = componentToPlace.GetComponent<Fastener>();
-            if (fastener)
-                fastener.IsStopped = true;
-        }
 
         Transform correctSnappoint = interactor.transform.GetChild(stepIndex);
         if (correctSnappoint == null)

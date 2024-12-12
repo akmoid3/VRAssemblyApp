@@ -1,8 +1,6 @@
-using System.Collections;
-using System.Collections.Generic;
 using TMPro;
-using Unity.VRTemplate;
 using UnityEngine;
+using Unity.VRTemplate;
 using UnityEngine.XR.Interaction.Toolkit;
 
 public class DynamometerScrewDriver : BaseScrewDriver
@@ -10,11 +8,11 @@ public class DynamometerScrewDriver : BaseScrewDriver
     private bool isPlayingSound = false;
     private float triggerValue;
     private AudioSource audioSource;
-    [SerializeField] private float force = 0.0f;
+    [SerializeField] private int force = 0;
     [SerializeField] private TextMeshProUGUI forceText;
     public bool IsPlayingSound { get => isPlayingSound; set => isPlayingSound = value; }
     public float TriggerValue { get => triggerValue; set => triggerValue = value; }
-    public float Force { get => force; set => force = value; }
+    public int Force { get => force; set => force = value; }
 
     private void Start()
     {
@@ -36,15 +34,10 @@ public class DynamometerScrewDriver : BaseScrewDriver
     {
         if(knob != null)
         {
-            Force = Mathf.Lerp(0, 120, knob.value);
-            forceText.text = $"{Force:F2}";
-
-        }
-        else
-        {
-            forceText.text = $"{Force: 0}";
+            Force = Mathf.RoundToInt(Mathf.Lerp(0, 120, knob.value));
         }
 
+        forceText.text = $"{Force}";
     }
     public override void ProcessInteractable(XRInteractionUpdateOrder.UpdatePhase updatePhase)
     {

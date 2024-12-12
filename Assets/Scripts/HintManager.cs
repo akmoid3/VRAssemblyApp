@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using UnityEngine;
 
@@ -45,7 +46,7 @@ public class HintManager : MonoBehaviour
     }
 
 
-    public virtual void ShowHint(List<ComponentData> assemblySequence, int currentStep, List<Transform> components, SnapToPosition interactor)
+    public virtual void ShowHint(int currentStep, Transform component, SnapToPosition interactor)
     {
 
         if (hintShownForStep.ContainsKey(currentStep) && hintShownForStep[currentStep])
@@ -60,7 +61,7 @@ public class HintManager : MonoBehaviour
         if (interactor != null)
         {
             ShowSnapPoint(interactor, currentStep);
-            CurvedHint(components, assemblySequence, currentStep, interactor);
+            CurvedHint(currentStep, component, interactor);
         }
     }
 
@@ -69,9 +70,11 @@ public class HintManager : MonoBehaviour
     {
         if (StateManager.Instance.CurrentState == State.PlayBack)
         {
+            GameObject currentSelectedComponent = Manager.Instance.CurrentSelectedComponent;
+            if (currentSelectedComponent && Manager.Instance.ComponentsThatCanSnap.Contains(currentSelectedComponent.transform))
+                currentComponentTransform = currentSelectedComponent.transform;
 
-            if (canChangeLine && Manager.Instance.CurrentSelectedComponent != null && Manager.Instance.AssemblySequence[Manager.Instance.CurrentStep].group == Manager.Instance.CurrentSelectedComponent.GetComponent<ComponentObject>().GetGroup())
-                currentComponentTransform = Manager.Instance.CurrentSelectedComponent.transform;
+
             if (currentLineRenderer != null && currentComponentTransform != null && currentSnapPointTransform != null)
             {
                 DrawCurvedLine(currentComponentTransform.position, currentSnapPointTransform.position);
@@ -126,51 +129,23 @@ public class HintManager : MonoBehaviour
         }
     }
 
-    public virtual void HighlightComponentToPlace(List<ComponentData> assemblySequence, int currentStep, List<Transform> components)
+    public virtual void HighlightComponentToPlace(List<Transform> components)
     {
+        if (components == null)
+            return;
         if (isWaiting)
             return;
 
-        int stepID = assemblySequence[currentStep].stepId;
-        string componentToPlaceName = assemblySequence[currentStep].componentName;
-        string componentToPlaceGroup = assemblySequence[currentStep].group;
-
-
-        if (!Manager.Instance.CurrentAssembledSequence.TryGetValue(stepID, out var currentComponent))
+        foreach (var component in components)
         {
-            foreach (var component in components)
-            {
-                ComponentObject componentObject = component.GetComponent<ComponentObject>();
-                if ((component.name == componentToPlaceName && !componentObject.GetIsPlaced()) || (!componentObject.GetIsPlaced() && componentObject.GetGroup() != "None" && componentToPlaceGroup == componentObject.GetGroup()))
-                {
-                    StartCoroutine(HandleHintCooldown(component.gameObject));
-                }
-            }
+            StartCoroutine(HandleHintCooldown(component.gameObject));
         }
-        else
-        {
-            StartCoroutine(HandleHintCooldown(currentComponent.gameObject));
 
-        }
     }
 
-    private void CurvedHint(List<Transform> components, List<ComponentData> assemblySequence, int currentStep, SnapToPosition interactor)
+    private void CurvedHint(int currentStep, Transform component, SnapToPosition interactor)
     {
-        int componentID = assemblySequence[currentStep].stepId;
-
-
-        if (!Manager.Instance.CurrentAssembledSequence.TryGetValue(componentID, out var currentComponent))
-        {
-            string componentName = assemblySequence[currentStep].componentName;
-            currentComponentTransform = components.FirstOrDefault(component => component.name == componentName || component.GetComponent<ComponentObject>().GetGroup() == assemblySequence[currentStep].group);
-            canChangeLine = true;
-        }
-        else
-        {
-            canChangeLine = false;
-            currentComponentTransform = currentComponent.transform;
-        }
-
+        currentComponentTransform = component;
         currentSnapPointTransform = interactor.transform.GetChild(currentStep);
 
         if (currentComponentTransform != null && currentSnapPointTransform != null)

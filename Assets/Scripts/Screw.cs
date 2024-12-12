@@ -10,61 +10,25 @@ public class Screw : Fastener
 
     protected override void HandleInteraction()
     {
+        if (isStopped) return;
         if (StateManager.Instance.CurrentState == State.PlayBack)
         {
-            HandlePlayBackInteraction();
+            if (screwdriverScript != null && socketTransform != null && screwdriverScript.ToolName == CorrectToolName)
+            {
+                DynamometerScrewDriver dynamometerScrewDriver = screwdriverScript as DynamometerScrewDriver;
+                if (dynamometerScrewDriver && dynamometerScrewDriver.Force != CorrectToolForce)
+                    return;
+                Interaction();
+
+            }
         }
         else if (screwdriverScript != null && isAligned)
         {
-            HandleNormalInteraction();
+            Interaction();
         }
     }
 
-    private void HandlePlayBackInteraction()
-    {
-        if (screwdriverScript != null && socketTransform != null && screwdriverScript.ToolName == CorrectToolName)
-        {
-            
-            Vector3 screwdriverDir = screwdriverScript.transform.forward;
-            Vector3 screwDir = MapSelectedAxisToTransformDirection(selectedAxisDirRaw);
-
-            float dotProduct = Vector3.Dot(screwdriverDir.normalized, screwDir.normalized);
-            if (dotProduct >= maxAllowedDotProduct)
-            {
-                float rotationSpeed = screwdriverScript.GetRotationSpeed();
-                float linearMovement = (rotationSpeed * pitch / 360) * Time.deltaTime;
-
-                if (!isScrewing && linearMovement > 0.0f)
-                {
-                    AudioManager.Instance.PlaySound(audioSource, "screw", true, 1f);
-                    isScrewing = true;
-                }
-                else
-                {
-                    StopScrewSound();
-                }
-
-                // Update pitch based on linear movement
-                float pitchAudio = Mathf.Clamp(linearMovement * 10.0f, 0.5f, 2.0f);
-                AudioManager.Instance.SetPitch(audioSource, pitchAudio);
-
-                socketTransform.Rotate(selectedAxisDirRaw, rotationSpeed * Time.deltaTime * -1.0f);
-                socketTransform.Translate(selectedAxisDirRaw * linearMovement);
-
-                float distanceTraveled = Mathf.Abs(Vector3.Distance(socketTransform.localPosition, initialSocketPosition));
-
-                if (distanceTraveled >= distanceToTravel)
-                {
-                    isStopped = true;
-                    fastenerRenderer.material.color = defaultColor;
-                    StopScrewSound();
-                }
-            }
-        
-        }
-    }
-
-    private void HandleNormalInteraction()
+    private void Interaction()
     {
         Vector3 screwdriverDir = screwdriverScript.transform.forward;
         Vector3 screwDir = MapSelectedAxisToTransformDirection(selectedAxisDirRaw);
@@ -92,9 +56,9 @@ public class Screw : Fastener
             transform.Rotate(selectedAxisDirRaw, rotationSpeed * Time.deltaTime * -1.0f);
             transform.Translate(selectedAxisDirRaw * linearMovement);
 
-            float distanceTraveled = Mathf.Abs(Vector3.Distance(transform.localPosition, initialPosition));
+            float distanceTraveled = Vector3.Distance(transform.localPosition, InitialPosition);
 
-            if (distanceTraveled >= distanceToTravel)
+            if ((distanceTraveled >= distanceToTravel && !socketTransform) || (socketTransform && Vector3.Distance(transform.position, socketTransform.position) <= 0.01f))
             {
                 isStopped = true;
                 fastenerRenderer.material.color = defaultColor;

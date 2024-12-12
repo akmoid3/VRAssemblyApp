@@ -10,6 +10,10 @@ public class InteractionManager : MonoBehaviour
     [SerializeField] private float outlineWidth = 1.0f;
 
 
+    private void Awake()
+    {
+        currentSelectedComponent = null;
+    }
     public virtual void OnSelectEnter(SelectEnterEventArgs args)
     {
         if (args.interactorObject as XRBaseControllerInteractor)

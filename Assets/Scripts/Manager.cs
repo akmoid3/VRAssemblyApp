@@ -22,6 +22,7 @@ public class Manager : MonoBehaviour
 
 
     SnapToPosition interactor;
+    private List<Transform> componentsThatCanSnap;
 
     private static Dictionary<int, GameObject> currentAssembledSequence;
 
@@ -43,8 +44,9 @@ public class Manager : MonoBehaviour
     public GameObject CurrentSelectedComponent { get => interactionManager?.GetCurrentSelectedComponent(); set => interactionManager?.SetCurrentSelectedComponent(value); }
 
     public Dictionary<int, GameObject> CurrentAssembledSequence { get => currentAssembledSequence; set => currentAssembledSequence = value; }
+    public List<Transform> ComponentsThatCanSnap { get => componentsThatCanSnap; set => componentsThatCanSnap = value; }
 
-    List<Fastener> fasteners = new List<Fastener>();
+    List<GameObject> fasteners = new List<GameObject>();
 
 
     private void Awake()
@@ -75,96 +77,57 @@ public class Manager : MonoBehaviour
         stateManager = StateManager.Instance;
         stateManager.UpdateState(State.ChoosingModel);
         currentAssembledSequence = new Dictionary<int, GameObject>();
+        componentsThatCanSnap = new List<Transform>();
     }
 
 
     private void Update()
     {
         if (stateManager.CurrentState == State.PlayBack)
-        {
-            ProcessPlaybackState();
-        }
+            HighlightComponentToPlace();
     }
 
-    private void ProcessPlaybackState()
-    {
-        HighlightComponentToPlace();
-
-        var componentData = AssemblySequence[CurrentStep];
-        if (componentData != null)
-        {
-            ProcessComponentPlacement(componentData);
-        }
-    }
 
     private void HighlightComponentToPlace()
     {
-        hintManager.HighlightComponentToPlace(AssemblySequence, CurrentStep, components);
+        hintManager.HighlightComponentToPlace(componentsThatCanSnap);
     }
 
-    private void ProcessComponentPlacement(ComponentData componentData)
-    {
-        foreach (var component in components)
-        {
-            ComponentObject componentObject = component.GetComponent<ComponentObject>();
-            if (IsTargetComponent(component, componentData, componentObject))
-            {
-                HandleComponentFastening(component, componentData);
-            }
-        }
-    }
 
-    private bool IsTargetComponent(Transform component, ComponentData componentData, ComponentObject componentObject)
-    {
-        return component.name == componentData.componentName || componentObject.GetGroup() != "None";
-    }
-
-    private void HandleComponentFastening(Transform component, ComponentData componentData)
+    private void HandleComponentFastener(Transform component, ComponentData componentData)
     {
         Fastener fastener = component.GetComponent<Fastener>();
-        if (fasteners.Contains(fastener))
-            fastener = null;
+        if (fastener == null)
+            return;
 
-        if (fastener != null)
-        {
-            if (!string.IsNullOrEmpty(componentData.toolName))
-            {
-                fastener.CorrectToolName = componentData.toolName;
-            }
+        if (componentData == null)
+            return;
 
-            if (fastener.IsStopped)
-            {
-                OnFastenerStopped(component, fastener);
-            }
-        }
+
+        fastener.CorrectToolName = componentData.toolName;
+        fastener.CorrectToolForce = componentData.toolForce;
+        fastener.InitialPosition = fastener.transform.localPosition;
     }
 
-    private void OnFastenerStopped(Transform component, Fastener fastener)
+
+    private void HandleCurrentStepPlayBack()
     {
-        fasteners.Add(fastener);
-        if (interactor != null)
+        foreach (Transform component in components)
         {
-            HideCorrectSnapPoint();
-        }
-
-        fastener.PlayBuildPopSound();
-
-        ValidateComponent(component.gameObject);
-        IncrementCurrentStep();
-    }
-
-    private void HideCorrectSnapPoint()
-    {
-        Transform correctSnappoint = interactor.transform.GetChild(CurrentStep);
-
-        if (correctSnappoint != null)
-        {
-            correctSnappoint.GetComponent<MeshRenderer>().enabled = false;
+            MakeGrabbable makeGrabbable = component.GetComponent<MakeGrabbable>();
+            if (componentsThatCanSnap.Contains(component))
+            {
+                makeGrabbable.MakeObjectGrabbable();
+                HandleComponentFastener(component, AssemblySequence[CurrentStep]);
+            }
+            else if (!component.GetComponent<ComponentObject>().GetIsPlaced())
+            {
+                makeGrabbable.MakeObjectNonGrabbable();
+            }
         }
     }
 
-
-    private void MakeComponentGrabbableForStep()
+    private void UpdateComponentsPerCurrentStep()
     {
         int stepID = AssemblySequence[CurrentStep].stepId;
         string componentToPlaceName = AssemblySequence[CurrentStep].componentName;
@@ -173,35 +136,33 @@ public class Manager : MonoBehaviour
 
         if (!CurrentAssembledSequence.TryGetValue(stepID, out var currentComponent))
         {
-            foreach (var component in components)
+            foreach (Transform component in components)
             {
                 ComponentObject componentObject = component.GetComponent<ComponentObject>();
-                MakeGrabbable makeGrabbable = component.GetComponent<MakeGrabbable>();
 
-                if (componentObject.GetIsPlaced())
-                    continue;
+
                 if ((component.name == componentToPlaceName && !componentObject.GetIsPlaced()) || (!componentObject.GetIsPlaced() && componentObject.GetGroup() != "None" && componentToPlaceGroup == componentObject.GetGroup()))
                 {
-                    makeGrabbable.MakeObjectGrabbable();
+                    if (!componentsThatCanSnap.Contains(component))
+                        ComponentsThatCanSnap.Add(component);
                     continue;
                 }
-                makeGrabbable.MakeObjectNonGrabbable();
+                if (componentsThatCanSnap.Contains(component))
+                    ComponentsThatCanSnap.Remove(component);
             }
         }
         else
         {
-            foreach (var component in components)
+            foreach (Transform component in components)
             {
-                ComponentObject componentObject = component.GetComponent<ComponentObject>();
-                MakeGrabbable makeGrabbable = component.GetComponent<MakeGrabbable>();
-                if (componentObject.GetIsPlaced())
-                    continue;
-                if (component == currentComponent)
+                if (component.gameObject == currentComponent)
                 {
-                    makeGrabbable.MakeObjectGrabbable();
+                    if (!componentsThatCanSnap.Contains(component))
+                        ComponentsThatCanSnap.Add(component);
                     continue;
                 }
-                makeGrabbable.MakeObjectNonGrabbable();
+                if (componentsThatCanSnap.Contains(component))
+                    ComponentsThatCanSnap.Remove(component);
             }
         }
     }
@@ -215,7 +176,8 @@ public class Manager : MonoBehaviour
                 StateManager.Instance.UpdateState(State.Finish);
                 return;
             }
-            MakeComponentGrabbableForStep();
+            UpdateComponentsPerCurrentStep();
+            HandleCurrentStepPlayBack();
         }
     }
 
@@ -407,10 +369,12 @@ public class Manager : MonoBehaviour
             case State.PlayBack:
                 LoadPDF();
                 InitializeComponentsType();
-                MakeComponentsGrabbable();
+                //MakeComponentsGrabbable();
                 interactor = FindObjectOfType<SnapToPosition>();
                 PlaybackSpawnComponents();
                 CopyComponentObjectToInteractor();
+                UpdateComponentsPerCurrentStep();
+                HandleCurrentStepPlayBack();
                 PlaceInitialComponent();
                 break;
             case State.Finish:
@@ -451,38 +415,7 @@ public class Manager : MonoBehaviour
     {
         foreach (Transform component in components)
         {
-            ComponentObject componentObject = component.GetComponent<ComponentObject>();
-
-            if (componentObject != null)
-            {
-                if (componentObject.IsDestroyed)
-                {
-                    Destroy(componentObject.gameObject);
-                    return;
-                }
-                // Remove existing components of type Screw or Nail
-                RemoveExistingScripts<Screw>(component.gameObject);
-                RemoveExistingScripts<Nail>(component.gameObject);
-                RemoveExistingScripts<WoodenPin>(component.gameObject);
-
-                component.tag = "Untagged";
-                // Add the selected component script
-                switch (componentObject.GetComponentType())
-                {
-                    case ComponentObject.ComponentType.Screw:
-                        component.gameObject.AddComponent<Screw>();
-                        break;
-                    case ComponentObject.ComponentType.Nail:
-                        component.gameObject.AddComponent<Nail>();
-                        break;
-                    case ComponentObject.ComponentType.WoodenPin:
-                        component.gameObject.AddComponent<WoodenPin>();
-                        break;
-                    case ComponentObject.ComponentType.None:
-                        component.tag = "Component";
-                        break;
-                }
-            }
+            InitializeSingleComponentType(component);
         }
     }
 
@@ -577,7 +510,7 @@ public class Manager : MonoBehaviour
     public void PlaceInitialComponent()
     {
         if (automaticPlacementManager != null)
-            automaticPlacementManager.PlaceInitialComponent(AssemblySequence, components, interactor);
+            automaticPlacementManager.PlaceCurrentStepComponent(CurrentStep, componentsThatCanSnap[0], interactor);
     }
 
 
@@ -590,12 +523,12 @@ public class Manager : MonoBehaviour
     public void PlaceCurrentComponent()
     {
         if (automaticPlacementManager != null)
-            automaticPlacementManager.PlaceCurrentStepComponent(CurrentStep, AssemblySequence, components, interactor);
+            automaticPlacementManager.PlaceCurrentStepComponent(CurrentStep, componentsThatCanSnap[0], interactor);
         hintManager.HideHints(interactor);
     }
     public void ShowHint()
     {
-        hintManager.ShowHint(AssemblySequence, CurrentStep, components, interactor);
+        hintManager.ShowHint(CurrentStep, componentsThatCanSnap[0], interactor);
     }
 
     public void HideHint()

@@ -12,7 +12,7 @@ public class ComponentData
     public Vector3 position;
     public Quaternion rotation;
     public string toolName;
-    public string force;
+    public int toolForce;
     public string group;
     public ComponentObject.ComponentType type;
 }
@@ -65,6 +65,8 @@ public class SaveSequence : MonoBehaviour
     public virtual void SaveComponent(GameObject component)
     {
         string toolName = "null";
+        int force = 0;
+
         Fastener fastener = component.GetComponent<Fastener>();
         if (fastener != null)
         {
@@ -72,6 +74,11 @@ public class SaveSequence : MonoBehaviour
             if (tool != null)
             {
                 toolName = tool.ToolName;
+                DynamometerScrewDriver dyn = tool as DynamometerScrewDriver;
+                if(dyn != null)
+                {
+                    force = dyn.Force;
+                }
             }
         }
 
@@ -95,6 +102,7 @@ public class SaveSequence : MonoBehaviour
             position = component.transform.localPosition,
             rotation = component.transform.localRotation,
             toolName = toolName,
+            toolForce = force,
             group = componentObject.GetGroup(),
             type = componentObject.GetComponentType()
         };

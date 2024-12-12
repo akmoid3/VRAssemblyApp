@@ -127,7 +127,7 @@ public class MakeGrabbable : MonoBehaviour
         return clonedColliders;
     }
 
-    private void DestroyInteractables() {
+    public void DestroyInteractables() {
 
         // Disable original interactables
         foreach (var interactable in originalInteractables)

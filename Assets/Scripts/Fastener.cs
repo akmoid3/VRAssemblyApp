@@ -23,7 +23,7 @@ public abstract class Fastener : MonoBehaviour
 
     protected Color defaultColor = Color.white;
 
-    protected Vector3 initialPosition;
+    private Vector3 initialPosition;
     protected float distanceToTravel;
 
     protected Collider colliderComponent;
@@ -35,13 +35,17 @@ public abstract class Fastener : MonoBehaviour
 
     protected bool isFirstError = true;
 
-    private string correctToolName;
+    [SerializeField] private string correctToolName;
+
+    [SerializeField] private int correctToolForce;
     public bool IsAligned { get => isAligned; set => isAligned = value; }
     public bool IsStopped { get => isStopped; set => isStopped = value; }
     public bool CanStop { get => canStop; set => canStop = value; }
     public string CorrectToolName { get => correctToolName; set => correctToolName = value; }
     public Tool Tool { get => tool; set => tool = value; }
     public Renderer FastenerRenderer { get => fastenerRenderer; set => fastenerRenderer = value; }
+    public int CorrectToolForce { get => correctToolForce; set => correctToolForce = value; }
+    public Vector3 InitialPosition { get => initialPosition; set => initialPosition = value; }
 
     protected Vector3 selectedAxisDirRaw;
     protected Vector3 selectedAxisDirection;
@@ -111,11 +115,21 @@ public abstract class Fastener : MonoBehaviour
 
             if (StateManager.Instance.CurrentState == State.PlayBack)
             {
+                DynamometerScrewDriver dyn = tool as DynamometerScrewDriver;
+                if (dyn && tool.ToolName == CorrectToolName && dyn.Force != CorrectToolForce)
+                {
+                    Manager.Instance.IncrementCurrentError();
+                    isFirstError = false;
+                    return;
+                }
+                
                 if (tool.ToolName != CorrectToolName && isFirstError)
                 {
                     Manager.Instance.IncrementCurrentError();
                     isFirstError = false;
+                    return;
                 }
+                
             }
         }
     }
