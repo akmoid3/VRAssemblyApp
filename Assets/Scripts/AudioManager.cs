@@ -38,6 +38,8 @@ public class AudioManager : MonoBehaviour
 
     public void PlaySound(AudioSource audioSource, string clipName, bool loop = false, float volume = 1.0f)
     {
+        if (!audioSource)
+            return;
         if (audioClips.ContainsKey(clipName))
         {
             audioSource.clip = audioClips[clipName];
@@ -52,6 +54,8 @@ public class AudioManager : MonoBehaviour
     }
     public void PlayOneShot(AudioSource audioSource, string clipName, float volume = 1.0f)
     {
+        if (!audioSource)
+            return;
         if (audioClips.ContainsKey(clipName))
         {
             audioSource.PlayOneShot(audioClips[clipName], volume);

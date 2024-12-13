@@ -100,7 +100,7 @@ public class SequenceReader : MonoBehaviour
             // If not found, try loading it from Resources/TableUIComponents
             if (prefabChild == null)
             {
-                string resourcePath = $"TableUIComponents/{component.componentName}";
+                string resourcePath = $"TemplateComponentsPrefab/{component.componentName}";
                 prefabChild = Resources.Load<GameObject>(resourcePath);
 
                 if (prefabChild == null)

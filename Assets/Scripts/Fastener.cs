@@ -333,7 +333,7 @@ public abstract class Fastener : MonoBehaviour
             initialSocketPosition = socket.localPosition;
     }
 
-    public Transform getSocketTransform()
+    public Transform GetSocketTransform()
     {
         return socketTransform;
     }

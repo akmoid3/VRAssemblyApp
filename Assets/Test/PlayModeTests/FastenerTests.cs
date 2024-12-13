@@ -231,8 +231,8 @@ public class FastenerAlignmentTests
         fastener.SetSocketTransform(mockSocket);
 
         // Assert that the SetSocketTransform method was called
-        Assert.IsTrue(fastener.getSocketTransform(), "SetSocketTransform should have been called.");
-        Assert.IsTrue(mockSocket == fastener.getSocketTransform());
+        Assert.IsTrue(fastener.GetSocketTransform(), "SetSocketTransform should have been called.");
+        Assert.IsTrue(mockSocket == fastener.GetSocketTransform());
 
     }
 

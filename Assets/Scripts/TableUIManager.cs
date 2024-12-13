@@ -13,7 +13,7 @@ public class TableComponentDataSO : ScriptableObject
     public string id;
     public string type;
     public List<AttributeData> attributes = new List<AttributeData>();
-    public string prefab;
+    public GameObject prefab;
 }
 
 [System.Serializable]
@@ -31,21 +31,6 @@ public class TableComponentListSO : ScriptableObject
 }
 
 
-[System.Serializable]
-public class TableComponentData
-{
-    public string id;
-    public string type;
-    public Dictionary<string, string> attributes = new Dictionary<string, string>();
-    public string prefab;
-}
-
-[System.Serializable]
-public class TableComponentList
-{
-    public List<TableComponentData> components;
-}
-
 public class TableUIManager : MonoBehaviour
 {
     public GameObject panelContainer;
@@ -55,45 +40,39 @@ public class TableUIManager : MonoBehaviour
     public Transform attributesContainer;
     public GameObject dropdownPrefab;
     public Transform spawnPoint;
+    public AudioSource audioSource;
 
+    public TableComponentListSO componentListSO;
 
-    private TableComponentList componentList;
-    private TableComponentData selectedComponent;
-    private List<GameObject> dynamicDropdowns = new List<GameObject>();
-
+    private TableComponentDataSO selectedComponent;
+    private readonly List<GameObject> dynamicDropdowns = new List<GameObject>();
 
     private void Awake()
     {
         StateManager.OnStateChanged += HandleStateChanged;
-
     }
+
     void Start()
     {
-        LoadComponentData();
         PopulateComponentDropdown();
         dropdownComponentTypes.onValueChanged.AddListener(delegate { OnComponentSelected(); });
     }
 
     private void HandleStateChanged(State newState)
     {
-        if(panelContainer)
+        if (panelContainer)
             panelContainer.SetActive(newState == State.Record);
-    }
-
-    void LoadComponentData()
-    {
-        TextAsset jsonText = Resources.Load<TextAsset>("TableUIComponents/components");
-        componentList = JsonConvert.DeserializeObject<TableComponentList>(jsonText.text);
     }
 
     void PopulateComponentDropdown()
     {
         dropdownComponentTypes.ClearOptions();
         List<string> componentOptions = new List<string> { "None" };
-        foreach (var component in componentList.components)
+        foreach (var component in componentListSO.components)
         {
-            if (!componentOptions.Contains(component.type))
-                componentOptions.Add(component.type);
+            string componentTypeLower = component.type.ToLower(); 
+            if (!componentOptions.Contains(componentTypeLower))
+                componentOptions.Add(componentTypeLower);
         }
         dropdownComponentTypes.AddOptions(componentOptions);
         OnComponentSelected();
@@ -101,19 +80,17 @@ public class TableUIManager : MonoBehaviour
 
     void OnComponentSelected()
     {
-        string selectedType = dropdownComponentTypes.options[dropdownComponentTypes.value].text;
+        string selectedType = dropdownComponentTypes.options[dropdownComponentTypes.value].text.ToLower();
 
-        prefabButtonsContainer.parent.gameObject.SetActive(selectedType != "None");
+        prefabButtonsContainer.parent.gameObject.SetActive(selectedType != "none");
 
-        selectedComponent = componentList.components.Find(c => c.type == selectedType);
+        selectedComponent = componentListSO.components.Find(c => c.type.ToLower() == selectedType);
         PopulateAttributesUI(selectedType);
         PopulatePrefabButtons(selectedType);
     }
 
-
     void PopulateAttributesUI(string selectedType)
     {
-        // Clear any previous dropdowns
         foreach (var dropdown in dynamicDropdowns)
         {
             Destroy(dropdown.gameObject);
@@ -124,40 +101,37 @@ public class TableUIManager : MonoBehaviour
 
         if (selectedComponent != null)
         {
-            List<TableComponentData> filteredComponents = componentList.components.FindAll(c => c.type == selectedType);
+            List<TableComponentDataSO> filteredComponents = componentListSO.components.FindAll(c => c.type.ToLower() == selectedType);
 
             foreach (var component in filteredComponents)
             {
                 foreach (var attribute in component.attributes)
                 {
-                    // Check if a dropdown for this attribute already exists
-                    if (!existingDropdowns.ContainsKey(attribute.Key))
+                    string attributeKeyLower = attribute.key.ToLower(); 
+                    string attributeValueLower = attribute.value.ToLower(); 
+
+                    if (!existingDropdowns.ContainsKey(attributeKeyLower))
                     {
-                        // Instantiate the dropdown prefab
                         GameObject dropdownObject = Instantiate(dropdownPrefab, attributesContainer);
                         TMP_Dropdown dropdown = dropdownObject.transform.Find("Dropdown").GetComponent<TMP_Dropdown>();
-
-                        // Access the label inside the prefab
                         TMP_Text label = dropdownObject.transform.Find("Text").GetComponent<TMP_Text>();
-                        label.text = attribute.Key; // Set the label text to the attribute key
+                        label.text = attributeKeyLower; // Mostra la key in minuscolo
 
                         dropdown.ClearOptions();
-                        dropdown.AddOptions(new List<string> { "None", attribute.Value });
+                        dropdown.AddOptions(new List<string> { "None", attributeValueLower }); 
 
-                        // Store the dropdown in the dictionary and in the list
-                        existingDropdowns[attribute.Key] = dropdownObject;
+                        existingDropdowns[attributeKeyLower] = dropdownObject;
                         dynamicDropdowns.Add(dropdownObject);
 
-                        // Add a listener to update the prefab buttons when the dropdown value changes
                         dropdown.onValueChanged.AddListener(delegate { UpdatePrefabButtons(selectedType); });
                     }
                     else
                     {
-                        // If dropdown for this attribute already exists, add new value if necessary
-                        GameObject existingDropdown = existingDropdowns[attribute.Key];
-                        if (!existingDropdown.transform.Find("Dropdown").GetComponent<TMP_Dropdown>().options.Exists(option => option.text == attribute.Value))
+                        GameObject existingDropdown = existingDropdowns[attributeKeyLower];
+                        TMP_Dropdown dropdown = existingDropdown.transform.Find("Dropdown").GetComponent<TMP_Dropdown>();
+                        if (!dropdown.options.Exists(option => option.text == attributeValueLower))
                         {
-                            existingDropdown.transform.Find("Dropdown").GetComponent<TMP_Dropdown>().options.Add(new TMP_Dropdown.OptionData(attribute.Value));
+                            dropdown.options.Add(new TMP_Dropdown.OptionData(attributeValueLower));
                         }
                     }
                 }
@@ -172,7 +146,7 @@ public class TableUIManager : MonoBehaviour
             Destroy(child.gameObject);
         }
 
-        List<TableComponentData> filteredComponents = componentList.components.FindAll(c => c.type == selectedType);
+        List<TableComponentDataSO> filteredComponents = componentListSO.components.FindAll(c => c.type.ToLower() == selectedType);
 
         foreach (var component in filteredComponents)
         {
@@ -180,7 +154,7 @@ public class TableUIManager : MonoBehaviour
             Button button = buttonObject.GetComponent<Button>();
 
             TMP_Text buttonText = buttonObject.GetComponentInChildren<TMP_Text>();
-            buttonText.text = component.id;
+            buttonText.text = component.id.ToLower();
 
             button.onClick.AddListener(() => SpawnPrefabById(component.id));
         }
@@ -188,30 +162,24 @@ public class TableUIManager : MonoBehaviour
 
     void SpawnPrefabById(string componentId)
     {
-        TableComponentData component = componentList.components.Find(c => c.id == componentId);
-        if (component != null)
+        TableComponentDataSO component = componentListSO.components.Find(c => c.id.ToLower() == componentId.ToLower());
+        if (component != null && component.prefab != null)
         {
-            GameObject prefab = Resources.Load<GameObject>("TableUIComponents/" + component.prefab);
-            if (prefab != null)
-            {
-                GameObject spawnedObject = Instantiate(prefab, spawnPoint.position, Quaternion.identity, spawnPoint);
+            GameObject spawnedObject = Instantiate(component.prefab, spawnPoint.position, Quaternion.identity, spawnPoint);
+            spawnedObject.name = component.prefab.name;
 
-                spawnedObject.name = prefab.name;
+            MakeGrabbable makeGrabbable = spawnedObject.AddComponent<MakeGrabbable>();
+            makeGrabbable.MakeObjectGrabbable();
+            InitializeComponentType(spawnedObject);
+            AudioManager.Instance.PlayOneShot(audioSource, "TemplateSpawn", 1.0f);
 
-                MakeGrabbable makeGrabbable = spawnedObject.AddComponent<MakeGrabbable>();
-                makeGrabbable.MakeObjectGrabbable();
-                InitializeComponentType(spawnedObject);
-            }
-            else
-            {
-                Debug.LogError($"Prefab not found in Resources/TableUIComponents/{component.prefab}");
-            }
         }
         else
         {
-            Debug.LogError($"Component with ID {componentId} not found.");
+            Debug.LogError(component == null ? $"Component with ID {componentId} not found." : "Prefab is null in the component data.");
         }
     }
+
 
     void UpdatePrefabButtons(string selectedType)
     {
@@ -220,23 +188,23 @@ public class TableUIManager : MonoBehaviour
             Destroy(child.gameObject);
         }
 
-        List<TableComponentData> filteredComponents = componentList.components;
+        List<TableComponentDataSO> filteredComponents = componentListSO.components;
 
-        if (selectedType != "None")
+        if (selectedType != "none")
         {
-            filteredComponents = filteredComponents.FindAll(component => component.type == selectedType);
+            filteredComponents = filteredComponents.FindAll(component => component.type.ToLower() == selectedType);
         }
 
         foreach (var dropdown in dynamicDropdowns)
         {
             if (dropdown != null && dropdown.transform.Find("Dropdown").GetComponent<TMP_Dropdown>().options.Count > 0)
             {
-                string selectedValue = dropdown.transform.Find("Dropdown").GetComponent<TMP_Dropdown>().options[dropdown.transform.Find("Dropdown").GetComponent<TMP_Dropdown>().value].text;
+                string selectedValue = dropdown.transform.Find("Dropdown").GetComponent<TMP_Dropdown>().options[dropdown.transform.Find("Dropdown").GetComponent<TMP_Dropdown>().value].text.ToLower(); 
 
-                if (selectedValue != "None")
+                if (selectedValue != "none")
                 {
                     filteredComponents = filteredComponents.FindAll(component =>
-                        component.attributes.ContainsValue(selectedValue));
+                        component.attributes.Exists(attr => attr.value.ToLower() == selectedValue));
                 }
             }
         }
@@ -253,29 +221,26 @@ public class TableUIManager : MonoBehaviour
         }
     }
 
-
-
     public void InitializeComponentType(GameObject component)
     {
-            ComponentObject componentObject = component.GetComponent<ComponentObject>();
+        ComponentObject componentObject = component.GetComponent<ComponentObject>();
 
-            if (componentObject != null)
+        if (componentObject != null)
+        {
+            switch (componentObject.GetComponentType())
             {
-                // Add the selected component script
-                switch (componentObject.GetComponentType())
-                {
-                    case ComponentObject.ComponentType.Screw:
-                        component.gameObject.AddComponent<Screw>();
-                        break;
-                    case ComponentObject.ComponentType.Nail:
-                        component.gameObject.AddComponent<Nail>();
-                        break;
-                    case ComponentObject.ComponentType.WoodenPin:
-                        component.gameObject.AddComponent<WoodenPin>();
-                        break;
-                    default:
-                        break;
-                }
+                case ComponentObject.ComponentType.Screw:
+                    component.gameObject.AddComponent<Screw>();
+                    break;
+                case ComponentObject.ComponentType.Nail:
+                    component.gameObject.AddComponent<Nail>();
+                    break;
+                case ComponentObject.ComponentType.WoodenPin:
+                    component.gameObject.AddComponent<WoodenPin>();
+                    break;
+                default:
+                    break;
+            }
         }
     }
 }

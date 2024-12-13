@@ -10,7 +10,6 @@ public class Screw : Fastener
 
     protected override void HandleInteraction()
     {
-        if (isStopped) return;
         if (StateManager.Instance.CurrentState == State.PlayBack)
         {
             if (screwdriverScript != null && socketTransform != null && screwdriverScript.ToolName == CorrectToolName)

@@ -20,50 +20,15 @@ public class Nail : Fastener
         if (StateManager.Instance.CurrentState == State.PlayBack)
         {
             if (socketTransform != null && hammerScript != null)
-                HandleSocketTransformInteraction();
+                Interaction();
         }
         else if (hammerScript != null && isAligned)
         {
-            HandleNormalInteraction();
+            Interaction();
         }
     }
 
-    private void HandleSocketTransformInteraction()
-    {
-        float hammerForce = hammerScript.GetImpactForce() * forceScalingFactor;
-        Vector3 impactDirection = hammerScript.GetImpactDirection();
-
-        if (hammerForce >= minimumImpactForce)
-        {
-            float potentialMovement = hammerForce * Time.fixedDeltaTime * forceScalingFactor;
-            float currentDistance = Vector3.Distance(socketTransform.localPosition, initialSocketPosition);
-            float remainingDistance = distanceToTravel - currentDistance;
-
-            float direction = Vector3.Dot(impactDirection, MapSelectedAxisToTransformDirection(selectedAxisDirRaw));
-
-            // Check if the impact direction matches the alignment
-            if (direction >= 0.7f)
-            {
-                float actualMovement = Mathf.Min(potentialMovement, remainingDistance);
-
-                // Move the socketTransform based on the impact
-                socketTransform.Translate(selectedAxisDirRaw * actualMovement);
-
-                AudioManager.Instance.PlayOneShot(audioSource, "Hammer", 1.0f);
-
-                // Check if the nail has reached or exceeded the distanceToTravel
-                if (currentDistance + actualMovement >= distanceToTravel)
-                {
-                    isStopped = true;
-                    fastenerRenderer.material.color = defaultColor;
-                }
-
-                lastMoveTime = Time.time;
-            }
-        }
-    }
-
-    private void HandleNormalInteraction()
+    private void Interaction()
     {
         float hammerForce = hammerScript.GetImpactForce() * forceScalingFactor;
         Vector3 impactDirection = hammerScript.GetImpactDirection();
@@ -74,10 +39,10 @@ public class Nail : Fastener
             float currentDistance = Vector3.Distance(transform.localPosition, InitialPosition);
             float remainingDistance = distanceToTravel - currentDistance;
 
-            float direction = Vector3.Dot(impactDirection, selectedAxisDirection);
+            float direction = Vector3.Dot(impactDirection, MapSelectedAxisToTransformDirection(selectedAxisDirRaw));
 
             // Check if the impact direction matches the alignment
-            if (direction >= 0.8f)
+            if (direction >= 0.7f)
             {
                 float actualMovement = Mathf.Min(potentialMovement, remainingDistance);
 
@@ -87,7 +52,7 @@ public class Nail : Fastener
                 AudioManager.Instance.PlayOneShot(audioSource, "Hammer", 1.0f);
 
                 // Check if the nail has reached or exceeded the distanceToTravel
-                if (currentDistance + actualMovement >= distanceToTravel)
+                if ((currentDistance + actualMovement >= distanceToTravel && !socketTransform) || (socketTransform && Vector3.Distance(transform.position, socketTransform.position) <= 0.01f))
                 {
                     isStopped = true;
                     fastenerRenderer.material.color = defaultColor;

@@ -308,7 +308,7 @@ public class Manager : MonoBehaviour
                 for (int i = 0; i < missingCount; i++)
                 {
                     // Try to load the prefab from Resources/TableUIComponents
-                    GameObject prefab = Resources.Load<GameObject>("TableUIComponents/" + componentName);
+                    GameObject prefab = Resources.Load<GameObject>("TemplateComponentsPrefab/" + componentName);
                     if (prefab != null)
                     {
                         // Instantiate the prefab at the specified position and rotation from the AssemblySequence
