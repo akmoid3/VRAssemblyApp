@@ -6,6 +6,31 @@ using UnityEngine.UI;
 using Newtonsoft.Json;
 using System;
 
+
+[CreateAssetMenu(fileName = "TableComponentData", menuName = "ScriptableObjects/TableComponentData", order = 1)]
+public class TableComponentDataSO : ScriptableObject
+{
+    public string id;
+    public string type;
+    public List<AttributeData> attributes = new List<AttributeData>();
+    public string prefab;
+}
+
+[System.Serializable]
+public class AttributeData
+{
+    public string key;
+    public string value;
+}
+
+
+[CreateAssetMenu(fileName = "TableComponentList", menuName = "ScriptableObjects/TableComponentList", order = 2)]
+public class TableComponentListSO : ScriptableObject
+{
+    public List<TableComponentDataSO> components = new List<TableComponentDataSO>();
+}
+
+
 [System.Serializable]
 public class TableComponentData
 {
