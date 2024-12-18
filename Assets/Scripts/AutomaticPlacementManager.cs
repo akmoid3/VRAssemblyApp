@@ -6,17 +6,12 @@ using UnityEngine;
 
 public class AutomaticPlacementManager : MonoBehaviour
 {
-    [SerializeField] private float timeForFirstPlacement = 1.0f;
     [SerializeField] private Transform showSolutionPosition;
     private GameObject interactorClone;
     private readonly Dictionary<string, GameObject> instantiatedComponents = new Dictionary<string, GameObject>();
-
     private bool isPlacingComponent = false;
 
-    public float TimeForFirstPlacement { get => timeForFirstPlacement; set => timeForFirstPlacement = value; }
-
-
-    public void PlaceCurrentStepComponent(int stepIndex, Transform componentToPlace, SnapToPosition interactor)
+    public void PlaceCurrentStepComponent(int stepIndex, Transform componentToPlace, SnapToPosition interactor, float timeMovement)
     {
         if (isPlacingComponent) return;  // Prevent spamming if placement is ongoing
 
@@ -31,7 +26,7 @@ public class AutomaticPlacementManager : MonoBehaviour
         }
 
         // Start coroutine to move the component and reset the flag afterward
-        StartCoroutine(SmoothMoveAndResetFlag(componentToPlace, correctSnappoint, timeForFirstPlacement));
+        StartCoroutine(SmoothMoveAndResetFlag(componentToPlace, correctSnappoint, timeMovement));
     }
 
     private IEnumerator SmoothMoveAndResetFlag(Transform component, Transform correctSnappoint, float duration)
@@ -105,7 +100,7 @@ public class AutomaticPlacementManager : MonoBehaviour
                     }
                     else
                     {
-                        yield return StartCoroutine(SmoothMoveComponent(componentClone.transform, correctSnappoint, timeForFirstPlacement));
+                        yield return StartCoroutine(SmoothMoveComponent(componentClone.transform, correctSnappoint, 0));
                         yield return new WaitForSeconds(delayBetweenComponents);
                     }
 

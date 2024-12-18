@@ -240,7 +240,7 @@ public class InitializeComponentManager : MonoBehaviour
             removedComponents.Remove(component);
         }
 
-        Manager.Instance.RepositionComponentsOnTable();
+        Manager.Instance.RepositionComponentsOnTable(Manager.Instance.Components);
     }
 
 

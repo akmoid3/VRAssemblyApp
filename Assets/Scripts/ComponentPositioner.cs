@@ -111,51 +111,9 @@ public class ComponentPositioner : MonoBehaviour
             List<Transform> allChildrenWithMesh = new List<Transform>();
             CollectChildrenWithMesh(instantiatedPrefab.transform, allChildrenWithMesh);
 
-            Vector3 newPosition;
-            float width;
-            float height;
-            float startPosition = tableBounds.min.x + 0.2f;
-            float currentX = startPosition;
+            RepositionComponentsOnTable(allChildrenWithMesh);
 
-            // Position the components within the bounds of the table
-            foreach (Transform child in allChildrenWithMesh)
-            {
-                child.SetParent(parent.transform);
-
-                child.rotation = Quaternion.identity;
-                Renderer renderer = child.GetComponent<Renderer>();
-                if (renderer != null)
-                {
-                    Bounds childBounds = renderer.bounds;
-                    Vector3 pivotOffset = child.position - childBounds.center;
-
-                    width = childBounds.size.x;
-                    height = childBounds.size.y;
-                    newPosition = new Vector3(currentX + width / 2, tableBounds.max.y + height / 2 + 0.01f, tableBounds.center.z);
-
-                    newPosition += pivotOffset;
-
-                    child.position = newPosition;
-                    currentX += width + extraSpacing;
-
-                    spawnedChildren.Add(child);
-                    child.gameObject.AddComponent<ComponentObject>();
-                    child.gameObject.AddComponent<MakeGrabbable>();
-                    child.tag = "Component";
-
-                    // Deactivate if out of bounds
-                    if (child.position.x > tableBounds.max.x)
-                    {
-                        child.gameObject.SetActive(false);
-                    }
-                    else
-                    {
-                        child.gameObject.SetActive(true);
-                    }
-                }
-            }
-
-            Manager.Instance.Components = spawnedChildren;
+            Manager.Instance.Components = allChildrenWithMesh;
 
            
 
@@ -163,14 +121,13 @@ public class ComponentPositioner : MonoBehaviour
         }
     }
 
-    public void RepositionComponentsOnTable()
+    public void RepositionComponentsOnTable(List<Transform> components)
     {
         Vector3 newPosition;
         float width;
         float height;
         float startPosition = tableBounds.min.x + 0.2f;
         float currentX = startPosition;
-        var components = Manager.Instance.Components;
 
         foreach (Transform child in components)
         {
@@ -194,7 +151,14 @@ public class ComponentPositioner : MonoBehaviour
                 child.position = newPosition;
                 currentX += width + extraSpacing;
 
+                if(!child.GetComponent<ComponentObject>())
+                    child.gameObject.AddComponent<ComponentObject>();
+
+                if(!child.GetComponent<MakeGrabbable>())
+                    child.gameObject.AddComponent<MakeGrabbable>();
+
                 child.SetParent(parent.transform);
+
                 // Deactivate if out of bounds
                 if (child.position.x > tableBounds.max.x)
                 {
@@ -205,6 +169,54 @@ public class ComponentPositioner : MonoBehaviour
                     child.gameObject.SetActive(true);
                 }
             }
+        }
+    }
+
+    public void RepositionComponentOnTable(Transform child)
+    {
+        Vector3 newPosition;
+        float width;
+        float height;
+        float startPosition = tableBounds.min.x + 0.2f;
+        float currentX = startPosition;
+
+            child.rotation = Quaternion.identity;
+            Renderer renderer = child.GetComponent<Renderer>();
+            if (renderer != null)
+            {
+                Bounds childBounds = renderer.bounds;
+                Vector3 pivotOffset = child.position - childBounds.center;
+
+                width = childBounds.size.x;
+                height = childBounds.size.y;
+                newPosition = new Vector3(
+                    currentX + width / 2,
+                    tableBounds.max.y + height / 2 + 0.01f,
+                    tableBounds.center.z
+                );
+
+                newPosition += pivotOffset;
+
+                child.position = newPosition;
+                currentX += width + extraSpacing;
+
+                if (!child.GetComponent<ComponentObject>())
+                    child.gameObject.AddComponent<ComponentObject>();
+
+                if (!child.GetComponent<MakeGrabbable>())
+                    child.gameObject.AddComponent<MakeGrabbable>();
+
+                child.SetParent(parent.transform);
+
+                // Deactivate if out of bounds
+                if (child.position.x > tableBounds.max.x)
+                {
+                    child.gameObject.SetActive(false);
+                }
+                else
+                {
+                    child.gameObject.SetActive(true);
+                }
         }
     }
 

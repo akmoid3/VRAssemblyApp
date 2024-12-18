@@ -112,6 +112,8 @@ public class Manager : MonoBehaviour
 
     private void HandleCurrentStepPlayBack()
     {
+        if (CurrentStep >= AssemblySequence.Count) return;
+
         foreach (Transform component in components)
         {
             MakeGrabbable makeGrabbable = component.GetComponent<MakeGrabbable>();
@@ -127,8 +129,9 @@ public class Manager : MonoBehaviour
         }
     }
 
-    private void UpdateComponentsPerCurrentStep()
+    public void UpdateComponentsPerCurrentStep()
     {
+        if (CurrentStep >= AssemblySequence.Count) return;
         int stepID = AssemblySequence[CurrentStep].stepId;
         string componentToPlaceName = AssemblySequence[CurrentStep].componentName;
         string componentToPlaceGroup = AssemblySequence[CurrentStep].group;
@@ -171,7 +174,7 @@ public class Manager : MonoBehaviour
         if (sequenceManager)
         {
             sequenceManager.IncrementCurrentStep();
-            if (AssemblySequence != null && CurrentStep >= AssemblySequence.Count)
+            if (AssemblySequence != null && CurrentStep >= AssemblySequence.Count && StateManager.Instance.CurrentState == State.PlayBack)
             {
                 StateManager.Instance.UpdateState(State.Finish);
                 return;
@@ -237,9 +240,14 @@ public class Manager : MonoBehaviour
             sequenceManager.RemoveComponentFromSequence(CurrentSelectedComponent, model.name);
     }
 
-    public void RepositionComponentsOnTable()
+    public void RepositionComponentsOnTable(List<Transform> components)
     {
-        componentPositioner.RepositionComponentsOnTable();
+        componentPositioner.RepositionComponentsOnTable(components);
+    }
+
+    public void RepositionComponentOnTable(Transform component)
+    {
+        componentPositioner.RepositionComponentOnTable(component);
     }
 
     public void PlaybackSpawnComponents()
@@ -345,7 +353,7 @@ public class Manager : MonoBehaviour
         }
 
         // Reposition components after ensuring all are present
-        componentPositioner.RepositionComponentsOnTable();
+        componentPositioner.RepositionComponentsOnTable(components);
     }
 
 
@@ -510,7 +518,7 @@ public class Manager : MonoBehaviour
     public void PlaceInitialComponent()
     {
         if (automaticPlacementManager != null)
-            automaticPlacementManager.PlaceCurrentStepComponent(CurrentStep, componentsThatCanSnap[0], interactor);
+            automaticPlacementManager.PlaceCurrentStepComponent(CurrentStep, componentsThatCanSnap[0], interactor, 1.0f);
     }
 
 
@@ -520,11 +528,16 @@ public class Manager : MonoBehaviour
             automaticPlacementManager.PlaceAllComponentsGradually(delayBetweenComponents, interactor, AssemblySequence, components, toolManager);
     }
 
-    public void PlaceCurrentComponent()
+    public void PlaceCurrentComponent(float timePlacement)
     {
         if (automaticPlacementManager != null)
-            automaticPlacementManager.PlaceCurrentStepComponent(CurrentStep, componentsThatCanSnap[0], interactor);
+            automaticPlacementManager.PlaceCurrentStepComponent(CurrentStep, componentsThatCanSnap[0], interactor, timePlacement);
         hintManager.HideHints(interactor);
+    }
+
+    public void ResetComponents()
+    {
+        
     }
     public void ShowHint()
     {

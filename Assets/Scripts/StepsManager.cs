@@ -1,10 +1,12 @@
+using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class StepsManager : MonoBehaviour
 {
-    public GameObject stepPrefab;  
+    public GameObject stepPrefab;
     public Transform stepParent;
 
     public class StepData
@@ -84,7 +86,7 @@ public class StepsManager : MonoBehaviour
         if (currentStepData != null)
         {
             currentStepData.Hints = hintCount - previousHintCount;
-            previousHintCount = hintCount; 
+            previousHintCount = hintCount;
         }
     }
 
@@ -103,7 +105,7 @@ public class StepsManager : MonoBehaviour
         {
             foreach (var step in stepsData)
             {
-                if(step.TimeSpent == 0)
+                if (step.TimeSpent == 0)
                     continue;
                 GameObject stepObject = Instantiate(stepPrefab, stepParent);
 
@@ -112,6 +114,8 @@ public class StepsManager : MonoBehaviour
                 TextMeshProUGUI hintText = stepObject.transform.Find("Hint").GetComponent<TextMeshProUGUI>();
                 TextMeshProUGUI timeText = stepObject.transform.Find("Time").GetComponent<TextMeshProUGUI>();
 
+                Button button = stepObject.GetComponent<Button>();
+                button.onClick.AddListener(() => StartCoroutine(ShowPlacement(step.StepNumber)));
                 stepText.text = $"Step {step.StepNumber}";
                 errorText.text = $"Errors: {step.Errors}";
                 hintText.text = $"Hints: {step.Hints}";
@@ -119,4 +123,47 @@ public class StepsManager : MonoBehaviour
             }
         }
     }
+
+    bool isProcessing = false;
+    private IEnumerator ShowPlacement(int step)
+    {
+        if (isProcessing) yield break;
+
+        isProcessing = true;
+        Debug.Log("ciao" + step);
+        Manager.Instance.RepositionComponentsOnTable(Manager.Instance.Components);
+        Manager.Instance.CurrentStep = 0;
+        Manager.Instance.CurrentAssembledSequence.Clear();
+
+        foreach (Transform go in Manager.Instance.Components) { go.GetComponent<ComponentObject>().SetIsPlaced(false); }
+        for (int i = 0; i <= step; i++)
+        {
+            Manager.Instance.CurrentStep = i;
+            Manager.Instance.UpdateComponentsPerCurrentStep();
+
+            if (i == step)
+            {
+                //i--;
+                //Manager.Instance.RepositionComponentOnTable(Manager.Instance.ComponentsThatCanSnap[0]);
+                Manager.Instance.PlaceCurrentComponent(1.2f);
+                yield return new WaitForSeconds(1.3f);
+                //isProcessing = false;
+
+            }
+            else
+            {
+
+                Manager.Instance.PlaceCurrentComponent(0.15f);
+
+                yield return new WaitForSeconds(0.25f);
+
+            }
+
+        }
+
+        isProcessing = false;
+
+    }
+
+
 }
