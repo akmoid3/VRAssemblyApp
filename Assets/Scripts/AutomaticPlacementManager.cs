@@ -11,9 +11,10 @@ public class AutomaticPlacementManager : MonoBehaviour
     private readonly Dictionary<string, GameObject> instantiatedComponents = new Dictionary<string, GameObject>();
     private bool isPlacingComponent = false;
 
-    public void PlaceCurrentStepComponent(int stepIndex, Transform componentToPlace, SnapToPosition interactor, float timeMovement)
+    public void PlaceCurrentStepComponent(int stepIndex, Transform componentToPlace, SnapToPosition interactor,
+        float timeMovement)
     {
-        if (isPlacingComponent) return;  // Prevent spamming if placement is ongoing
+        if (isPlacingComponent) return; // Prevent spamming if placement is ongoing
 
         isPlacingComponent = true;
 
@@ -21,21 +22,35 @@ public class AutomaticPlacementManager : MonoBehaviour
         if (correctSnappoint == null)
         {
             Debug.LogWarning($"Snap point for step index {stepIndex} not found in the interactor.");
-            isPlacingComponent = false;  // Reset flag if snap point is not found
+            isPlacingComponent = false; // Reset flag if snap point is not found
             return;
         }
 
-        // Start coroutine to move the component and reset the flag afterward
         StartCoroutine(SmoothMoveAndResetFlag(componentToPlace, correctSnappoint, timeMovement));
+        // Start coroutine to move the component and reset the flag afterward
+    }
+
+    public void PlaceStepComponent(int stepIndex, Transform componentToPlace, SnapToPosition interactor)
+    {
+        Transform correctSnappoint = interactor.transform.GetChild(stepIndex);
+        if (correctSnappoint == null)
+        {
+            Debug.LogWarning($"Snap point for step index {stepIndex} not found in the interactor.");
+            isPlacingComponent = false; // Reset flag if snap point is not found
+            return;
+        }
+
+        MoveComponent(componentToPlace, correctSnappoint);
     }
 
     private IEnumerator SmoothMoveAndResetFlag(Transform component, Transform correctSnappoint, float duration)
     {
         yield return StartCoroutine(SmoothMoveComponent(component, correctSnappoint, duration));
-        isPlacingComponent = false;  // Reset flag after placement is complete
+        isPlacingComponent = false; // Reset flag after placement is complete
     }
 
-    public virtual void PlaceAllComponentsGradually(float delayBetweenComponents, SnapToPosition interactor, List<ComponentData> assemblySequence, List<Transform> components, ToolManager toolManager)
+    public virtual void PlaceAllComponentsGradually(float delayBetweenComponents, SnapToPosition interactor,
+        List<ComponentData> assemblySequence, List<Transform> components, ToolManager toolManager)
     {
         CleanupPreviousClones();
         interactorClone = new GameObject(interactor.name);
@@ -59,10 +74,12 @@ public class AutomaticPlacementManager : MonoBehaviour
             }
         }
 
-        StartCoroutine(PlaceAllComponentsGraduallyCoroutine(delayBetweenComponents, interactorClone, assemblySequence, components, toolManager));
+        StartCoroutine(PlaceAllComponentsGraduallyCoroutine(delayBetweenComponents, interactorClone, assemblySequence,
+            components, toolManager));
     }
 
-    public IEnumerator PlaceAllComponentsGraduallyCoroutine(float delayBetweenComponents, GameObject interactorClone, List<ComponentData> assemblySequence, List<Transform> components, ToolManager toolManager)
+    public IEnumerator PlaceAllComponentsGraduallyCoroutine(float delayBetweenComponents, GameObject interactorClone,
+        List<ComponentData> assemblySequence, List<Transform> components, ToolManager toolManager)
     {
         if (assemblySequence == null || assemblySequence.Count == 0)
             yield break;
@@ -86,7 +103,8 @@ public class AutomaticPlacementManager : MonoBehaviour
                     instantiatedComponents[componentData.componentName] = componentClone;
                 }
 
-                Transform correctSnappoint = interactorClone.transform.GetChild(assemblySequence.IndexOf(componentData));
+                Transform correctSnappoint =
+                    interactorClone.transform.GetChild(assemblySequence.IndexOf(componentData));
 
                 if (correctSnappoint != null)
                 {
@@ -120,7 +138,7 @@ public class AutomaticPlacementManager : MonoBehaviour
 
     public void CleanupPreviousClones()
     {
-        if (interactorClone != null)
+        if (interactorClone)
         {
             Destroy(interactorClone);
         }
@@ -159,5 +177,12 @@ public class AutomaticPlacementManager : MonoBehaviour
         // Final alignment with the snap point after the movement completes
         component.position = correctSnappoint.position;
         component.rotation = correctSnappoint.rotation;
+    }
+
+    public void MoveComponent(Transform component, Transform correctSnappoint)
+    {
+        // Final alignment with the snap point after the movement completes
+        component.transform.SetPositionAndRotation(correctSnappoint.transform.position, correctSnappoint.rotation);
+        //component.rotation = correctSnappoint.rotation;
     }
 }

@@ -1,8 +1,10 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.XR.Interaction.Toolkit;
 
 public class StepsManager : MonoBehaviour
 {
@@ -31,7 +33,7 @@ public class StepsManager : MonoBehaviour
 
     private int previousErrorCount = 0;
     private int previousHintCount = 0;
-
+    private bool processOneTimeComponentsPerSteps = false;
     public IReadOnlyList<StepData> StepsData => stepsData;
 
     private void Awake()
@@ -40,6 +42,7 @@ public class StepsManager : MonoBehaviour
         SequenceManager.OnErrorCountChanged += OnErrorCountChanged;
         HintManager.OnHintCountChanged += OnHintCountChanged;
         StateManager.OnStateChanged += PrintStepData;
+        processOneTimeComponentsPerSteps = false;
     }
 
     private void OnDestroy()
@@ -115,7 +118,7 @@ public class StepsManager : MonoBehaviour
                 TextMeshProUGUI timeText = stepObject.transform.Find("Time").GetComponent<TextMeshProUGUI>();
 
                 Button button = stepObject.GetComponent<Button>();
-                button.onClick.AddListener(() => StartCoroutine(ShowPlacement(step.StepNumber)));
+                button.onClick.AddListener(() => ShowPlacement(step.StepNumber));
                 stepText.text = $"Step {step.StepNumber}";
                 errorText.text = $"Errors: {step.Errors}";
                 hintText.text = $"Hints: {step.Hints}";
@@ -124,46 +127,73 @@ public class StepsManager : MonoBehaviour
         }
     }
 
-    bool isProcessing = false;
-    private IEnumerator ShowPlacement(int step)
+    private void ShowPlacement(int step)
     {
-        if (isProcessing) yield break;
+        Debug.Log("Processing steps up to: " + step);
 
-        isProcessing = true;
-        Debug.Log("ciao" + step);
+        // Reset Manager's state
         Manager.Instance.RepositionComponentsOnTable(Manager.Instance.Components);
         Manager.Instance.CurrentStep = 0;
         Manager.Instance.CurrentAssembledSequence.Clear();
 
-        foreach (Transform go in Manager.Instance.Components) { go.GetComponent<ComponentObject>().SetIsPlaced(false); }
-        for (int i = 0; i <= step; i++)
+        List<Transform> components = Manager.Instance.Components;
+        foreach (Transform go in components)
         {
-            Manager.Instance.CurrentStep = i;
-            Manager.Instance.UpdateComponentsPerCurrentStep();
-
-            if (i == step)
-            {
-                //i--;
-                //Manager.Instance.RepositionComponentOnTable(Manager.Instance.ComponentsThatCanSnap[0]);
-                Manager.Instance.PlaceCurrentComponent(1.2f);
-                yield return new WaitForSeconds(1.3f);
-                //isProcessing = false;
-
-            }
-            else
-            {
-
-                Manager.Instance.PlaceCurrentComponent(0.15f);
-
-                yield return new WaitForSeconds(0.25f);
-
-            }
-
+            go.GetComponent<ComponentObject>().SetIsPlaced(false);
         }
 
-        isProcessing = false;
+        // Ensure all steps up to the target step are updated in the dictionary
+        if (!processOneTimeComponentsPerSteps)
+        {
+            for (int i = 0; i < Manager.Instance.Components.Count; i++)
+            {
+                UpdateComponentsForStepManager(i);
+            }
 
+            processOneTimeComponentsPerSteps = true;
+        }
+
+
+        // Iterate through steps and place components
+        for (int i = 0; i <= step; i++)
+        {
+            var stepID = Manager.Instance.AssemblySequence[i].stepId;
+            if (!stepComponentsByStep.TryGetValue(stepID, out var componentForStep))
+            {
+                Debug.LogWarning($"No components to snap for step {i}");
+                continue;
+            }
+
+            Manager.Instance.PlaceCurrentComponent(i,componentForStep);
+            componentForStep.SetParent( Manager.Instance.Interactor.transform.GetChild(i));
+        }
     }
 
+    private Dictionary<int, Transform> stepComponentsByStep = new Dictionary<int, Transform>();
 
+    public void UpdateComponentsForStepManager(int currentStep)
+    {
+        if (currentStep >= Manager.Instance.AssemblySequence.Count) return;
+
+        int stepID = Manager.Instance.AssemblySequence[currentStep].stepId;
+        string componentToPlaceName = Manager.Instance.AssemblySequence[currentStep].componentName;
+        string componentToPlaceGroup = Manager.Instance.AssemblySequence[currentStep].group;
+
+        foreach (Transform component in Manager.Instance.Components)
+        {
+            ComponentObject componentObject = component.GetComponent<ComponentObject>();
+
+            // Condition to identify components relevant to the current step
+            if ((component.name == componentToPlaceName && !componentObject.GetIsPlaced() &&
+                 !stepComponentsByStep.ContainsValue(component)) ||
+                (!componentObject.GetIsPlaced() && componentObject.GetGroup() != "None" &&
+                 componentToPlaceGroup == componentObject.GetGroup() && !stepComponentsByStep.ContainsValue(component)))
+            {
+                if (!stepComponentsByStep.ContainsValue(component))
+                {
+                    stepComponentsByStep[stepID] = component;
+                }
+            }
+        }
+    }
 }

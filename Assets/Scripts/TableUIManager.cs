@@ -52,7 +52,7 @@ public class TableUIManager : MonoBehaviour
         StateManager.OnStateChanged += HandleStateChanged;
     }
 
-    void Start()
+    private void Start()
     {
         PopulateComponentDropdown();
         dropdownComponentTypes.onValueChanged.AddListener(delegate { OnComponentSelected(); });
@@ -64,21 +64,24 @@ public class TableUIManager : MonoBehaviour
             panelContainer.SetActive(newState == State.Record);
     }
 
-    void PopulateComponentDropdown()
+    private void PopulateComponentDropdown()
     {
         dropdownComponentTypes.ClearOptions();
         List<string> componentOptions = new List<string> { "None" };
         foreach (var component in componentListSO.components)
         {
-            string componentTypeLower = component.type.ToLower(); 
-            if (!componentOptions.Contains(componentTypeLower))
-                componentOptions.Add(componentTypeLower);
+            if (component != null)
+            {
+                string componentTypeLower = component.type.ToLower(); 
+                if (!componentOptions.Contains(componentTypeLower))
+                    componentOptions.Add(componentTypeLower);
+            }
         }
         dropdownComponentTypes.AddOptions(componentOptions);
         OnComponentSelected();
     }
 
-    void OnComponentSelected()
+    private void OnComponentSelected()
     {
         string selectedType = dropdownComponentTypes.options[dropdownComponentTypes.value].text.ToLower();
 
@@ -89,7 +92,7 @@ public class TableUIManager : MonoBehaviour
         PopulatePrefabButtons(selectedType);
     }
 
-    void PopulateAttributesUI(string selectedType)
+    private void PopulateAttributesUI(string selectedType)
     {
         foreach (var dropdown in dynamicDropdowns)
         {
@@ -139,7 +142,7 @@ public class TableUIManager : MonoBehaviour
         }
     }
 
-    void PopulatePrefabButtons(string selectedType)
+    private void PopulatePrefabButtons(string selectedType)
     {
         foreach (Transform child in prefabButtonsContainer)
         {
@@ -160,7 +163,7 @@ public class TableUIManager : MonoBehaviour
         }
     }
 
-    void SpawnPrefabById(string componentId)
+    private void SpawnPrefabById(string componentId)
     {
         TableComponentDataSO component = componentListSO.components.Find(c => c.id.ToLower() == componentId.ToLower());
         if (component != null && component.prefab != null)
@@ -181,7 +184,7 @@ public class TableUIManager : MonoBehaviour
     }
 
 
-    void UpdatePrefabButtons(string selectedType)
+    private void UpdatePrefabButtons(string selectedType)
     {
         foreach (Transform child in prefabButtonsContainer)
         {

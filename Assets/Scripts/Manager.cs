@@ -21,7 +21,7 @@ public class Manager : MonoBehaviour
     [SerializeField] private ComponentPositioner componentPositioner;
 
 
-    SnapToPosition interactor;
+    private SnapToPosition interactor;
     private List<Transform> componentsThatCanSnap;
 
     private static Dictionary<int, GameObject> currentAssembledSequence;
@@ -45,6 +45,12 @@ public class Manager : MonoBehaviour
 
     public Dictionary<int, GameObject> CurrentAssembledSequence { get => currentAssembledSequence; set => currentAssembledSequence = value; }
     public List<Transform> ComponentsThatCanSnap { get => componentsThatCanSnap; set => componentsThatCanSnap = value; }
+
+    public SnapToPosition Interactor
+    {
+        get => interactor;
+        set => interactor = value;
+    }
 
     List<GameObject> fasteners = new List<GameObject>();
 
@@ -84,13 +90,13 @@ public class Manager : MonoBehaviour
     private void Update()
     {
         if (stateManager.CurrentState == State.PlayBack)
-            HighlightComponentToPlace();
+            HighlightComponentToPlace(componentsThatCanSnap);
     }
 
 
-    private void HighlightComponentToPlace()
+    private void HighlightComponentToPlace(List<Transform> componentsToHighlight)
     {
-        hintManager.HighlightComponentToPlace(componentsThatCanSnap);
+        hintManager.HighlightComponentToPlace(componentsToHighlight);
     }
 
 
@@ -320,14 +326,14 @@ public class Manager : MonoBehaviour
                     if (prefab != null)
                     {
                         // Instantiate the prefab at the specified position and rotation from the AssemblySequence
-                        GameObject instantiatedObject = Instantiate(prefab, componentData.position, componentData.rotation, interactor.transform);
+                        GameObject instantiatedObject = Instantiate(prefab, componentData.position, componentData.rotation, Interactor.transform);
                         instantiatedObject.name = prefab.name; // Ensure name matches the prefab
 
                         // Add the MakeGrabbable script to the instantiated object
                         instantiatedObject.AddComponent<MakeGrabbable>().MakeObjectGrabbable();
 
                         // Attach the same ComponentObject script from the interactor's child to the new object
-                        Transform firstChild = interactor.transform.Find(componentName); // Find the first matching child with the same name
+                        Transform firstChild = Interactor.transform.Find(componentName); // Find the first matching child with the same name
                         if (firstChild != null)
                         {
                             ComponentObject originalComponentObject = firstChild.GetComponent<ComponentObject>();
@@ -378,7 +384,7 @@ public class Manager : MonoBehaviour
                 LoadPDF();
                 InitializeComponentsType();
                 //MakeComponentsGrabbable();
-                interactor = FindObjectOfType<SnapToPosition>();
+                Interactor = FindObjectOfType<SnapToPosition>();
                 PlaybackSpawnComponents();
                 CopyComponentObjectToInteractor();
                 UpdateComponentsPerCurrentStep();
@@ -465,7 +471,7 @@ public class Manager : MonoBehaviour
 
     private void CopyComponentObjectToInteractor()
     {
-        if (interactor == null)
+        if (Interactor == null)
         {
             Debug.LogError("Interactor is not assigned.");
             return;
@@ -474,7 +480,7 @@ public class Manager : MonoBehaviour
         foreach (var component in components)
         {
             // Find the corresponding child in the interactor
-            Transform interactorChild = interactor.transform.Find(component.name);
+            Transform interactorChild = Interactor.transform.Find(component.name);
             if (interactorChild != null)
             {
                 // Copy the ComponentObject from the original component
@@ -518,35 +524,40 @@ public class Manager : MonoBehaviour
     public void PlaceInitialComponent()
     {
         if (automaticPlacementManager != null)
-            automaticPlacementManager.PlaceCurrentStepComponent(CurrentStep, componentsThatCanSnap[0], interactor, 1.0f);
+            automaticPlacementManager.PlaceCurrentStepComponent(CurrentStep, componentsThatCanSnap[0], Interactor, 1.0f);
     }
 
 
     public void PlaceAllComponentsGradually(float delayBetweenComponents)
     {
         if (automaticPlacementManager != null)
-            automaticPlacementManager.PlaceAllComponentsGradually(delayBetweenComponents, interactor, AssemblySequence, components, toolManager);
+            automaticPlacementManager.PlaceAllComponentsGradually(delayBetweenComponents, Interactor, AssemblySequence, components, toolManager);
     }
 
     public void PlaceCurrentComponent(float timePlacement)
     {
         if (automaticPlacementManager != null)
-            automaticPlacementManager.PlaceCurrentStepComponent(CurrentStep, componentsThatCanSnap[0], interactor, timePlacement);
-        hintManager.HideHints(interactor);
+            automaticPlacementManager.PlaceCurrentStepComponent(CurrentStep, componentsThatCanSnap[0], Interactor, timePlacement);
+        hintManager.HideHints(Interactor);
     }
-
+    public void PlaceCurrentComponent(int step,Transform component)
+    {
+        if (automaticPlacementManager != null)
+            automaticPlacementManager.PlaceStepComponent(step, component, Interactor);
+        hintManager.HideHints(Interactor);
+    }
     public void ResetComponents()
     {
         
     }
     public void ShowHint()
     {
-        hintManager.ShowHint(CurrentStep, componentsThatCanSnap[0], interactor);
+        hintManager.ShowHint(CurrentStep, componentsThatCanSnap[0], Interactor);
     }
 
     public void HideHint()
     {
-        hintManager.HideHints(interactor);
+        hintManager.HideHints(Interactor);
     }
 
     public void CloseApp()

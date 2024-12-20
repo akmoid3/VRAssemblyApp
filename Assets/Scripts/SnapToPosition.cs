@@ -29,6 +29,7 @@ public class SnapToPosition : MonoBehaviour
     {
         interactionManager = FindObjectOfType<XRInteractionManager>();
     }
+   
 
     private void Start()
     {
@@ -57,6 +58,7 @@ public class SnapToPosition : MonoBehaviour
         }
     }
 
+    
     private void OnTriggerStay(Collider other)
     {
          if (other == null || !((StateManager.Instance.CurrentState != State.PlayBack || StateManager.Instance.CurrentState != State.Finish) && Manager.Instance.CurrentStep < Manager.Instance.AssemblySequence.Count) )

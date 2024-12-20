@@ -131,6 +131,7 @@ public class ComponentPositioner : MonoBehaviour
 
         foreach (Transform child in components)
         {
+            child.SetParent(null);
             child.rotation = Quaternion.identity;
             Renderer renderer = child.GetComponent<Renderer>();
             if (renderer != null)
