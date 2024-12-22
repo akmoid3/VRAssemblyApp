@@ -17,6 +17,7 @@ public class AutomaticPlacementManager : MonoBehaviour
         if (isPlacingComponent) return; // Prevent spamming if placement is ongoing
 
         isPlacingComponent = true;
+        componentToPlace.GetComponent<ComponentObject>().IsReleased = true;
 
         Transform correctSnappoint = interactor.transform.GetChild(stepIndex);
         if (correctSnappoint == null)
@@ -33,6 +34,8 @@ public class AutomaticPlacementManager : MonoBehaviour
     public void PlaceStepComponent(int stepIndex, Transform componentToPlace, SnapToPosition interactor)
     {
         Transform correctSnappoint = interactor.transform.GetChild(stepIndex);
+        componentToPlace.GetComponent<ComponentObject>().IsReleased = true;
+
         if (correctSnappoint == null)
         {
             Debug.LogWarning($"Snap point for step index {stepIndex} not found in the interactor.");

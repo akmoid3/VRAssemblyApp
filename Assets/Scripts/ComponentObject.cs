@@ -6,7 +6,9 @@ public class ComponentObject : MonoBehaviour
 
     [SerializeField]
     private bool isPlaced = false;
+    [SerializeField]
     private bool isReleased = false;
+    [SerializeField]
     private bool isDestroyed = false;
 
     public enum ComponentType

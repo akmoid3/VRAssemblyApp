@@ -8,6 +8,7 @@ using System;
 
 
 [CreateAssetMenu(fileName = "TableComponentData", menuName = "ScriptableObjects/TableComponentData", order = 1)]
+[Serializable]
 public class TableComponentDataSO : ScriptableObject
 {
     public string id;
@@ -16,7 +17,7 @@ public class TableComponentDataSO : ScriptableObject
     public GameObject prefab;
 }
 
-[System.Serializable]
+[Serializable]
 public class AttributeData
 {
     public string key;
@@ -25,6 +26,7 @@ public class AttributeData
 
 
 [CreateAssetMenu(fileName = "TableComponentList", menuName = "ScriptableObjects/TableComponentList", order = 2)]
+[Serializable]
 public class TableComponentListSO : ScriptableObject
 {
     public List<TableComponentDataSO> components = new List<TableComponentDataSO>();
