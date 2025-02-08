@@ -120,6 +120,7 @@ public abstract class Fastener : MonoBehaviour
                 {
                     Manager.Instance.IncrementCurrentError();
                     isFirstError = false;
+                    dyn.ShowCorrectForceTemporarily(CorrectToolForce, 2f);
                     return;
                 }
                 

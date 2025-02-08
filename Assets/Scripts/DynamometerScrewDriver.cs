@@ -1,3 +1,4 @@
+using System.Collections;
 using TMPro;
 using UnityEngine;
 using Unity.VRTemplate;
@@ -13,7 +14,7 @@ public class DynamometerScrewDriver : BaseScrewDriver
     public bool IsPlayingSound { get => isPlayingSound; set => isPlayingSound = value; }
     public float TriggerValue { get => triggerValue; set => triggerValue = value; }
     public int Force { get => force; set => force = value; }
-
+    private Coroutine showCorrectForceCoroutine;
     private void Start()
     {
         // Ensure AudioManager is initialized
@@ -97,4 +98,34 @@ public class DynamometerScrewDriver : BaseScrewDriver
             isPlayingSound = false;
         }
     }
+    
+    public void ShowCorrectForceTemporarily(int correctForce, float duration = 2f)
+    {
+        // Se una coroutine era già in esecuzione, la fermiamo per evitare conflitti
+        if (showCorrectForceCoroutine != null)
+        {
+            StopCoroutine(showCorrectForceCoroutine);
+        }
+        showCorrectForceCoroutine = StartCoroutine(ShowCorrectForceCoroutine(correctForce, duration));
+    }
+
+    private IEnumerator ShowCorrectForceCoroutine(int correctForce, float duration)
+    {
+        // Salva lo stato iniziale del testo (colore e contenuto)
+        Color originalColor = forceText.color;
+        string originalText = forceText.text;
+
+        // Imposta il testo con il valore corretto e lo colore rosso
+        forceText.text = correctForce.ToString();
+        forceText.color = Color.red;
+
+        // Attende per il tempo specificato
+        yield return new WaitForSeconds(duration);
+
+        // Ripristina il testo originale e il colore iniziale
+        forceText.text = originalText;
+        forceText.color = originalColor;
+        showCorrectForceCoroutine = null;
+    }
+    
 }
