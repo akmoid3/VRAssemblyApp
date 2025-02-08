@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -5,12 +6,16 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.XR.Interaction.Toolkit;
+using Object = UnityEngine.Object;
+
 
 public class StepsManager : MonoBehaviour
 {
     public GameObject stepPrefab;
     public Transform stepParent;
 
+    private Dictionary<int, Transform> stepComponentsByStep;
+    private List<Transform> componentToHighlight;
     public class StepData
     {
         public int StepNumber { get; set; }
@@ -18,12 +23,16 @@ public class StepsManager : MonoBehaviour
         public int Hints { get; set; }
         public float TimeSpent { get; set; }
 
+        public float Accuracy { get; set; }
+
+
         public StepData(int stepNumber)
         {
             StepNumber = stepNumber;
             Errors = 0;
             Hints = 0;
             TimeSpent = 0f;
+            Accuracy = 0f;
         }
     }
 
@@ -43,6 +52,8 @@ public class StepsManager : MonoBehaviour
         HintManager.OnHintCountChanged += OnHintCountChanged;
         StateManager.OnStateChanged += PrintStepData;
         processOneTimeComponentsPerSteps = false;
+        componentToHighlight = new List<Transform>();
+        stepComponentsByStep = new Dictionary<int, Transform>();
     }
 
     private void OnDestroy()
@@ -51,6 +62,12 @@ public class StepsManager : MonoBehaviour
         SequenceManager.OnErrorCountChanged -= OnErrorCountChanged;
         HintManager.OnHintCountChanged -= OnHintCountChanged;
         StateManager.OnStateChanged -= PrintStepData;
+    }
+
+    private void Update()
+    {
+        if (StateManager.Instance.CurrentState == State.Finish)
+            Manager.Instance.HighlightComponentToPlace(componentToHighlight);
     }
 
     private void OnStepChanged(int stepNumber)
@@ -63,12 +80,8 @@ public class StepsManager : MonoBehaviour
 
         stepStartTime = Time.time;
 
-        currentStepData = stepsData.Find(s => s.StepNumber == stepNumber);
-        if (currentStepData == null)
-        {
-            currentStepData = new StepData(stepNumber);
-            stepsData.Add(currentStepData);
-        }
+        currentStepData = new StepData(stepNumber+1);
+        stepsData.Add(currentStepData);
     }
 
     private void OnErrorCountChanged(int errorCount)
@@ -93,36 +106,37 @@ public class StepsManager : MonoBehaviour
         }
     }
 
-    public void CompleteCurrentStep()
-    {
-        if (currentStepData != null)
-        {
-            currentStepData.TimeSpent += Time.time - stepStartTime;
-            stepStartTime = 0f;
-        }
-    }
-
     public void PrintStepData(State state)
     {
         if (state == State.Finish)
         {
+            // Finalize time spent on the last step
+            if (currentStepData != null)
+            {
+                currentStepData.TimeSpent += Time.time - stepStartTime;
+            }
+            
             foreach (var step in stepsData)
             {
-                if (step.TimeSpent == 0)
-                    continue;
+                Debug.Log(step.StepNumber);
+                step.Accuracy = Manager.Instance.PerformaceForEachStep[step.StepNumber - 1] * 100;
+              
                 GameObject stepObject = Instantiate(stepPrefab, stepParent);
 
                 TextMeshProUGUI stepText = stepObject.transform.Find("Steps").GetComponent<TextMeshProUGUI>();
                 TextMeshProUGUI errorText = stepObject.transform.Find("Errors").GetComponent<TextMeshProUGUI>();
                 TextMeshProUGUI hintText = stepObject.transform.Find("Hint").GetComponent<TextMeshProUGUI>();
                 TextMeshProUGUI timeText = stepObject.transform.Find("Time").GetComponent<TextMeshProUGUI>();
+                TextMeshProUGUI accuracyText = stepObject.transform.Find("Accuracy").GetComponent<TextMeshProUGUI>();
 
                 Button button = stepObject.GetComponent<Button>();
                 button.onClick.AddListener(() => ShowPlacement(step.StepNumber));
-                stepText.text = $"Step {step.StepNumber}";
-                errorText.text = $"Errors: {step.Errors}";
-                hintText.text = $"Hints: {step.Hints}";
-                timeText.text = $"Time: {step.TimeSpent:F2}s";
+                stepText.text = $"{step.StepNumber - 1}";
+                errorText.text = $"{step.Errors}";
+                hintText.text = $"{step.Hints}";
+                timeText.text = $"{step.TimeSpent:F2}s";
+                accuracyText.text = $"{step.Accuracy:F2}%";
+
             }
         }
     }
@@ -149,13 +163,13 @@ public class StepsManager : MonoBehaviour
             {
                 UpdateComponentsForStepManager(i);
             }
-
+    
             processOneTimeComponentsPerSteps = true;
         }
 
 
         // Iterate through steps and place components
-        for (int i = 0; i <= step; i++)
+        for (int i = 0; i < step; i++)
         {
             var stepID = Manager.Instance.AssemblySequence[i].stepId;
             if (!stepComponentsByStep.TryGetValue(stepID, out var componentForStep))
@@ -164,12 +178,16 @@ public class StepsManager : MonoBehaviour
                 continue;
             }
 
-            Manager.Instance.PlaceCurrentComponent(i,componentForStep);
-            componentForStep.SetParent( Manager.Instance.Interactor.transform.GetChild(i));
+            Manager.Instance.PlaceComponent(i, componentForStep);
+            componentForStep.SetParent(Manager.Instance.Interactor.transform.GetChild(i));
+            if(i == step)
+                componentToHighlight.Add(componentForStep.transform);
+            else if (componentToHighlight.Contains(componentForStep.transform))
+            {
+                componentToHighlight.Remove(componentForStep.transform);
+            }
         }
     }
-
-    private Dictionary<int, Transform> stepComponentsByStep = new Dictionary<int, Transform>();
 
     public void UpdateComponentsForStepManager(int currentStep)
     {

@@ -19,6 +19,7 @@ public class Manager : MonoBehaviour
     [SerializeField] private List<Transform> components = new List<Transform>();
     [SerializeField] private List<Transform> removedComponents = new List<Transform>();
     [SerializeField] private ComponentPositioner componentPositioner;
+    [SerializeField] private List<float> performaceForEachStep = new List<float>();
 
 
     private SnapToPosition interactor;
@@ -30,21 +31,72 @@ public class Manager : MonoBehaviour
     public static Manager Instance { get; private set; }
 
 
-    public GameObject Model { get => model; set => model = value; }
-    public List<Transform> Components { get => components; set => components = value; }
-    public List<Transform> RemovedComponents { get => removedComponents; set => removedComponents = value; }
+    public GameObject Model
+    {
+        get => model;
+        set => model = value;
+    }
+
+    public List<Transform> Components
+    {
+        get => components;
+        set => components = value;
+    }
+
+    public List<Transform> RemovedComponents
+    {
+        get => removedComponents;
+        set => removedComponents = value;
+    }
 
 
-    public List<ComponentData> AssemblySequence { get => sequenceManager?.AssemblySequence; set => sequenceManager.AssemblySequence = value; }
-    public int CurrentStep { get => sequenceManager.CurrentStep; set => sequenceManager.CurrentStep = value; }
-    public string FinishTime { get => sequenceManager.FinishTime; set => sequenceManager.FinishTime = value; }
-    public int HintCount { get => hintManager.HintCount; set => hintManager.HintCount = value; }
+    public List<ComponentData> AssemblySequence
+    {
+        get => sequenceManager?.AssemblySequence;
+        set => sequenceManager.AssemblySequence = value;
+    }
 
-    public int ErrorCount { get => sequenceManager.ErrorCount; set => sequenceManager.ErrorCount = value; }
-    public GameObject CurrentSelectedComponent { get => interactionManager?.GetCurrentSelectedComponent(); set => interactionManager?.SetCurrentSelectedComponent(value); }
+    public int CurrentStep
+    {
+        get => sequenceManager.CurrentStep;
+        set => sequenceManager.CurrentStep = value;
+    }
 
-    public Dictionary<int, GameObject> CurrentAssembledSequence { get => currentAssembledSequence; set => currentAssembledSequence = value; }
-    public List<Transform> ComponentsThatCanSnap { get => componentsThatCanSnap; set => componentsThatCanSnap = value; }
+    public string FinishTime
+    {
+        get => sequenceManager.FinishTime;
+        set => sequenceManager.FinishTime = value;
+    }
+
+    public int HintCount
+    {
+        get => hintManager.HintCount;
+        set => hintManager.HintCount = value;
+    }
+
+    public int ErrorCount
+    {
+        get => sequenceManager.ErrorCount;
+        set => sequenceManager.ErrorCount = value;
+    }
+
+    public GameObject CurrentSelectedComponent
+    {
+        get => interactionManager?.GetCurrentSelectedComponent();
+        set => interactionManager?.SetCurrentSelectedComponent(value);
+    }
+
+    public Dictionary<int, GameObject> CurrentAssembledSequence
+    {
+        get => currentAssembledSequence;
+        set => currentAssembledSequence = value;
+    }
+
+    public List<Transform> ComponentsThatCanSnap
+    {
+        get => componentsThatCanSnap;
+        set => componentsThatCanSnap = value;
+    }
 
     public SnapToPosition Interactor
     {
@@ -52,8 +104,11 @@ public class Manager : MonoBehaviour
         set => interactor = value;
     }
 
-    List<GameObject> fasteners = new List<GameObject>();
-
+    public List<float> PerformaceForEachStep
+    {
+        get => performaceForEachStep;
+        set => performaceForEachStep = value;
+    }
 
     private void Awake()
     {
@@ -76,8 +131,8 @@ public class Manager : MonoBehaviour
     {
         SnapToPosition.OnComponentPlaced -= IncrementCurrentStep;
         StateManager.OnStateChanged -= HandleStateChange;
-
     }
+
     private void Start()
     {
         stateManager = StateManager.Instance;
@@ -94,7 +149,7 @@ public class Manager : MonoBehaviour
     }
 
 
-    private void HighlightComponentToPlace(List<Transform> componentsToHighlight)
+    public void HighlightComponentToPlace(List<Transform> componentsToHighlight)
     {
         hintManager.HighlightComponentToPlace(componentsToHighlight);
     }
@@ -150,12 +205,15 @@ public class Manager : MonoBehaviour
                 ComponentObject componentObject = component.GetComponent<ComponentObject>();
 
 
-                if ((component.name == componentToPlaceName && !componentObject.GetIsPlaced()) || (!componentObject.GetIsPlaced() && componentObject.GetGroup() != "None" && componentToPlaceGroup == componentObject.GetGroup()))
+                if ((component.name == componentToPlaceName && !componentObject.GetIsPlaced()) ||
+                    (!componentObject.GetIsPlaced() && componentObject.GetGroup() != "None" &&
+                     componentToPlaceGroup == componentObject.GetGroup()))
                 {
                     if (!componentsThatCanSnap.Contains(component))
                         ComponentsThatCanSnap.Add(component);
                     continue;
                 }
+
                 if (componentsThatCanSnap.Contains(component))
                     ComponentsThatCanSnap.Remove(component);
             }
@@ -170,24 +228,30 @@ public class Manager : MonoBehaviour
                         ComponentsThatCanSnap.Add(component);
                     continue;
                 }
+
                 if (componentsThatCanSnap.Contains(component))
                     ComponentsThatCanSnap.Remove(component);
             }
         }
     }
+
     private void IncrementCurrentStep()
     {
-        if (sequenceManager)
+        if (!sequenceManager)
+            return;
+
+        if (AssemblySequence != null && CurrentStep >= AssemblySequence.Count - 1 &&
+            StateManager.Instance.CurrentState == State.PlayBack)
         {
             sequenceManager.IncrementCurrentStep();
-            if (AssemblySequence != null && CurrentStep >= AssemblySequence.Count && StateManager.Instance.CurrentState == State.PlayBack)
-            {
-                StateManager.Instance.UpdateState(State.Finish);
-                return;
-            }
-            UpdateComponentsPerCurrentStep();
-            HandleCurrentStepPlayBack();
+            StateManager.Instance.UpdateState(State.Finish);
+            return;
         }
+
+        sequenceManager.IncrementCurrentStep();
+
+        UpdateComponentsPerCurrentStep();
+        HandleCurrentStepPlayBack();
     }
 
 
@@ -208,7 +272,6 @@ public class Manager : MonoBehaviour
     public virtual void OnSelectExit(SelectExitEventArgs args)
     {
         interactionManager.OnSelectExit(args);
-
     }
 
 
@@ -251,11 +314,6 @@ public class Manager : MonoBehaviour
         componentPositioner.RepositionComponentsOnTable(components);
     }
 
-    public void RepositionComponentOnTable(Transform component)
-    {
-        componentPositioner.RepositionComponentOnTable(component);
-    }
-
     public void PlaybackSpawnComponents()
     {
         // Create a dictionary to track the count of each component in the components list
@@ -276,11 +334,11 @@ public class Manager : MonoBehaviour
 
         // Group components by stepId to handle each step individually
         var groupedByStep = AssemblySequence
-        .GroupBy(c => c.stepId)
-        .ToDictionary(
-         g => g.Key,
-         g => g.GroupBy(c => c.componentName).Select(grp => grp.First()).ToList()
-     );
+            .GroupBy(c => c.stepId)
+            .ToDictionary(
+                g => g.Key,
+                g => g.GroupBy(c => c.componentName).Select(grp => grp.First()).ToList()
+            );
 
 
         // Iterate through each stepId to spawn the components
@@ -312,8 +370,12 @@ public class Manager : MonoBehaviour
             foreach (var componentData in stepComponents)
             {
                 string componentName = componentData.componentName;
-                int requiredCount = stepComponentCounts[componentName]; // How many times this component is required in this step
-                int componentCount = componentsCount.ContainsKey(componentName) ? componentsCount[componentName] : 0; // How many of this component exist in the scene
+                int requiredCount =
+                    stepComponentCounts[componentName]; // How many times this component is required in this step
+                int componentCount =
+                    componentsCount.ContainsKey(componentName)
+                        ? componentsCount[componentName]
+                        : 0; // How many of this component exist in the scene
 
                 // Calculate the number of missing components for this step
                 int missingCount = requiredCount - componentCount;
@@ -326,21 +388,26 @@ public class Manager : MonoBehaviour
                     if (prefab != null)
                     {
                         // Instantiate the prefab at the specified position and rotation from the AssemblySequence
-                        GameObject instantiatedObject = Instantiate(prefab, componentData.position, componentData.rotation, Interactor.transform);
+                        GameObject instantiatedObject = Instantiate(prefab, componentData.position,
+                            componentData.rotation, Interactor.transform);
                         instantiatedObject.name = prefab.name; // Ensure name matches the prefab
 
                         // Add the MakeGrabbable script to the instantiated object
                         instantiatedObject.AddComponent<MakeGrabbable>().MakeObjectGrabbable();
 
                         // Attach the same ComponentObject script from the interactor's child to the new object
-                        Transform firstChild = Interactor.transform.Find(componentName); // Find the first matching child with the same name
+                        Transform
+                            firstChild =
+                                Interactor.transform
+                                    .Find(componentName); // Find the first matching child with the same name
                         if (firstChild != null)
                         {
                             ComponentObject originalComponentObject = firstChild.GetComponent<ComponentObject>();
                             if (originalComponentObject != null)
                             {
                                 ComponentObject newComponentObject = instantiatedObject.AddComponent<ComponentObject>();
-                                newComponentObject.CopyFrom(originalComponentObject); // Copy data from the original object
+                                newComponentObject.CopyFrom(
+                                    originalComponentObject); // Copy data from the original object
                             }
                         }
 
@@ -348,11 +415,11 @@ public class Manager : MonoBehaviour
 
                         // Add the newly instantiated object to the components list
                         components.Add(instantiatedObject.transform);
-                        Debug.Log($"Spawned missing component: {componentName}");
                     }
                     else
                     {
-                        Debug.LogWarning($"Prefab for missing component {componentName} not found in Resources/TableUIComponents.");
+                        Debug.LogWarning(
+                            $"Prefab for missing component {componentName} not found in Resources/TableUIComponents.");
                     }
                 }
             }
@@ -363,11 +430,8 @@ public class Manager : MonoBehaviour
     }
 
 
-
-
     public void HandleStateChange(State newState)
     {
-
         switch (newState)
         {
             case State.ChoosingModel:
@@ -444,6 +508,7 @@ public class Manager : MonoBehaviour
                 Destroy(componentObject.gameObject);
                 return;
             }
+
             // Remove existing components of type Screw or Nail
             RemoveExistingScripts<Screw>(component.gameObject);
             RemoveExistingScripts<Nail>(component.gameObject);
@@ -492,6 +557,7 @@ public class Manager : MonoBehaviour
                     {
                         targetComponentObject = interactorChild.gameObject.AddComponent<ComponentObject>();
                     }
+
                     // Copy properties
                     targetComponentObject.SetComponentType(sourceComponentObject.GetComponentType());
                     targetComponentObject.SetGroup(sourceComponentObject.GetGroup());
@@ -503,7 +569,6 @@ public class Manager : MonoBehaviour
                     Debug.LogWarning($"ComponentObject not found on source component: {component.name}");
                 }
             }
-
         }
     }
 
@@ -524,32 +589,37 @@ public class Manager : MonoBehaviour
     public void PlaceInitialComponent()
     {
         if (automaticPlacementManager != null)
-            automaticPlacementManager.PlaceCurrentStepComponent(CurrentStep, componentsThatCanSnap[0], Interactor, 1.0f);
+            automaticPlacementManager.PlaceCurrentStepComponent(CurrentStep, componentsThatCanSnap[0], Interactor,
+                1.0f);
     }
 
 
     public void PlaceAllComponentsGradually(float delayBetweenComponents)
     {
         if (automaticPlacementManager != null)
-            automaticPlacementManager.PlaceAllComponentsGradually(delayBetweenComponents, Interactor, AssemblySequence, components, toolManager);
+            automaticPlacementManager.PlaceAllComponentsGradually(delayBetweenComponents, Interactor, AssemblySequence,
+                components, toolManager);
     }
 
     public void PlaceCurrentComponent(float timePlacement)
     {
         if (automaticPlacementManager != null)
-            automaticPlacementManager.PlaceCurrentStepComponent(CurrentStep, componentsThatCanSnap[0], Interactor, timePlacement);
+            automaticPlacementManager.PlaceCurrentStepComponent(CurrentStep, componentsThatCanSnap[0], Interactor,
+                timePlacement);
         hintManager.HideHints(Interactor);
     }
-    public void PlaceCurrentComponent(int step,Transform component)
+
+    public void PlaceComponent(int step, Transform component)
     {
         if (automaticPlacementManager != null)
             automaticPlacementManager.PlaceStepComponent(step, component, Interactor);
         hintManager.HideHints(Interactor);
     }
+
     public void ResetComponents()
     {
-        
     }
+
     public void ShowHint()
     {
         hintManager.ShowHint(CurrentStep, componentsThatCanSnap[0], Interactor);
@@ -566,4 +636,3 @@ public class Manager : MonoBehaviour
         applicationQuit.QuitApplication();
     }
 }
-

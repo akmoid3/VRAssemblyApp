@@ -98,7 +98,6 @@ public class SnapToPosition : MonoBehaviour
                  componentObject.GetType() == snapPoint.componentObject.GetType()))
             {
                 float distance = Vector3.Distance(other.transform.position, snapPoint.snapTransform.position);
-                Debug.Log(string.Format("Snap Distance: {0}, Snap Angle: {1}", distance, snapAngle));
                 float angle = Quaternion.Angle(other.transform.rotation, snapPoint.snapTransform.rotation);
 
                 Fastener fastener = other.GetComponent<Fastener>();
@@ -111,8 +110,8 @@ public class SnapToPosition : MonoBehaviour
                 if ((fastener && distance < fastenerSnapDistance) ||
                     (distance < snapDistance && angle < snapAngle && !componentObject.GetIsPlaced()))
                 {
-                    CalculatePerformance(other.transform, snapPoint, fastener != null);
-
+                    float performance = CalculatePerformance(other.transform, snapPoint, fastener != null);
+                    Manager.Instance.PerformaceForEachStep.Add(performance);
                     other.attachedRigidbody.isKinematic = true;
                     snapPoint.meshRenderer.enabled = true;
 
@@ -156,7 +155,7 @@ public class SnapToPosition : MonoBehaviour
         }
     }
 
-    private void CalculatePerformance(Transform component, SnapPoint snapPoint, bool isFastener)
+    private float CalculatePerformance(Transform component, SnapPoint snapPoint, bool isFastener)
     {
         float distance = Vector3.Distance(component.transform.position, snapPoint.snapTransform.position);
         float angle = Quaternion.Angle(component.transform.rotation, snapPoint.snapTransform.rotation);
@@ -175,9 +174,11 @@ public class SnapToPosition : MonoBehaviour
             ? distancePerformance
             : (distancePerformance + rotationPerformance) / 2.0f;
 
+
+        Debug.Log($"Precision Performance: {overallPerformance * 100f}% {component.name}");
+        return overallPerformance;
         // Log details for debugging
-        Debug.Log($"Precision Performance: {overallPerformance * 100f}%");
-        Debug.Log($"Distance: {distance}, Effective Snap Distance: {effectiveSnapDistance}");
+        
     }
 
 

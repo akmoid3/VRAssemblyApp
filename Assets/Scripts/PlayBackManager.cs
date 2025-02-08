@@ -13,7 +13,7 @@ public class PlayBackManager : MonoBehaviour
     public TextMeshProUGUI hintCountText;
     public TextMeshProUGUI stepsText;
 
-    private float elapsedTime = 0f;
+    private float elapsedTime = 0.0f;
     private bool isPlayingBack = false;
 
     public float ElapsedTime { get => elapsedTime; set => elapsedTime = value; }
@@ -42,8 +42,8 @@ public class PlayBackManager : MonoBehaviour
     }
     public void IncrementStepCount(int n)
     {
-        int totalSteps = Manager.Instance.AssemblySequence.Count - 1;
-        stepsText.text = $"{n}/{totalSteps}";
+        int totalSteps = Manager.Instance.AssemblySequence.Count;
+        stepsText.text = $"{n+1}/{totalSteps}";
     }
     public void OnDestroy()
     {
@@ -84,13 +84,24 @@ public class PlayBackManager : MonoBehaviour
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
 
+    private float displayUpdateInterval = 0.1f;
+    private float lastUpdateTime = 0f;
+
     public void UpdateTimerDisplay()
     {
-        // Format the time into minutes and seconds
-        int minutes = Mathf.FloorToInt(elapsedTime / 60f);
-        int seconds = Mathf.FloorToInt(elapsedTime % 60f);
-        timerText.text = string.Format("{0:D2}:{1:D2}", minutes, seconds);
+        if (Time.time - lastUpdateTime >= displayUpdateInterval)
+        {
+            lastUpdateTime = Time.time;
+
+            // Format the time into minutes, seconds, and milliseconds
+            int minutes = Mathf.FloorToInt(elapsedTime / 60f);
+            int seconds = Mathf.FloorToInt(elapsedTime % 60f);
+            int milliseconds = Mathf.FloorToInt((elapsedTime * 1000f) % 1000);
+
+            timerText.text = string.Format("{0:D2}:{1:D2}:{2:D3}", minutes, seconds, milliseconds);
+        }
     }
+
 
     public void OnShowSolutionClicked()
     {

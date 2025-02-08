@@ -165,7 +165,7 @@ public class HintManager : MonoBehaviour
     public IEnumerator ChangeColorTemporarily(GameObject component)
     {
         MeshRenderer meshRenderer = component.GetComponent<MeshRenderer>();
-        if (meshRenderer != null)
+        if (meshRenderer)
         {
             Material[] originalMaterials = meshRenderer.materials;
             Material[] tempMaterials = new Material[originalMaterials.Length];
