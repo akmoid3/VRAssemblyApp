@@ -27846,6 +27846,8 @@ MonoBehaviour:
   stepPrefab: {fileID: 4659234336226164293, guid: abc1726716e4cd34ba138001cf7a87da,
     type: 3}
   stepParent: {fileID: 1554632308}
+  InteractorPosition: {fileID: 1933974497}
+  highlightMaterial: {fileID: 2100000, guid: 5e947cceff1847144836e62ca127f01f, type: 2}
 --- !u!4 &1827018485
 Transform:
   m_ObjectHideFlags: 0
@@ -27858,7 +27860,8 @@ Transform:
   m_LocalPosition: {x: -3.6926653, y: 2.053434, z: 5.687333}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children: []
+  m_Children:
+  - {fileID: 1933974497}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1827419680
@@ -29442,6 +29445,37 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   m_IsOn: 1
+--- !u!1 &1933974496
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1933974497}
+  m_Layer: 0
+  m_Name: InteractorPosition
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1933974497
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1933974496}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 2.842, y: -0.922, z: -3.512}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1827018485}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1938070073
 GameObject:
   m_ObjectHideFlags: 0

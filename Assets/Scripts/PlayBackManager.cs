@@ -52,7 +52,8 @@ public class PlayBackManager : MonoBehaviour
         HintManager.OnHintCountChanged -= IncrementHintCount;
         SequenceManager.OnStepChanged -= IncrementStepCount;
 
-        showSolutionButton.onClick.RemoveListener(OnShowSolutionClicked);
+        if(showSolutionButton != null)
+            showSolutionButton.onClick.RemoveListener(OnShowSolutionClicked);
         finishButton.onClick.RemoveListener(OnFinishClicked);
     }
 

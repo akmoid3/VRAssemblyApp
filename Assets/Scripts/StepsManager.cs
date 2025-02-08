@@ -1,13 +1,11 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.XR.Interaction.Toolkit;
 using Object = UnityEngine.Object;
-
 
 public class StepsManager : MonoBehaviour
 {
@@ -16,15 +14,17 @@ public class StepsManager : MonoBehaviour
 
     private Dictionary<int, Transform> stepComponentsByStep;
     private List<Transform> componentToHighlight;
+    private List<Transform> componentToRemoveHighlight;
+
+    [SerializeField] private Transform InteractorPosition;
+
     public class StepData
     {
         public int StepNumber { get; set; }
         public int Errors { get; set; }
         public int Hints { get; set; }
         public float TimeSpent { get; set; }
-
         public float Accuracy { get; set; }
-
 
         public StepData(int stepNumber)
         {
@@ -39,11 +39,13 @@ public class StepsManager : MonoBehaviour
     private List<StepData> stepsData = new List<StepData>();
     private StepData currentStepData = null;
     private float stepStartTime;
-
     private int previousErrorCount = 0;
     private int previousHintCount = 0;
     private bool processOneTimeComponentsPerSteps = false;
     public IReadOnlyList<StepData> StepsData => stepsData;
+
+    [SerializeField] private Material highlightMaterial;
+    private Dictionary<Renderer, Material[]> originalMaterials = new Dictionary<Renderer, Material[]>();
 
     private void Awake()
     {
@@ -53,6 +55,7 @@ public class StepsManager : MonoBehaviour
         StateManager.OnStateChanged += PrintStepData;
         processOneTimeComponentsPerSteps = false;
         componentToHighlight = new List<Transform>();
+        componentToRemoveHighlight = new List<Transform>();
         stepComponentsByStep = new Dictionary<int, Transform>();
     }
 
@@ -67,20 +70,35 @@ public class StepsManager : MonoBehaviour
     private void Update()
     {
         if (StateManager.Instance.CurrentState == State.Finish)
-            Manager.Instance.HighlightComponentToPlace(componentToHighlight);
+        {
+            foreach (Transform comp in componentToHighlight)
+            {
+                HighlightComponent(comp);
+            }
+            foreach (Transform comp in componentToRemoveHighlight)
+            {
+                ClearHighlight(comp);
+            }
+        }
+        else
+        {
+            foreach (Transform comp in componentToHighlight)
+            {
+                ClearHighlight(comp);
+            }
+            foreach (Transform comp in componentToRemoveHighlight)
+            {
+                ClearHighlight(comp);
+            }
+        }
     }
 
     private void OnStepChanged(int stepNumber)
     {
         if (currentStepData != null)
-        {
-            // Add time spent on the previous step
             currentStepData.TimeSpent += Time.time - stepStartTime;
-        }
-
         stepStartTime = Time.time;
-
-        currentStepData = new StepData(stepNumber+1);
+        currentStepData = new StepData(stepNumber + 1);
         stepsData.Add(currentStepData);
     }
 
@@ -89,13 +107,10 @@ public class StepsManager : MonoBehaviour
         if (currentStepData != null)
         {
             int errorDifference = errorCount - previousErrorCount;
-
             currentStepData.Errors += errorDifference;
-
             previousErrorCount = errorCount;
         }
     }
-
 
     private void OnHintCountChanged(int hintCount)
     {
@@ -110,19 +125,17 @@ public class StepsManager : MonoBehaviour
     {
         if (state == State.Finish)
         {
-            // Finalize time spent on the last step
             if (currentStepData != null)
-            {
                 currentStepData.TimeSpent += Time.time - stepStartTime;
-            }
             
             foreach (var step in stepsData)
             {
                 Debug.Log(step.StepNumber);
+                if (step.StepNumber > Manager.Instance.PerformaceForEachStep.Count)
+                    return;
                 step.Accuracy = Manager.Instance.PerformaceForEachStep[step.StepNumber - 1] * 100;
               
                 GameObject stepObject = Instantiate(stepPrefab, stepParent);
-
                 TextMeshProUGUI stepText = stepObject.transform.Find("Steps").GetComponent<TextMeshProUGUI>();
                 TextMeshProUGUI errorText = stepObject.transform.Find("Errors").GetComponent<TextMeshProUGUI>();
                 TextMeshProUGUI hintText = stepObject.transform.Find("Hint").GetComponent<TextMeshProUGUI>();
@@ -136,39 +149,34 @@ public class StepsManager : MonoBehaviour
                 hintText.text = $"{step.Hints}";
                 timeText.text = $"{step.TimeSpent:F2}s";
                 accuracyText.text = $"{step.Accuracy:F2}%";
-
             }
         }
     }
 
     private void ShowPlacement(int step)
     {
-        Debug.Log("Processing steps up to: " + step);
-
-        // Reset Manager's state
         Manager.Instance.RepositionComponentsOnTable(Manager.Instance.Components);
         Manager.Instance.CurrentStep = 0;
         Manager.Instance.CurrentAssembledSequence.Clear();
+        Manager.Instance.Interactor.transform.SetPositionAndRotation(InteractorPosition.position, InteractorPosition.rotation);
 
-        List<Transform> components = Manager.Instance.Components;
-        foreach (Transform go in components)
+        foreach (Transform go in Manager.Instance.Components)
         {
             go.GetComponent<ComponentObject>().SetIsPlaced(false);
+            ClearHighlight(go);
         }
 
-        // Ensure all steps up to the target step are updated in the dictionary
         if (!processOneTimeComponentsPerSteps)
         {
             for (int i = 0; i < Manager.Instance.Components.Count; i++)
-            {
                 UpdateComponentsForStepManager(i);
-            }
-    
             processOneTimeComponentsPerSteps = true;
         }
 
+        // Pulizia delle liste
+        componentToHighlight.Clear();
+        componentToRemoveHighlight.Clear();
 
-        // Iterate through steps and place components
         for (int i = 0; i < step; i++)
         {
             var stepID = Manager.Instance.AssemblySequence[i].stepId;
@@ -180,11 +188,21 @@ public class StepsManager : MonoBehaviour
 
             Manager.Instance.PlaceComponent(i, componentForStep);
             componentForStep.SetParent(Manager.Instance.Interactor.transform.GetChild(i));
-            if(i == step)
-                componentToHighlight.Add(componentForStep.transform);
-            else if (componentToHighlight.Contains(componentForStep.transform))
+
+            // Se è l'ultimo step lo evidenziamo, altrimenti assicuriamoci di rimuovere l'evidenziazione
+            if (i == step - 1)
             {
-                componentToHighlight.Remove(componentForStep.transform);
+                if (componentToRemoveHighlight.Contains(componentForStep.transform))
+                    componentToRemoveHighlight.Remove(componentForStep.transform);
+                if (!componentToHighlight.Contains(componentForStep.transform))
+                    componentToHighlight.Add(componentForStep.transform);
+            }
+            else
+            {
+                if (componentToHighlight.Contains(componentForStep.transform))
+                    componentToHighlight.Remove(componentForStep.transform);
+                if (!componentToRemoveHighlight.Contains(componentForStep.transform))
+                    componentToRemoveHighlight.Add(componentForStep.transform);
             }
         }
     }
@@ -200,18 +218,38 @@ public class StepsManager : MonoBehaviour
         foreach (Transform component in Manager.Instance.Components)
         {
             ComponentObject componentObject = component.GetComponent<ComponentObject>();
-
-            // Condition to identify components relevant to the current step
             if ((component.name == componentToPlaceName && !componentObject.GetIsPlaced() &&
                  !stepComponentsByStep.ContainsValue(component)) ||
                 (!componentObject.GetIsPlaced() && componentObject.GetGroup() != "None" &&
                  componentToPlaceGroup == componentObject.GetGroup() && !stepComponentsByStep.ContainsValue(component)))
             {
                 if (!stepComponentsByStep.ContainsValue(component))
-                {
                     stepComponentsByStep[stepID] = component;
-                }
             }
+        }
+    }
+
+    private void HighlightComponent(Transform component)
+    {
+        Renderer[] renderers = component.GetComponentsInChildren<Renderer>();
+        foreach (Renderer rend in renderers)
+        {
+            if (!originalMaterials.ContainsKey(rend))
+                originalMaterials[rend] = rend.materials;
+            Material[] newMats = new Material[rend.materials.Length];
+            for (int i = 0; i < newMats.Length; i++)
+                newMats[i] = highlightMaterial;
+            rend.materials = newMats;
+        }
+    }
+
+    private void ClearHighlight(Transform component)
+    {
+        Renderer[] renderers = component.GetComponentsInChildren<Renderer>();
+        foreach (Renderer rend in renderers)
+        {
+            if (originalMaterials.TryGetValue(rend, out Material[] origMats))
+                rend.materials = origMats;
         }
     }
 }
