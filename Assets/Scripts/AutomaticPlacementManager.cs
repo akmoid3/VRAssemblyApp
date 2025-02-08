@@ -8,7 +8,6 @@ public class AutomaticPlacementManager : MonoBehaviour
 {
     [SerializeField] private Transform showSolutionPosition;
     private GameObject interactorClone;
-    private readonly Dictionary<string, GameObject> instantiatedComponents = new Dictionary<string, GameObject>();
     private bool isPlacingComponent = false;
 
     public void PlaceCurrentStepComponent(int stepIndex, Transform componentToPlace, SnapToPosition interactor,
@@ -50,111 +49,6 @@ public class AutomaticPlacementManager : MonoBehaviour
     {
         yield return StartCoroutine(SmoothMoveComponent(component, correctSnappoint, duration));
         isPlacingComponent = false; // Reset flag after placement is complete
-    }
-
-    public virtual void PlaceAllComponentsGradually(float delayBetweenComponents, SnapToPosition interactor,
-        List<ComponentData> assemblySequence, List<Transform> components, ToolManager toolManager)
-    {
-        CleanupPreviousClones();
-        interactorClone = new GameObject(interactor.name);
-        interactorClone.transform.position = showSolutionPosition.position;
-        interactorClone.transform.rotation = showSolutionPosition.rotation;
-
-        foreach (Transform child in interactor.transform)
-        {
-            GameObject childClone = Instantiate(child.gameObject);
-            childClone.transform.SetParent(interactorClone.transform, false);
-
-            MeshRenderer meshRenderer = childClone.GetComponent<MeshRenderer>();
-            if (meshRenderer != null)
-            {
-                Destroy(meshRenderer);
-            }
-
-            foreach (Transform grandchild in childClone.transform)
-            {
-                Destroy(grandchild.gameObject);
-            }
-        }
-
-        StartCoroutine(PlaceAllComponentsGraduallyCoroutine(delayBetweenComponents, interactorClone, assemblySequence,
-            components, toolManager));
-    }
-
-    public IEnumerator PlaceAllComponentsGraduallyCoroutine(float delayBetweenComponents, GameObject interactorClone,
-        List<ComponentData> assemblySequence, List<Transform> components, ToolManager toolManager)
-    {
-        if (assemblySequence == null || assemblySequence.Count == 0)
-            yield break;
-
-        bool isFirstComponent = true;
-
-        foreach (var componentData in assemblySequence)
-        {
-            var originalComponent = components.Find(c => c.name == componentData.componentName);
-            if (originalComponent != null)
-            {
-                GameObject componentClone;
-
-                if (instantiatedComponents.ContainsKey(componentData.componentName))
-                {
-                    componentClone = instantiatedComponents[componentData.componentName];
-                }
-                else
-                {
-                    componentClone = Instantiate(originalComponent.gameObject);
-                    instantiatedComponents[componentData.componentName] = componentClone;
-                }
-
-                Transform correctSnappoint =
-                    interactorClone.transform.GetChild(assemblySequence.IndexOf(componentData));
-
-                if (correctSnappoint != null)
-                {
-                    var toolInstance = toolManager.AttachToolToComponent(componentClone, componentData.toolName);
-
-                    if (isFirstComponent)
-                    {
-                        componentClone.transform.position = correctSnappoint.position;
-                        componentClone.transform.rotation = correctSnappoint.rotation;
-                        isFirstComponent = false;
-                    }
-                    else
-                    {
-                        yield return StartCoroutine(SmoothMoveComponent(componentClone.transform, correctSnappoint, 0));
-                        yield return new WaitForSeconds(delayBetweenComponents);
-                    }
-
-                    if (toolInstance != null)
-                    {
-                        yield return new WaitForSeconds(1.0f);
-                        toolManager.HideToolOnComponent(componentClone);
-                    }
-                }
-            }
-        }
-
-        yield return new WaitForSeconds(3.0f);
-        toolManager.HideAllTools();
-        CleanupPreviousClones();
-    }
-
-    public void CleanupPreviousClones()
-    {
-        if (interactorClone)
-        {
-            Destroy(interactorClone);
-        }
-
-        foreach (var componentClone in instantiatedComponents.Values)
-        {
-            if (componentClone != null)
-            {
-                Destroy(componentClone);
-            }
-        }
-
-        instantiatedComponents.Clear();
     }
 
     public IEnumerator SmoothMoveComponent(Transform component, Transform correctSnappoint, float duration)

@@ -7,7 +7,6 @@ public class PlayBackManager : MonoBehaviour
 {
     public GameObject playBackPanel;
     public Button finishButton;
-    public Button showSolutionButton;
     public TextMeshProUGUI timerText;
     public TextMeshProUGUI errorCountText;
     public TextMeshProUGUI hintCountText;
@@ -25,8 +24,6 @@ public class PlayBackManager : MonoBehaviour
         SequenceManager.OnErrorCountChanged += IncrementErrorCount;
         HintManager.OnHintCountChanged += IncrementHintCount;
         SequenceManager.OnStepChanged += IncrementStepCount;
-        if (showSolutionButton != null)
-            showSolutionButton.onClick.AddListener(OnShowSolutionClicked);
         if (finishButton != null)
             finishButton.onClick.AddListener(OnFinishClicked);
     }
@@ -52,8 +49,6 @@ public class PlayBackManager : MonoBehaviour
         HintManager.OnHintCountChanged -= IncrementHintCount;
         SequenceManager.OnStepChanged -= IncrementStepCount;
 
-        if(showSolutionButton != null)
-            showSolutionButton.onClick.RemoveListener(OnShowSolutionClicked);
         finishButton.onClick.RemoveListener(OnFinishClicked);
     }
 
@@ -102,12 +97,6 @@ public class PlayBackManager : MonoBehaviour
             timerText.text = string.Format("{0:D2}:{1:D2}:{2:D3}", minutes, seconds, milliseconds);
         }
     }
-
-
-    public void OnShowSolutionClicked()
-    {
-        // Call the method to place all components gradually
-        Manager.Instance.PlaceAllComponentsGradually(0.75f);
-    }
+    
 
 }

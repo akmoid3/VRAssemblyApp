@@ -127,8 +127,12 @@ public abstract class Fastener : MonoBehaviour
                 {
                     Manager.Instance.IncrementCurrentError();
                     isFirstError = false;
+                    ToolManager toolManager = FindObjectOfType<ToolManager>();
+                    toolManager.HighlightToolByName(CorrectToolName);
                     return;
                 }
+                
+                FindObjectOfType<ToolManager>().ClearAllToolHighlights();
                 
             }
         }

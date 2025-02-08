@@ -11,7 +11,6 @@ public class Manager : MonoBehaviour
     [SerializeField] private SequenceManager sequenceManager;
     [SerializeField] private HintManager hintManager;
     [SerializeField] private AutomaticPlacementManager automaticPlacementManager;
-    [SerializeField] private ToolManager toolManager;
     [SerializeField] private PdfLoader pdfLoader;
 
 
@@ -593,14 +592,6 @@ public class Manager : MonoBehaviour
                 1.0f);
     }
 
-
-    public void PlaceAllComponentsGradually(float delayBetweenComponents)
-    {
-        if (automaticPlacementManager != null)
-            automaticPlacementManager.PlaceAllComponentsGradually(delayBetweenComponents, Interactor, AssemblySequence,
-                components, toolManager);
-    }
-
     public void PlaceCurrentComponent(float timePlacement)
     {
         if (automaticPlacementManager != null)
@@ -635,4 +626,6 @@ public class Manager : MonoBehaviour
         ApplicationQuit applicationQuit = new ApplicationQuit();
         applicationQuit.QuitApplication();
     }
+    
+    
 }

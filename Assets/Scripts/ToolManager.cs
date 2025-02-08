@@ -3,62 +3,77 @@ using UnityEngine;
 
 public class ToolManager : MonoBehaviour
 {
-    [SerializeField] private List<GameObject> toolPrefabsList;
-    private Dictionary<string, GameObject> toolPrefabs;
-    private Dictionary<GameObject, GameObject> toolInstances = new Dictionary<GameObject, GameObject>();
+    [SerializeField] private List<GameObject> toolsList;      
+    [SerializeField] private Material toolHighlightMaterial;  
 
-    public Dictionary<GameObject, GameObject> ToolInstances { get => toolInstances; set => toolInstances = value; }
+    private Dictionary<Renderer, Material[]> originalToolMaterials = new Dictionary<Renderer, Material[]>();
 
-    private void Awake()
+ 
+    public void HighlightToolByName(string correctToolName)
     {
-        // Initialize the tool prefabs dictionary
-        toolPrefabs = new Dictionary<string, GameObject>();
-        foreach (var toolPrefab in toolPrefabsList)
+        foreach (GameObject tool in toolsList)
         {
-            toolPrefabs[toolPrefab.name] = toolPrefab;
-        }
-    }
+            if (tool == null)
+                continue;
 
-    public GameObject AttachToolToComponent(GameObject component, string toolName)
-    {
-        // Remove any existing tool from the component
-        HideToolOnComponent(component);
+            Tool toolScript = tool.GetComponent<Tool>();
+            if (toolScript == null)
+                continue;
 
-        if (toolPrefabs.TryGetValue(toolName, out GameObject toolPrefab))
-        {
-            GameObject toolInstance = Instantiate(toolPrefab);
-            toolInstance.name = toolName;
-            toolInstance.transform.SetParent(component.transform); // Attach tool to component
-            toolInstance.transform.localPosition = Vector3.zero + new Vector3(0, 0.5f, 0); // Set local position relative to component
-            toolInstance.GetComponent<Rigidbody>().isKinematic = true;
-            toolInstance.transform.SetParent(null); // Detach tool from component
+            Renderer[] renderers = tool.GetComponentsInChildren<Renderer>();
 
-            // Store the tool instance for later management
-            toolInstances[component] = toolInstance;
-            return toolInstance;
-        }
-
-        return null;
-    }
-
-    public void HideToolOnComponent(GameObject component)
-    {
-        if (toolInstances.TryGetValue(component, out GameObject toolInstance))
-        {
-            Destroy(toolInstance);
-            toolInstances.Remove(component);
-        }
-    }
-
-    public void HideAllTools()
-    {
-        foreach (var toolInstance in toolInstances.Values)
-        {
-            if (toolInstance != null)
+            if (toolScript.ToolName == correctToolName)
             {
-                Destroy(toolInstance);
+                foreach (Renderer rend in renderers)
+                {
+                    if (rend == null)
+                        continue;
+
+                    if (!originalToolMaterials.ContainsKey(rend))
+                    {
+                        originalToolMaterials[rend] = rend.materials;
+                    }
+
+                    Material[] highlightMats = new Material[rend.materials.Length];
+                    for (int i = 0; i < highlightMats.Length; i++)
+                    {
+                        highlightMats[i] = toolHighlightMaterial;
+                    }
+                    rend.materials = highlightMats;
+                }
+            }
+            else
+            {
+                foreach (Renderer rend in renderers)
+                {
+                    if (rend == null)
+                        continue;
+                    ClearToolHighlight(rend);
+                }
             }
         }
-        toolInstances.Clear();
+    }
+
+
+    public void ClearToolHighlight(Renderer rend)
+    {
+        if (originalToolMaterials.TryGetValue(rend, out Material[] origMaterials))
+        {
+            rend.materials = origMaterials;
+            originalToolMaterials.Remove(rend);
+        }
+    }
+
+
+    public void ClearAllToolHighlights()
+    {
+        foreach (var pair in originalToolMaterials)
+        {
+            if (pair.Key != null)
+            {
+                pair.Key.materials = pair.Value;
+            }
+        }
+        originalToolMaterials.Clear();
     }
 }

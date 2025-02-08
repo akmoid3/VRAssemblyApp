@@ -13,7 +13,6 @@ public class PlayBackManagerTests
     private PlayBackManager playBackManager;
     private GameObject playBackPanel;
     private Button finishButton;
-    private Button showSolutionButton;
     private TextMeshProUGUI timerText;
     private TextMeshProUGUI errorCountText;
     private TextMeshProUGUI hintCountText;
@@ -38,9 +37,6 @@ public class PlayBackManagerTests
 
         finishButton = new GameObject().AddComponent<Button>();
         playBackManager.finishButton = finishButton;
-
-        showSolutionButton = new GameObject().AddComponent<Button>();
-        playBackManager.showSolutionButton = showSolutionButton;
 
         timerText = new GameObject().AddComponent<TextMeshProUGUI>();
         playBackManager.timerText = timerText;
@@ -68,7 +64,6 @@ public class PlayBackManagerTests
         Object.DestroyImmediate(playBackManager.gameObject);
         Object.DestroyImmediate(playBackPanel);
         Object.DestroyImmediate(finishButton.gameObject);
-        Object.DestroyImmediate(showSolutionButton.gameObject);
         Object.DestroyImmediate(timerText.gameObject);
         Object.DestroyImmediate(errorCountText.gameObject);
         Object.DestroyImmediate(hintCountText.gameObject);
@@ -117,14 +112,7 @@ public class PlayBackManagerTests
         // Assert
         Assert.AreEqual("02:03", timerText.text, "Timer display should correctly format minutes and seconds");
     }
-
-    [Test]
-    public void TestOnShowSolutionClicked_CallsPlaceAllComponentsGradually()
-    {
-        // Act
-        playBackManager.OnShowSolutionClicked();
-
-    }
+    
 
     [UnityTest]
     public IEnumerator TestUpdate_UpdatesTimerWhenPlayingBack()
