@@ -20,8 +20,19 @@ public class PdfLoader : MonoBehaviour
     private List<Texture2D> pages = new List<Texture2D>();
     private int currentPageIndex = 0;
     private RawImage pageImage;
+    
+    public int CurrentPageIndex {
+        get { return currentPageIndex; }
+        set { currentPageIndex = value; }
+    }
 
     public List<Texture2D> Pages { get => pages; set => pages = value; }
+
+    public bool CanActivePanel
+    {
+        get => canActivePanel;
+        set => canActivePanel = value;
+    }
 
     // Start is called before the first frame update
     void Start()
@@ -53,7 +64,7 @@ public class PdfLoader : MonoBehaviour
 
     private void HandleStateChanged(State newState)
     {
-        bool shouldActivatePanel = (newState == State.Record || newState == State.PlayBack) && canActivePanel;
+        bool shouldActivatePanel = (newState == State.Record || newState == State.PlayBack) && CanActivePanel;
         if (pdfPanel != null)
             pdfPanel.SetActive(shouldActivatePanel);
     }
@@ -70,7 +81,7 @@ public class PdfLoader : MonoBehaviour
         // Check if the PDF file exists
         if (!File.Exists(inputPath))
         {
-            canActivePanel = false;
+            CanActivePanel = false;
 
             return; // Exit the method if the file does not exist
         }
@@ -91,6 +102,11 @@ public class PdfLoader : MonoBehaviour
 
     private void RenderPdfToFile(string pdfFilename, string outputDir)
     {
+        if (Directory.Exists(outputDir))
+        {
+            Directory.Delete(outputDir, true); // Delete directory and its contents
+        }
+        Directory.CreateDirectory(outputDir);
         using (var doc = PdfiumViewer.PdfDocument.Load(pdfFilename))
         {               // Load PDF Document from file
             for (int page = 0; page < doc.PageCount; page++)

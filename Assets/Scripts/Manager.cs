@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.Serialization;
 using UnityEngine.XR.Interaction.Toolkit;
 
 
@@ -11,7 +12,7 @@ public class Manager : MonoBehaviour
     [SerializeField] private SequenceManager sequenceManager;
     [SerializeField] private HintManager hintManager;
     [SerializeField] private AutomaticPlacementManager automaticPlacementManager;
-    [SerializeField] private PdfLoader pdfLoader;
+    [FormerlySerializedAs("pdfLoader")] [SerializeField] private PdfLoader pdfLoaderPdf;
 
 
     [SerializeField] private GameObject model;
@@ -107,6 +108,12 @@ public class Manager : MonoBehaviour
     {
         get => performaceForEachStep;
         set => performaceForEachStep = value;
+    }
+
+    public PdfLoader LoaderPDF
+    {
+        get => pdfLoaderPdf;
+        set => pdfLoaderPdf = value;
     }
 
     private void Awake()
@@ -465,8 +472,8 @@ public class Manager : MonoBehaviour
 
     private void LoadPDF()
     {
-        if (pdfLoader != null)
-            pdfLoader.LoadPDF(model.name);
+        if (LoaderPDF != null)
+            LoaderPDF.LoadPDF(model.name);
     }
 
     private void MakeComponentsGrabbable()

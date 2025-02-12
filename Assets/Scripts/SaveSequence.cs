@@ -15,6 +15,7 @@ public class ComponentData
     public int toolForce;
     public string group;
     public ComponentObject.ComponentType type;
+    public int pdfIndex;
 }
 
 // A class to hold the data for all components
@@ -94,6 +95,12 @@ public class SaveSequence : MonoBehaviour
             componentIdMap[component] = stepId;
         }
 
+        int index = -1;
+        if (Manager.Instance.LoaderPDF.CanActivePanel)
+        {
+            index = Manager.Instance.LoaderPDF.CurrentPageIndex;
+        }
+            
         // Create new component data using the determined stepId
         ComponentData newData = new ComponentData
         {
@@ -104,7 +111,8 @@ public class SaveSequence : MonoBehaviour
             toolName = toolName,
             toolForce = force,
             group = componentObject.GetGroup(),
-            type = componentObject.GetComponentType()
+            type = componentObject.GetComponentType(),
+            pdfIndex = index
         };
 
         objectData.components.Add(newData);
