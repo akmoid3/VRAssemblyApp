@@ -130,7 +130,6 @@ public class StepsManager : MonoBehaviour
             
             foreach (var step in stepsData)
             {
-                Debug.Log(step.StepNumber);
                 if (step.StepNumber > Manager.Instance.PerformaceForEachStep.Count)
                     return;
                 step.Accuracy = Manager.Instance.PerformaceForEachStep[step.StepNumber - 1] * 100;
@@ -158,7 +157,7 @@ public class StepsManager : MonoBehaviour
         Manager.Instance.RepositionComponentsOnTable(Manager.Instance.Components);
         Manager.Instance.CurrentStep = 0;
         Manager.Instance.CurrentAssembledSequence.Clear();
-        Manager.Instance.Interactor.transform.SetPositionAndRotation(InteractorPosition.position, InteractorPosition.rotation);
+        //Manager.Instance.Interactor.transform.SetPositionAndRotation(InteractorPosition.position, InteractorPosition.rotation);
 
         foreach (Transform go in Manager.Instance.Components)
         {
@@ -189,7 +188,7 @@ public class StepsManager : MonoBehaviour
             Manager.Instance.PlaceComponent(i, componentForStep);
             componentForStep.SetParent(Manager.Instance.Interactor.transform.GetChild(i));
 
-            // Se è l'ultimo step lo evidenziamo, altrimenti assicuriamoci di rimuovere l'evidenziazione
+            // If it is last step highlight it
             if (i == step - 1)
             {
                 if (componentToRemoveHighlight.Contains(componentForStep.transform))

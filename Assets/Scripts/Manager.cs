@@ -595,8 +595,12 @@ public class Manager : MonoBehaviour
     public void PlaceCurrentComponent(float timePlacement)
     {
         if (automaticPlacementManager != null)
+        {
+            componentsThatCanSnap[0].GetComponent<ComponentObject>().IsAutomaticSnap = true;
             automaticPlacementManager.PlaceCurrentStepComponent(CurrentStep, componentsThatCanSnap[0], Interactor,
                 timePlacement);
+        }
+            
         hintManager.HideHints(Interactor);
     }
 
@@ -605,10 +609,6 @@ public class Manager : MonoBehaviour
         if (automaticPlacementManager != null)
             automaticPlacementManager.PlaceStepComponent(step, component, Interactor);
         hintManager.HideHints(Interactor);
-    }
-
-    public void ResetComponents()
-    {
     }
 
     public void ShowHint()

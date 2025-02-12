@@ -14,6 +14,7 @@ public class PlayBackManager : MonoBehaviour
 
     private float elapsedTime = 0.0f;
     private bool isPlayingBack = false;
+    private bool timerHasStarted = false;
 
     public float ElapsedTime { get => elapsedTime; set => elapsedTime = value; }
     public bool IsPlayingBack { get => isPlayingBack; set => isPlayingBack = value; }
@@ -37,12 +38,20 @@ public class PlayBackManager : MonoBehaviour
     {
         hintCountText.text = n.ToString();
     }
+
     public void IncrementStepCount(int n)
     {
         int totalSteps = Manager.Instance.AssemblySequence.Count;
-        stepsText.text = $"{n+1}/{totalSteps}";
+        stepsText.text = $"{n}/{totalSteps-1}";
+
+        if (!timerHasStarted)
+        {
+            timerHasStarted = true;
+            StartTimer();
+        }
     }
-    public void OnDestroy()
+
+    private void OnDestroy()
     {
         StateManager.OnStateChanged -= SetPanelActive;
         SequenceManager.OnErrorCountChanged -= IncrementErrorCount;
@@ -64,15 +73,16 @@ public class PlayBackManager : MonoBehaviour
     public void SetPanelActive(State state)
     {
         playBackPanel.SetActive(state == State.PlayBack);
-        isPlayingBack = (state == State.PlayBack);
-        if (isPlayingBack)
-        {
-            elapsedTime = 0f; // Reset timer when playback starts
-        }
-        else if (state == State.Finish)
+        if (state == State.Finish)
         {
             Manager.Instance.FinishTime = timerText.text;
         }
+    }
+
+    public void StartTimer()
+    {
+        elapsedTime = 0f;
+        isPlayingBack = true;
     }
 
     private void OnFinishClicked()
@@ -89,7 +99,6 @@ public class PlayBackManager : MonoBehaviour
         {
             lastUpdateTime = Time.time;
 
-            // Format the time into minutes, seconds, and milliseconds
             int minutes = Mathf.FloorToInt(elapsedTime / 60f);
             int seconds = Mathf.FloorToInt(elapsedTime % 60f);
             int milliseconds = Mathf.FloorToInt((elapsedTime * 1000f) % 1000);
@@ -97,6 +106,4 @@ public class PlayBackManager : MonoBehaviour
             timerText.text = string.Format("{0:D2}:{1:D2}:{2:D3}", minutes, seconds, milliseconds);
         }
     }
-    
-
 }

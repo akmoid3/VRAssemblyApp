@@ -111,6 +111,9 @@ public class SnapToPosition : MonoBehaviour
                     (distance < snapDistance && angle < snapAngle && !componentObject.GetIsPlaced()))
                 {
                     float performance = CalculatePerformance(other.transform, snapPoint, fastener != null);
+
+                    if (fastener && componentObject.GetIsPlaced() || componentObject.IsAutomaticSnap)
+                        performance = 1;
                     Manager.Instance.PerformaceForEachStep.Add(performance);
                     other.attachedRigidbody.isKinematic = true;
                     snapPoint.meshRenderer.enabled = true;
@@ -175,9 +178,7 @@ public class SnapToPosition : MonoBehaviour
             : (distancePerformance + rotationPerformance) / 2.0f;
 
 
-        Debug.Log($"Precision Performance: {overallPerformance * 100f}% {component.name}");
         return overallPerformance;
-        // Log details for debugging
         
     }
 

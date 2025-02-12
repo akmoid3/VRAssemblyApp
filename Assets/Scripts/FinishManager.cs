@@ -10,6 +10,8 @@ public class FinishManager : MonoBehaviour
     [SerializeField] private TextMeshProUGUI timerText;
     [SerializeField] private TextMeshProUGUI errorCountText;
     [SerializeField] private TextMeshProUGUI hintCountText;
+    [SerializeField] private TextMeshProUGUI averagePerformanceText;
+
     private void Awake()
     {
         StateManager.OnStateChanged += SetPanelActive;
@@ -38,8 +40,37 @@ public class FinishManager : MonoBehaviour
 
             errorCountText.text = $"Errors: {Manager.Instance.ErrorCount}";
             hintCountText.text = $"Hints: {Manager.Instance.HintCount}";
+            averagePerformanceText.text = $"Accuracy: {CalculateAveragePerformance() * 100:F2}";
         }
     }
+
+    public float CalculateAveragePerformance()
+    {
+        float performance = 0f;
+        bool firstElement = true;
+        Debug.Log("Starting performance calculation");
+
+        foreach (var var in Manager.Instance.PerformaceForEachStep)
+        {
+            if (firstElement)
+            {
+                Debug.Log("Skipping first element");
+                firstElement = false;
+                continue;
+            }
+
+            Debug.Log($"Adding value: {var}");
+            performance += var;
+        }
+
+        float average = performance / (Manager.Instance.PerformaceForEachStep.Count - 1);
+        Debug.Log($"Total performance: {performance}");
+        Debug.Log($"Number of elements considered: {Manager.Instance.PerformaceForEachStep.Count - 1}");
+        Debug.Log($"Average performance: {average}");
+
+        return average;
+    }
+
 
     public void OnFinishClicked()
     {

@@ -10,7 +10,8 @@ public class ComponentObject : MonoBehaviour
     private bool isReleased = false;
     [SerializeField]
     private bool isDestroyed = false;
-
+    [SerializeField]
+    private bool isAutomaticSnap = false;
     public enum ComponentType
     {
         None,
@@ -33,6 +34,11 @@ public class ComponentObject : MonoBehaviour
     public bool IsReleased { get => isReleased; set => isReleased = value; }
     public bool IsDestroyed { get => isDestroyed; set => isDestroyed = value; }
 
+    public bool IsAutomaticSnap
+    {
+        get => isAutomaticSnap;
+        set => isAutomaticSnap = value;
+    }
 
 
     private void Start()
