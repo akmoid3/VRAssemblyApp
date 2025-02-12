@@ -1,68 +1,74 @@
 ﻿# Summary
 |||
 |:---|:---|
-| Generated on: | 01/09/2024 - 17:52:23 |
-| Parser: | MultiReportParser (260x OpenCoverParser) |
+| Generated on: | 12/02/2025 - 01:19:24 |
+| Parser: | MultiReportParser (153x OpenCoverParser) |
 | Assemblies: | 1 |
-| Classes: | 46 |
-| Files: | 44 |
-| Covered lines: | 2515 |
-| Uncovered lines: | 276 |
-| Coverable lines: | 2791 |
-| Total lines: | 4706 |
-| Line coverage: | 90.1% (2515 of 2791) |
+| Classes: | 52 |
+| Files: | 48 |
+| Covered lines: | 1465 |
+| Uncovered lines: | 2511 |
+| Coverable lines: | 3976 |
+| Total lines: | 6717 |
+| Line coverage: | 36.8% (1465 of 3976) |
 | Covered branches: | 0 |
 | Total branches: | 0 |
-| Covered methods: | 403 |
-| Total methods: | 428 |
-| Method coverage: | 94.1% (403 of 428) |
+| Covered methods: | 263 |
+| Total methods: | 555 |
+| Method coverage: | 47.3% (263 of 555) |
 
 |**Name**|**Covered**|**Uncovered**|**Coverable**|**Total**|**Line coverage**|**Covered**|**Total**|**Branch coverage**|**Covered**|**Total**|**Method coverage**|
 |:---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|
-|**Scripts**|**2515**|**276**|**2791**|**4945**|**90.1%**|**0**|**0**|****|**403**|**428**|**94.1%**|
+|**Scripts**|**1465**|**2511**|**3976**|**7551**|**36.8%**|**0**|**0**|****|**263**|**555**|**47.3%**|
 |ApplicationQuit|3|0|3|17|100%|0|0||1|1|100%|
-|AudioManager|49|0|49|77|100%|0|0||7|7|100%|
-|AutomaticPlacementManager|96|17|113|180|84.9%|0|0||10|10|100%|
+|AudioManager|20|43|63|92|31.7%|0|0||4|9|44.4%|
+|AutomaticPlacementManager|0|47|47|85|0%|0|0||0|6|0%|
 |BaseHammer|6|0|6|16|100%|0|0||2|2|100%|
 |BaseScrewDriver|6|0|6|18|100%|0|0||6|6|100%|
-|ComponentObject|23|0|23|61|100%|0|0||9|9|100%|
-|ComponentPositioner|210|14|224|321|93.7%|0|0||27|29|93.1%|
+|ComponentObject|29|51|80|148|36.2%|0|0||10|19|52.6%|
+|ComponentPositioner|205|35|240|350|85.4%|0|0||29|31|93.5%|
 |ConveyerLights|40|0|40|66|100%|0|0||8|8|100%|
 |DropDownManager|14|8|22|41|63.6%|0|0||2|3|66.6%|
-|ElectricScrewDriver|50|13|63|90|79.3%|0|0||9|12|75%|
+|DynamometerScrewDriver|0|85|85|131|0%|0|0||0|15|0%|
+|ElectricScrewDriver|22|37|59|87|37.2%|0|0||4|10|40%|
 |Extensions|27|0|27|38|100%|0|0||1|1|100%|
-|Fastener|100|31|131|210|76.3%|0|0||22|22|100%|
+|Fastener|52|168|220|385|23.6%|0|0||17|32|53.1%|
 |FileBrowserManager|30|6|36|81|83.3%|0|0||3|3|100%|
 |FileChecker|8|0|8|19|100%|0|0||1|1|100%|
 |FileMonitor|41|1|42|86|97.6%|0|0||9|9|100%|
-|FinishManager|20|4|24|46|83.3%|0|0||4|5|80%|
+|FinishManager|12|29|41|75|29.2%|0|0||3|6|50%|
 |HandMenuController|0|14|14|33|0%|0|0||0|3|0%|
-|HandMenuManager|282|4|286|449|98.6%|0|0||35|35|100%|
-|HintManager|56|4|60|111|93.3%|0|0||8|8|100%|
-|InitializeComponentManager|88|4|92|161|95.6%|0|0||14|14|100%|
-|InitializedDataManager|57|3|60|112|95%|0|0||5|5|100%|
-|InteractionManager|40|25|65|100|61.5%|0|0||8|10|80%|
-|JsonData|1|0|1|112|100%|0|0||1|1|100%|
-|MakeGrabbable|99|20|119|183|83.1%|0|0||18|22|81.8%|
-|Manager|225|23|248|398|90.7%|0|0||51|52|98%|
+|HandMenuManager|264|25|289|451|91.3%|0|0||35|35|100%|
+|HintManager|7|123|130|210|5.3%|0|0||2|17|11.7%|
+|InitializeComponentManager|0|236|236|356|0%|0|0||0|23|0%|
+|InitializedDataManager|0|100|100|180|0%|0|0||0|5|0%|
+|InteractionManager|43|25|68|104|63.2%|0|0||9|11|81.8%|
+|JsonData|0|1|1|180|0%|0|0||0|1|0%|
+|MakeGrabbable|105|19|124|190|84.6%|0|0||18|22|81.8%|
+|Manager|107|260|367|631|29.1%|0|0||26|64|40.6%|
 |ManualScrewDriver|25|7|32|60|78.1%|0|0||4|4|100%|
-|ModeChooserManager|37|7|44|78|84%|0|0||7|8|87.5%|
+|ModeChooserManager|36|8|44|78|81.8%|0|0||7|8|87.5%|
 |ModelLoader|17|0|17|38|100%|0|0||1|1|100%|
 |ModelSelectionManager|19|2|21|43|90.4%|0|0||5|5|100%|
-|Nail|69|0|69|115|100%|0|0||6|6|100%|
-|ObjectData|1|0|1|127|100%|0|0||1|1|100%|
+|Nail|4|42|46|75|8.6%|0|0||1|5|20%|
+|ObjectData|0|1|1|152|0%|0|0||0|1|0%|
 |OpenMenu|0|6|6|14|0%|0|0||0|1|0%|
 |PdfLoader|111|6|117|189|94.8%|0|0||14|14|100%|
-|PlayBackManager|57|5|62|101|91.9%|0|0||14|15|93.3%|
-|PrefabManager|83|6|89|129|93.2%|0|0||9|9|100%|
+|PlayBackManager|46|22|68|109|67.6%|0|0||12|15|80%|
+|PrefabManager|86|3|89|129|96.6%|0|0||9|9|100%|
 |RecordManager|12|5|17|36|70.5%|0|0||3|4|75%|
-|SaveSequence|44|3|47|127|93.6%|0|0||8|8|100%|
-|Screw|84|0|84|117|100%|0|0||7|7|100%|
-|SequenceManager|45|9|54|99|83.3%|0|0||15|15|100%|
-|SequenceReader|92|12|104|173|88.4%|0|0||8|8|100%|
-|SimpleHammer|29|3|32|62|90.6%|0|0||5|5|100%|
-|SnapToPosition|78|14|92|168|84.7%|0|0||6|10|60%|
-|StateManager|15|0|15|29|100%|0|0||6|6|100%|
-|Tool|18|0|18|28|100%|0|0||4|4|100%|
-|ToolManager|39|0|39|71|100%|0|0||13|13|100%|
-|WoodenPin|69|0|69|115|100%|0|0||6|6|100%|
+|SaveSequence|0|62|62|152|0%|0|0||0|8|0%|
+|Screw|2|56|58|85|3.4%|0|0||1|6|16.6%|
+|SequenceManager|0|68|68|116|0%|0|0||0|15|0%|
+|SequenceReader|7|125|132|222|5.3%|0|0||1|9|11.1%|
+|SimpleHammer|22|3|25|53|88%|0|0||4|4|100%|
+|SnapToPosition|0|118|118|224|0%|0|0||0|11|0%|
+|StateManager|15|0|15|39|100%|0|0||6|6|100%|
+|StepsManager|0|183|183|254|0%|0|0||0|24|0%|
+|TableComponentDataSO|0|1|1|251|0%|0|0||0|1|0%|
+|TableComponentListSO|0|1|1|251|0%|0|0||0|1|0%|
+|TableUIManager|0|149|149|251|0%|0|0||0|11|0%|
+|Tool|18|1|19|32|94.7%|0|0||4|6|66.6%|
+|ToolManager|0|55|55|79|0%|0|0||0|4|0%|
+|Unity.VRTemplate.XRKnob|0|209|209|440|0%|0|0||0|33|0%|
+|WoodenPin|4|65|69|109|5.7%|0|0||1|6|16.6%|

@@ -224,56 +224,62 @@ var assemblies = [
   {
     "name": "Scripts",
     "classes": [
-      { "name": "ApplicationQuit", "rp": "Scripts_ApplicationQuit.html", "cl": 3, "ucl": 0, "cal": 3, "tl": 17, "ct": "LineCoverage", "mc": "-", "cb": 0, "tb": 0, "lch": [100], "bch": [], "hc": [{ "et": "01/09/2024 - 17:52:08", "cl": 3, "ucl": 0, "cal": 3, "tl": 17, "lcq": 100, "cb": 0, "tb": 0, "bcq": 0 }, { "et": "01/09/2024 - 17:52:21", "cl": 3, "ucl": 0, "cal": 3, "tl": 17, "lcq": 100, "cb": 0, "tb": 0, "bcq": 0 }] },
-      { "name": "AudioManager", "rp": "Scripts_AudioManager.html", "cl": 49, "ucl": 0, "cal": 49, "tl": 77, "ct": "LineCoverage", "mc": "-", "cb": 0, "tb": 0, "lch": [100], "bch": [], "hc": [{ "et": "01/09/2024 - 17:52:08", "cl": 49, "ucl": 0, "cal": 49, "tl": 77, "lcq": 100, "cb": 0, "tb": 0, "bcq": 0 }, { "et": "01/09/2024 - 17:52:21", "cl": 49, "ucl": 0, "cal": 49, "tl": 77, "lcq": 100, "cb": 0, "tb": 0, "bcq": 0 }] },
-      { "name": "AutomaticPlacementManager", "rp": "Scripts_AutomaticPlacementManager.html", "cl": 96, "ucl": 17, "cal": 113, "tl": 180, "ct": "LineCoverage", "mc": "-", "cb": 0, "tb": 0, "lch": [84.9], "bch": [], "hc": [{ "et": "01/09/2024 - 17:52:08", "cl": 96, "ucl": 17, "cal": 113, "tl": 180, "lcq": 84.9, "cb": 0, "tb": 0, "bcq": 0 }, { "et": "01/09/2024 - 17:52:21", "cl": 96, "ucl": 17, "cal": 113, "tl": 180, "lcq": 84.9, "cb": 0, "tb": 0, "bcq": 0 }] },
-      { "name": "BaseHammer", "rp": "Scripts_BaseHammer.html", "cl": 6, "ucl": 0, "cal": 6, "tl": 16, "ct": "LineCoverage", "mc": "-", "cb": 0, "tb": 0, "lch": [100], "bch": [], "hc": [{ "et": "01/09/2024 - 17:52:08", "cl": 6, "ucl": 0, "cal": 6, "tl": 16, "lcq": 100, "cb": 0, "tb": 0, "bcq": 0 }, { "et": "01/09/2024 - 17:52:21", "cl": 6, "ucl": 0, "cal": 6, "tl": 16, "lcq": 100, "cb": 0, "tb": 0, "bcq": 0 }] },
-      { "name": "BaseScrewDriver", "rp": "Scripts_BaseScrewDriver.html", "cl": 6, "ucl": 0, "cal": 6, "tl": 18, "ct": "LineCoverage", "mc": "-", "cb": 0, "tb": 0, "lch": [100], "bch": [], "hc": [{ "et": "01/09/2024 - 17:52:08", "cl": 6, "ucl": 0, "cal": 6, "tl": 18, "lcq": 100, "cb": 0, "tb": 0, "bcq": 0 }, { "et": "01/09/2024 - 17:52:21", "cl": 6, "ucl": 0, "cal": 6, "tl": 18, "lcq": 100, "cb": 0, "tb": 0, "bcq": 0 }] },
-      { "name": "ComponentObject", "rp": "Scripts_ComponentObject.html", "cl": 23, "ucl": 0, "cal": 23, "tl": 61, "ct": "LineCoverage", "mc": "-", "cb": 0, "tb": 0, "lch": [100], "bch": [], "hc": [{ "et": "01/09/2024 - 17:52:08", "cl": 23, "ucl": 0, "cal": 23, "tl": 61, "lcq": 100, "cb": 0, "tb": 0, "bcq": 0 }, { "et": "01/09/2024 - 17:52:21", "cl": 23, "ucl": 0, "cal": 23, "tl": 61, "lcq": 100, "cb": 0, "tb": 0, "bcq": 0 }] },
-      { "name": "ComponentPositioner", "rp": "Scripts_ComponentPositioner.html", "cl": 210, "ucl": 14, "cal": 224, "tl": 321, "ct": "LineCoverage", "mc": "-", "cb": 0, "tb": 0, "lch": [93.7], "bch": [], "hc": [{ "et": "01/09/2024 - 17:52:08", "cl": 210, "ucl": 14, "cal": 224, "tl": 321, "lcq": 93.7, "cb": 0, "tb": 0, "bcq": 0 }, { "et": "01/09/2024 - 17:52:21", "cl": 210, "ucl": 14, "cal": 224, "tl": 321, "lcq": 93.7, "cb": 0, "tb": 0, "bcq": 0 }] },
-      { "name": "ConveyerLights", "rp": "Scripts_ConveyerLights.html", "cl": 40, "ucl": 0, "cal": 40, "tl": 66, "ct": "LineCoverage", "mc": "-", "cb": 0, "tb": 0, "lch": [100], "bch": [], "hc": [{ "et": "01/09/2024 - 17:52:08", "cl": 40, "ucl": 0, "cal": 40, "tl": 66, "lcq": 100, "cb": 0, "tb": 0, "bcq": 0 }, { "et": "01/09/2024 - 17:52:21", "cl": 40, "ucl": 0, "cal": 40, "tl": 66, "lcq": 100, "cb": 0, "tb": 0, "bcq": 0 }] },
-      { "name": "DropDownManager", "rp": "Scripts_DropDownManager.html", "cl": 14, "ucl": 8, "cal": 22, "tl": 41, "ct": "LineCoverage", "mc": "-", "cb": 0, "tb": 0, "lch": [63.6], "bch": [], "hc": [{ "et": "01/09/2024 - 17:52:08", "cl": 14, "ucl": 8, "cal": 22, "tl": 41, "lcq": 63.6, "cb": 0, "tb": 0, "bcq": 0 }, { "et": "01/09/2024 - 17:52:21", "cl": 14, "ucl": 8, "cal": 22, "tl": 41, "lcq": 63.6, "cb": 0, "tb": 0, "bcq": 0 }] },
-      { "name": "ElectricScrewDriver", "rp": "Scripts_ElectricScrewDriver.html", "cl": 50, "ucl": 13, "cal": 63, "tl": 90, "ct": "LineCoverage", "mc": "-", "cb": 0, "tb": 0, "lch": [79.3], "bch": [], "hc": [{ "et": "01/09/2024 - 17:52:08", "cl": 50, "ucl": 13, "cal": 63, "tl": 90, "lcq": 79.3, "cb": 0, "tb": 0, "bcq": 0 }, { "et": "01/09/2024 - 17:52:21", "cl": 50, "ucl": 13, "cal": 63, "tl": 90, "lcq": 79.3, "cb": 0, "tb": 0, "bcq": 0 }] },
-      { "name": "Extensions", "rp": "Scripts_Extensions.html", "cl": 27, "ucl": 0, "cal": 27, "tl": 38, "ct": "LineCoverage", "mc": "-", "cb": 0, "tb": 0, "lch": [100], "bch": [], "hc": [{ "et": "01/09/2024 - 17:52:08", "cl": 27, "ucl": 0, "cal": 27, "tl": 38, "lcq": 100, "cb": 0, "tb": 0, "bcq": 0 }, { "et": "01/09/2024 - 17:52:21", "cl": 27, "ucl": 0, "cal": 27, "tl": 38, "lcq": 100, "cb": 0, "tb": 0, "bcq": 0 }] },
-      { "name": "Fastener", "rp": "Scripts_Fastener.html", "cl": 100, "ucl": 31, "cal": 131, "tl": 210, "ct": "LineCoverage", "mc": "-", "cb": 0, "tb": 0, "lch": [76.3], "bch": [], "hc": [{ "et": "01/09/2024 - 17:52:08", "cl": 100, "ucl": 31, "cal": 131, "tl": 210, "lcq": 76.3, "cb": 0, "tb": 0, "bcq": 0 }, { "et": "01/09/2024 - 17:52:21", "cl": 100, "ucl": 31, "cal": 131, "tl": 210, "lcq": 76.3, "cb": 0, "tb": 0, "bcq": 0 }] },
-      { "name": "FileBrowserManager", "rp": "Scripts_FileBrowserManager.html", "cl": 30, "ucl": 6, "cal": 36, "tl": 81, "ct": "LineCoverage", "mc": "-", "cb": 0, "tb": 0, "lch": [83.3], "bch": [], "hc": [{ "et": "01/09/2024 - 17:52:08", "cl": 30, "ucl": 6, "cal": 36, "tl": 81, "lcq": 83.3, "cb": 0, "tb": 0, "bcq": 0 }, { "et": "01/09/2024 - 17:52:21", "cl": 30, "ucl": 6, "cal": 36, "tl": 81, "lcq": 83.3, "cb": 0, "tb": 0, "bcq": 0 }] },
-      { "name": "FileChecker", "rp": "Scripts_FileChecker.html", "cl": 8, "ucl": 0, "cal": 8, "tl": 19, "ct": "LineCoverage", "mc": "-", "cb": 0, "tb": 0, "lch": [100], "bch": [], "hc": [{ "et": "01/09/2024 - 17:52:08", "cl": 8, "ucl": 0, "cal": 8, "tl": 19, "lcq": 100, "cb": 0, "tb": 0, "bcq": 0 }, { "et": "01/09/2024 - 17:52:21", "cl": 8, "ucl": 0, "cal": 8, "tl": 19, "lcq": 100, "cb": 0, "tb": 0, "bcq": 0 }] },
-      { "name": "FileMonitor", "rp": "Scripts_FileMonitor.html", "cl": 41, "ucl": 1, "cal": 42, "tl": 86, "ct": "LineCoverage", "mc": "-", "cb": 0, "tb": 0, "lch": [97.6], "bch": [], "hc": [{ "et": "01/09/2024 - 17:52:08", "cl": 41, "ucl": 1, "cal": 42, "tl": 86, "lcq": 97.6, "cb": 0, "tb": 0, "bcq": 0 }, { "et": "01/09/2024 - 17:52:21", "cl": 41, "ucl": 1, "cal": 42, "tl": 86, "lcq": 97.6, "cb": 0, "tb": 0, "bcq": 0 }] },
-      { "name": "FinishManager", "rp": "Scripts_FinishManager.html", "cl": 20, "ucl": 4, "cal": 24, "tl": 46, "ct": "LineCoverage", "mc": "-", "cb": 0, "tb": 0, "lch": [83.3], "bch": [], "hc": [{ "et": "01/09/2024 - 17:52:08", "cl": 20, "ucl": 4, "cal": 24, "tl": 46, "lcq": 83.3, "cb": 0, "tb": 0, "bcq": 0 }, { "et": "01/09/2024 - 17:52:21", "cl": 20, "ucl": 4, "cal": 24, "tl": 46, "lcq": 83.3, "cb": 0, "tb": 0, "bcq": 0 }] },
-      { "name": "HandMenuController", "rp": "Scripts_HandMenuController.html", "cl": 0, "ucl": 14, "cal": 14, "tl": 33, "ct": "LineCoverage", "mc": "-", "cb": 0, "tb": 0, "lch": [0], "bch": [], "hc": [{ "et": "01/09/2024 - 17:52:08", "cl": 0, "ucl": 14, "cal": 14, "tl": 33, "lcq": 0, "cb": 0, "tb": 0, "bcq": 0 }, { "et": "01/09/2024 - 17:52:21", "cl": 0, "ucl": 14, "cal": 14, "tl": 33, "lcq": 0, "cb": 0, "tb": 0, "bcq": 0 }] },
-      { "name": "HandMenuManager", "rp": "Scripts_HandMenuManager.html", "cl": 282, "ucl": 4, "cal": 286, "tl": 449, "ct": "LineCoverage", "mc": "-", "cb": 0, "tb": 0, "lch": [98.6], "bch": [], "hc": [{ "et": "01/09/2024 - 17:52:08", "cl": 282, "ucl": 4, "cal": 286, "tl": 449, "lcq": 98.6, "cb": 0, "tb": 0, "bcq": 0 }, { "et": "01/09/2024 - 17:52:21", "cl": 282, "ucl": 4, "cal": 286, "tl": 449, "lcq": 98.6, "cb": 0, "tb": 0, "bcq": 0 }] },
-      { "name": "HintManager", "rp": "Scripts_HintManager.html", "cl": 56, "ucl": 4, "cal": 60, "tl": 111, "ct": "LineCoverage", "mc": "-", "cb": 0, "tb": 0, "lch": [93.3], "bch": [], "hc": [{ "et": "01/09/2024 - 17:52:08", "cl": 56, "ucl": 4, "cal": 60, "tl": 111, "lcq": 93.3, "cb": 0, "tb": 0, "bcq": 0 }, { "et": "01/09/2024 - 17:52:21", "cl": 56, "ucl": 4, "cal": 60, "tl": 111, "lcq": 93.3, "cb": 0, "tb": 0, "bcq": 0 }] },
-      { "name": "InitializeComponentManager", "rp": "Scripts_InitializeComponentManager.html", "cl": 88, "ucl": 4, "cal": 92, "tl": 161, "ct": "LineCoverage", "mc": "-", "cb": 0, "tb": 0, "lch": [95.6], "bch": [], "hc": [{ "et": "01/09/2024 - 17:52:08", "cl": 88, "ucl": 4, "cal": 92, "tl": 161, "lcq": 95.6, "cb": 0, "tb": 0, "bcq": 0 }, { "et": "01/09/2024 - 17:52:21", "cl": 88, "ucl": 4, "cal": 92, "tl": 161, "lcq": 95.6, "cb": 0, "tb": 0, "bcq": 0 }] },
-      { "name": "InitializedDataManager", "rp": "Scripts_InitializedDataManager.html", "cl": 57, "ucl": 3, "cal": 60, "tl": 112, "ct": "LineCoverage", "mc": "-", "cb": 0, "tb": 0, "lch": [95], "bch": [], "hc": [{ "et": "01/09/2024 - 17:52:08", "cl": 57, "ucl": 3, "cal": 60, "tl": 112, "lcq": 95, "cb": 0, "tb": 0, "bcq": 0 }, { "et": "01/09/2024 - 17:52:21", "cl": 57, "ucl": 3, "cal": 60, "tl": 112, "lcq": 95, "cb": 0, "tb": 0, "bcq": 0 }] },
-      { "name": "InteractionManager", "rp": "Scripts_InteractionManager.html", "cl": 40, "ucl": 25, "cal": 65, "tl": 100, "ct": "LineCoverage", "mc": "-", "cb": 0, "tb": 0, "lch": [61.5], "bch": [], "hc": [{ "et": "01/09/2024 - 17:52:08", "cl": 40, "ucl": 25, "cal": 65, "tl": 100, "lcq": 61.5, "cb": 0, "tb": 0, "bcq": 0 }, { "et": "01/09/2024 - 17:52:21", "cl": 40, "ucl": 25, "cal": 65, "tl": 100, "lcq": 61.5, "cb": 0, "tb": 0, "bcq": 0 }] },
-      { "name": "JsonData", "rp": "Scripts_JsonData.html", "cl": 1, "ucl": 0, "cal": 1, "tl": 112, "ct": "LineCoverage", "mc": "-", "cb": 0, "tb": 0, "lch": [100], "bch": [], "hc": [{ "et": "01/09/2024 - 17:52:08", "cl": 1, "ucl": 0, "cal": 1, "tl": 112, "lcq": 100, "cb": 0, "tb": 0, "bcq": 0 }, { "et": "01/09/2024 - 17:52:21", "cl": 1, "ucl": 0, "cal": 1, "tl": 112, "lcq": 100, "cb": 0, "tb": 0, "bcq": 0 }] },
-      { "name": "MakeGrabbable", "rp": "Scripts_MakeGrabbable.html", "cl": 99, "ucl": 20, "cal": 119, "tl": 183, "ct": "LineCoverage", "mc": "-", "cb": 0, "tb": 0, "lch": [83.1], "bch": [], "hc": [{ "et": "01/09/2024 - 17:52:08", "cl": 99, "ucl": 20, "cal": 119, "tl": 183, "lcq": 83.1, "cb": 0, "tb": 0, "bcq": 0 }, { "et": "01/09/2024 - 17:52:21", "cl": 99, "ucl": 20, "cal": 119, "tl": 183, "lcq": 83.1, "cb": 0, "tb": 0, "bcq": 0 }] },
-      { "name": "Manager", "rp": "Scripts_Manager.html", "cl": 225, "ucl": 23, "cal": 248, "tl": 398, "ct": "LineCoverage", "mc": "-", "cb": 0, "tb": 0, "lch": [90.7], "bch": [], "hc": [{ "et": "01/09/2024 - 17:52:08", "cl": 225, "ucl": 23, "cal": 248, "tl": 398, "lcq": 90.7, "cb": 0, "tb": 0, "bcq": 0 }, { "et": "01/09/2024 - 17:52:21", "cl": 225, "ucl": 23, "cal": 248, "tl": 398, "lcq": 90.7, "cb": 0, "tb": 0, "bcq": 0 }] },
-      { "name": "ManualScrewDriver", "rp": "Scripts_ManualScrewDriver.html", "cl": 25, "ucl": 7, "cal": 32, "tl": 60, "ct": "LineCoverage", "mc": "-", "cb": 0, "tb": 0, "lch": [78.1], "bch": [], "hc": [{ "et": "01/09/2024 - 17:52:08", "cl": 25, "ucl": 7, "cal": 32, "tl": 60, "lcq": 78.1, "cb": 0, "tb": 0, "bcq": 0 }, { "et": "01/09/2024 - 17:52:21", "cl": 25, "ucl": 7, "cal": 32, "tl": 60, "lcq": 78.1, "cb": 0, "tb": 0, "bcq": 0 }] },
-      { "name": "ModeChooserManager", "rp": "Scripts_ModeChooserManager.html", "cl": 37, "ucl": 7, "cal": 44, "tl": 78, "ct": "LineCoverage", "mc": "-", "cb": 0, "tb": 0, "lch": [84], "bch": [], "hc": [{ "et": "01/09/2024 - 17:52:08", "cl": 37, "ucl": 7, "cal": 44, "tl": 78, "lcq": 84, "cb": 0, "tb": 0, "bcq": 0 }, { "et": "01/09/2024 - 17:52:21", "cl": 37, "ucl": 7, "cal": 44, "tl": 78, "lcq": 84, "cb": 0, "tb": 0, "bcq": 0 }] },
-      { "name": "ModelLoader", "rp": "Scripts_ModelLoader.html", "cl": 17, "ucl": 0, "cal": 17, "tl": 38, "ct": "LineCoverage", "mc": "-", "cb": 0, "tb": 0, "lch": [100], "bch": [], "hc": [{ "et": "01/09/2024 - 17:52:08", "cl": 17, "ucl": 0, "cal": 17, "tl": 38, "lcq": 100, "cb": 0, "tb": 0, "bcq": 0 }, { "et": "01/09/2024 - 17:52:21", "cl": 17, "ucl": 0, "cal": 17, "tl": 38, "lcq": 100, "cb": 0, "tb": 0, "bcq": 0 }] },
-      { "name": "ModelSelectionManager", "rp": "Scripts_ModelSelectionManager.html", "cl": 19, "ucl": 2, "cal": 21, "tl": 43, "ct": "LineCoverage", "mc": "-", "cb": 0, "tb": 0, "lch": [90.4], "bch": [], "hc": [{ "et": "01/09/2024 - 17:52:08", "cl": 19, "ucl": 2, "cal": 21, "tl": 43, "lcq": 90.4, "cb": 0, "tb": 0, "bcq": 0 }, { "et": "01/09/2024 - 17:52:21", "cl": 19, "ucl": 2, "cal": 21, "tl": 43, "lcq": 90.4, "cb": 0, "tb": 0, "bcq": 0 }] },
-      { "name": "Nail", "rp": "Scripts_Nail.html", "cl": 69, "ucl": 0, "cal": 69, "tl": 115, "ct": "LineCoverage", "mc": "-", "cb": 0, "tb": 0, "lch": [100], "bch": [], "hc": [{ "et": "01/09/2024 - 17:52:08", "cl": 69, "ucl": 0, "cal": 69, "tl": 115, "lcq": 100, "cb": 0, "tb": 0, "bcq": 0 }, { "et": "01/09/2024 - 17:52:21", "cl": 69, "ucl": 0, "cal": 69, "tl": 115, "lcq": 100, "cb": 0, "tb": 0, "bcq": 0 }] },
-      { "name": "ObjectData", "rp": "Scripts_ObjectData.html", "cl": 1, "ucl": 0, "cal": 1, "tl": 127, "ct": "LineCoverage", "mc": "-", "cb": 0, "tb": 0, "lch": [100], "bch": [], "hc": [{ "et": "01/09/2024 - 17:52:08", "cl": 1, "ucl": 0, "cal": 1, "tl": 127, "lcq": 100, "cb": 0, "tb": 0, "bcq": 0 }, { "et": "01/09/2024 - 17:52:21", "cl": 1, "ucl": 0, "cal": 1, "tl": 127, "lcq": 100, "cb": 0, "tb": 0, "bcq": 0 }] },
-      { "name": "OpenMenu", "rp": "Scripts_OpenMenu.html", "cl": 0, "ucl": 6, "cal": 6, "tl": 14, "ct": "LineCoverage", "mc": "-", "cb": 0, "tb": 0, "lch": [0], "bch": [], "hc": [{ "et": "01/09/2024 - 17:52:08", "cl": 0, "ucl": 6, "cal": 6, "tl": 14, "lcq": 0, "cb": 0, "tb": 0, "bcq": 0 }, { "et": "01/09/2024 - 17:52:21", "cl": 0, "ucl": 6, "cal": 6, "tl": 14, "lcq": 0, "cb": 0, "tb": 0, "bcq": 0 }] },
-      { "name": "PdfLoader", "rp": "Scripts_PdfLoader.html", "cl": 111, "ucl": 6, "cal": 117, "tl": 189, "ct": "LineCoverage", "mc": "-", "cb": 0, "tb": 0, "lch": [94.8], "bch": [], "hc": [{ "et": "01/09/2024 - 17:52:08", "cl": 111, "ucl": 6, "cal": 117, "tl": 189, "lcq": 94.8, "cb": 0, "tb": 0, "bcq": 0 }, { "et": "01/09/2024 - 17:52:21", "cl": 111, "ucl": 6, "cal": 117, "tl": 189, "lcq": 94.8, "cb": 0, "tb": 0, "bcq": 0 }] },
-      { "name": "PlayBackManager", "rp": "Scripts_PlayBackManager.html", "cl": 57, "ucl": 5, "cal": 62, "tl": 101, "ct": "LineCoverage", "mc": "-", "cb": 0, "tb": 0, "lch": [91.9], "bch": [], "hc": [{ "et": "01/09/2024 - 17:52:08", "cl": 57, "ucl": 5, "cal": 62, "tl": 101, "lcq": 91.9, "cb": 0, "tb": 0, "bcq": 0 }, { "et": "01/09/2024 - 17:52:21", "cl": 57, "ucl": 5, "cal": 62, "tl": 101, "lcq": 91.9, "cb": 0, "tb": 0, "bcq": 0 }] },
-      { "name": "PrefabManager", "rp": "Scripts_PrefabManager.html", "cl": 83, "ucl": 6, "cal": 89, "tl": 129, "ct": "LineCoverage", "mc": "-", "cb": 0, "tb": 0, "lch": [93.2], "bch": [], "hc": [{ "et": "01/09/2024 - 17:52:08", "cl": 83, "ucl": 6, "cal": 89, "tl": 129, "lcq": 93.2, "cb": 0, "tb": 0, "bcq": 0 }, { "et": "01/09/2024 - 17:52:21", "cl": 83, "ucl": 6, "cal": 89, "tl": 129, "lcq": 93.2, "cb": 0, "tb": 0, "bcq": 0 }] },
-      { "name": "RecordManager", "rp": "Scripts_RecordManager.html", "cl": 12, "ucl": 5, "cal": 17, "tl": 36, "ct": "LineCoverage", "mc": "-", "cb": 0, "tb": 0, "lch": [70.5], "bch": [], "hc": [{ "et": "01/09/2024 - 17:52:08", "cl": 12, "ucl": 5, "cal": 17, "tl": 36, "lcq": 70.5, "cb": 0, "tb": 0, "bcq": 0 }, { "et": "01/09/2024 - 17:52:21", "cl": 12, "ucl": 5, "cal": 17, "tl": 36, "lcq": 70.5, "cb": 0, "tb": 0, "bcq": 0 }] },
-      { "name": "SaveSequence", "rp": "Scripts_SaveSequence.html", "cl": 44, "ucl": 3, "cal": 47, "tl": 127, "ct": "LineCoverage", "mc": "-", "cb": 0, "tb": 0, "lch": [93.6], "bch": [], "hc": [{ "et": "01/09/2024 - 17:52:08", "cl": 44, "ucl": 3, "cal": 47, "tl": 127, "lcq": 93.6, "cb": 0, "tb": 0, "bcq": 0 }, { "et": "01/09/2024 - 17:52:21", "cl": 44, "ucl": 3, "cal": 47, "tl": 127, "lcq": 93.6, "cb": 0, "tb": 0, "bcq": 0 }] },
-      { "name": "Screw", "rp": "Scripts_Screw.html", "cl": 84, "ucl": 0, "cal": 84, "tl": 117, "ct": "LineCoverage", "mc": "-", "cb": 0, "tb": 0, "lch": [100], "bch": [], "hc": [{ "et": "01/09/2024 - 17:52:08", "cl": 84, "ucl": 0, "cal": 84, "tl": 117, "lcq": 100, "cb": 0, "tb": 0, "bcq": 0 }, { "et": "01/09/2024 - 17:52:21", "cl": 84, "ucl": 0, "cal": 84, "tl": 117, "lcq": 100, "cb": 0, "tb": 0, "bcq": 0 }] },
-      { "name": "SequenceManager", "rp": "Scripts_SequenceManager.html", "cl": 45, "ucl": 9, "cal": 54, "tl": 99, "ct": "LineCoverage", "mc": "-", "cb": 0, "tb": 0, "lch": [83.3], "bch": [], "hc": [{ "et": "01/09/2024 - 17:52:08", "cl": 45, "ucl": 9, "cal": 54, "tl": 99, "lcq": 83.3, "cb": 0, "tb": 0, "bcq": 0 }, { "et": "01/09/2024 - 17:52:21", "cl": 45, "ucl": 9, "cal": 54, "tl": 99, "lcq": 83.3, "cb": 0, "tb": 0, "bcq": 0 }] },
-      { "name": "SequenceReader", "rp": "Scripts_SequenceReader.html", "cl": 92, "ucl": 12, "cal": 104, "tl": 173, "ct": "LineCoverage", "mc": "-", "cb": 0, "tb": 0, "lch": [88.4], "bch": [], "hc": [{ "et": "01/09/2024 - 17:52:08", "cl": 92, "ucl": 12, "cal": 104, "tl": 173, "lcq": 88.4, "cb": 0, "tb": 0, "bcq": 0 }, { "et": "01/09/2024 - 17:52:21", "cl": 92, "ucl": 12, "cal": 104, "tl": 173, "lcq": 88.4, "cb": 0, "tb": 0, "bcq": 0 }] },
-      { "name": "SimpleHammer", "rp": "Scripts_SimpleHammer.html", "cl": 29, "ucl": 3, "cal": 32, "tl": 62, "ct": "LineCoverage", "mc": "-", "cb": 0, "tb": 0, "lch": [90.6], "bch": [], "hc": [{ "et": "01/09/2024 - 17:52:08", "cl": 29, "ucl": 3, "cal": 32, "tl": 62, "lcq": 90.6, "cb": 0, "tb": 0, "bcq": 0 }, { "et": "01/09/2024 - 17:52:21", "cl": 29, "ucl": 3, "cal": 32, "tl": 62, "lcq": 90.6, "cb": 0, "tb": 0, "bcq": 0 }] },
-      { "name": "SnapToPosition", "rp": "Scripts_SnapToPosition.html", "cl": 78, "ucl": 14, "cal": 92, "tl": 168, "ct": "LineCoverage", "mc": "-", "cb": 0, "tb": 0, "lch": [84.7], "bch": [], "hc": [{ "et": "01/09/2024 - 17:52:08", "cl": 78, "ucl": 14, "cal": 92, "tl": 168, "lcq": 84.7, "cb": 0, "tb": 0, "bcq": 0 }, { "et": "01/09/2024 - 17:52:21", "cl": 78, "ucl": 14, "cal": 92, "tl": 168, "lcq": 84.7, "cb": 0, "tb": 0, "bcq": 0 }] },
-      { "name": "StateManager", "rp": "Scripts_StateManager.html", "cl": 15, "ucl": 0, "cal": 15, "tl": 29, "ct": "LineCoverage", "mc": "-", "cb": 0, "tb": 0, "lch": [100], "bch": [], "hc": [{ "et": "01/09/2024 - 17:52:08", "cl": 15, "ucl": 0, "cal": 15, "tl": 29, "lcq": 100, "cb": 0, "tb": 0, "bcq": 0 }, { "et": "01/09/2024 - 17:52:21", "cl": 15, "ucl": 0, "cal": 15, "tl": 29, "lcq": 100, "cb": 0, "tb": 0, "bcq": 0 }] },
-      { "name": "Tool", "rp": "Scripts_Tool.html", "cl": 18, "ucl": 0, "cal": 18, "tl": 28, "ct": "LineCoverage", "mc": "-", "cb": 0, "tb": 0, "lch": [100], "bch": [], "hc": [{ "et": "01/09/2024 - 17:52:08", "cl": 18, "ucl": 0, "cal": 18, "tl": 28, "lcq": 100, "cb": 0, "tb": 0, "bcq": 0 }, { "et": "01/09/2024 - 17:52:21", "cl": 18, "ucl": 0, "cal": 18, "tl": 28, "lcq": 100, "cb": 0, "tb": 0, "bcq": 0 }] },
-      { "name": "ToolManager", "rp": "Scripts_ToolManager.html", "cl": 39, "ucl": 0, "cal": 39, "tl": 71, "ct": "LineCoverage", "mc": "-", "cb": 0, "tb": 0, "lch": [100], "bch": [], "hc": [{ "et": "01/09/2024 - 17:52:08", "cl": 39, "ucl": 0, "cal": 39, "tl": 71, "lcq": 100, "cb": 0, "tb": 0, "bcq": 0 }, { "et": "01/09/2024 - 17:52:21", "cl": 39, "ucl": 0, "cal": 39, "tl": 71, "lcq": 100, "cb": 0, "tb": 0, "bcq": 0 }] },
-      { "name": "WoodenPin", "rp": "Scripts_WoodenPin.html", "cl": 69, "ucl": 0, "cal": 69, "tl": 115, "ct": "LineCoverage", "mc": "-", "cb": 0, "tb": 0, "lch": [100], "bch": [], "hc": [{ "et": "01/09/2024 - 17:52:08", "cl": 69, "ucl": 0, "cal": 69, "tl": 115, "lcq": 100, "cb": 0, "tb": 0, "bcq": 0 }, { "et": "01/09/2024 - 17:52:21", "cl": 69, "ucl": 0, "cal": 69, "tl": 115, "lcq": 100, "cb": 0, "tb": 0, "bcq": 0 }] },
+      { "name": "ApplicationQuit", "rp": "Scripts_ApplicationQuit.html", "cl": 3, "ucl": 0, "cal": 3, "tl": 17, "ct": "LineCoverage", "mc": "-", "cb": 0, "tb": 0, "lch": [100,50,100], "bch": [], "hc": [{ "et": "01/09/2024 - 17:52:08", "cl": 3, "ucl": 0, "cal": 3, "tl": 17, "lcq": 100, "cb": 0, "tb": 0, "bcq": 0 }, { "et": "01/09/2024 - 17:52:21", "cl": 3, "ucl": 0, "cal": 3, "tl": 17, "lcq": 100, "cb": 0, "tb": 0, "bcq": 0 }, { "et": "12/02/2025 - 01:17:35", "cl": 3, "ucl": 3, "cal": 6, "tl": 17, "lcq": 50, "cb": 0, "tb": 0, "bcq": 0 }, { "et": "12/02/2025 - 01:19:22", "cl": 3, "ucl": 0, "cal": 3, "tl": 17, "lcq": 100, "cb": 0, "tb": 0, "bcq": 0 }] },
+      { "name": "AudioManager", "rp": "Scripts_AudioManager.html", "cl": 20, "ucl": 43, "cal": 63, "tl": 92, "ct": "LineCoverage", "mc": "-", "cb": 0, "tb": 0, "lch": [100,17.8,31.7], "bch": [], "hc": [{ "et": "01/09/2024 - 17:52:08", "cl": 49, "ucl": 0, "cal": 49, "tl": 77, "lcq": 100, "cb": 0, "tb": 0, "bcq": 0 }, { "et": "01/09/2024 - 17:52:21", "cl": 49, "ucl": 0, "cal": 49, "tl": 77, "lcq": 100, "cb": 0, "tb": 0, "bcq": 0 }, { "et": "12/02/2025 - 01:17:35", "cl": 20, "ucl": 92, "cal": 112, "tl": 92, "lcq": 17.8, "cb": 0, "tb": 0, "bcq": 0 }, { "et": "12/02/2025 - 01:19:22", "cl": 20, "ucl": 43, "cal": 63, "tl": 92, "lcq": 31.7, "cb": 0, "tb": 0, "bcq": 0 }] },
+      { "name": "AutomaticPlacementManager", "rp": "Scripts_AutomaticPlacementManager.html", "cl": 0, "ucl": 47, "cal": 47, "tl": 85, "ct": "LineCoverage", "mc": "-", "cb": 0, "tb": 0, "lch": [84.9,0,0], "bch": [], "hc": [{ "et": "01/09/2024 - 17:52:08", "cl": 96, "ucl": 17, "cal": 113, "tl": 180, "lcq": 84.9, "cb": 0, "tb": 0, "bcq": 0 }, { "et": "01/09/2024 - 17:52:21", "cl": 96, "ucl": 17, "cal": 113, "tl": 180, "lcq": 84.9, "cb": 0, "tb": 0, "bcq": 0 }, { "et": "12/02/2025 - 01:17:35", "cl": 0, "ucl": 160, "cal": 160, "tl": 85, "lcq": 0, "cb": 0, "tb": 0, "bcq": 0 }, { "et": "12/02/2025 - 01:19:22", "cl": 0, "ucl": 47, "cal": 47, "tl": 85, "lcq": 0, "cb": 0, "tb": 0, "bcq": 0 }] },
+      { "name": "BaseHammer", "rp": "Scripts_BaseHammer.html", "cl": 6, "ucl": 0, "cal": 6, "tl": 16, "ct": "LineCoverage", "mc": "-", "cb": 0, "tb": 0, "lch": [100,50,100], "bch": [], "hc": [{ "et": "01/09/2024 - 17:52:08", "cl": 6, "ucl": 0, "cal": 6, "tl": 16, "lcq": 100, "cb": 0, "tb": 0, "bcq": 0 }, { "et": "01/09/2024 - 17:52:21", "cl": 6, "ucl": 0, "cal": 6, "tl": 16, "lcq": 100, "cb": 0, "tb": 0, "bcq": 0 }, { "et": "12/02/2025 - 01:17:35", "cl": 6, "ucl": 6, "cal": 12, "tl": 16, "lcq": 50, "cb": 0, "tb": 0, "bcq": 0 }, { "et": "12/02/2025 - 01:19:22", "cl": 6, "ucl": 0, "cal": 6, "tl": 16, "lcq": 100, "cb": 0, "tb": 0, "bcq": 0 }] },
+      { "name": "BaseScrewDriver", "rp": "Scripts_BaseScrewDriver.html", "cl": 6, "ucl": 0, "cal": 6, "tl": 18, "ct": "LineCoverage", "mc": "-", "cb": 0, "tb": 0, "lch": [100,50,100], "bch": [], "hc": [{ "et": "01/09/2024 - 17:52:08", "cl": 6, "ucl": 0, "cal": 6, "tl": 18, "lcq": 100, "cb": 0, "tb": 0, "bcq": 0 }, { "et": "01/09/2024 - 17:52:21", "cl": 6, "ucl": 0, "cal": 6, "tl": 18, "lcq": 100, "cb": 0, "tb": 0, "bcq": 0 }, { "et": "12/02/2025 - 01:17:35", "cl": 6, "ucl": 6, "cal": 12, "tl": 18, "lcq": 50, "cb": 0, "tb": 0, "bcq": 0 }, { "et": "12/02/2025 - 01:19:22", "cl": 6, "ucl": 0, "cal": 6, "tl": 18, "lcq": 100, "cb": 0, "tb": 0, "bcq": 0 }] },
+      { "name": "ComponentObject", "rp": "Scripts_ComponentObject.html", "cl": 29, "ucl": 51, "cal": 80, "tl": 148, "ct": "LineCoverage", "mc": "-", "cb": 0, "tb": 0, "lch": [100,41.7,36.2], "bch": [], "hc": [{ "et": "01/09/2024 - 17:52:08", "cl": 23, "ucl": 0, "cal": 23, "tl": 61, "lcq": 100, "cb": 0, "tb": 0, "bcq": 0 }, { "et": "01/09/2024 - 17:52:21", "cl": 23, "ucl": 0, "cal": 23, "tl": 61, "lcq": 100, "cb": 0, "tb": 0, "bcq": 0 }, { "et": "12/02/2025 - 01:17:35", "cl": 43, "ucl": 60, "cal": 103, "tl": 148, "lcq": 41.7, "cb": 0, "tb": 0, "bcq": 0 }, { "et": "12/02/2025 - 01:19:22", "cl": 29, "ucl": 51, "cal": 80, "tl": 148, "lcq": 36.2, "cb": 0, "tb": 0, "bcq": 0 }] },
+      { "name": "ComponentPositioner", "rp": "Scripts_ComponentPositioner.html", "cl": 205, "ucl": 35, "cal": 240, "tl": 350, "ct": "LineCoverage", "mc": "-", "cb": 0, "tb": 0, "lch": [93.7,44.1,85.4], "bch": [], "hc": [{ "et": "01/09/2024 - 17:52:08", "cl": 210, "ucl": 14, "cal": 224, "tl": 321, "lcq": 93.7, "cb": 0, "tb": 0, "bcq": 0 }, { "et": "01/09/2024 - 17:52:21", "cl": 210, "ucl": 14, "cal": 224, "tl": 321, "lcq": 93.7, "cb": 0, "tb": 0, "bcq": 0 }, { "et": "12/02/2025 - 01:17:35", "cl": 205, "ucl": 259, "cal": 464, "tl": 350, "lcq": 44.1, "cb": 0, "tb": 0, "bcq": 0 }, { "et": "12/02/2025 - 01:19:22", "cl": 205, "ucl": 35, "cal": 240, "tl": 350, "lcq": 85.4, "cb": 0, "tb": 0, "bcq": 0 }] },
+      { "name": "ConveyerLights", "rp": "Scripts_ConveyerLights.html", "cl": 40, "ucl": 0, "cal": 40, "tl": 66, "ct": "LineCoverage", "mc": "-", "cb": 0, "tb": 0, "lch": [100,50,100], "bch": [], "hc": [{ "et": "01/09/2024 - 17:52:08", "cl": 40, "ucl": 0, "cal": 40, "tl": 66, "lcq": 100, "cb": 0, "tb": 0, "bcq": 0 }, { "et": "01/09/2024 - 17:52:21", "cl": 40, "ucl": 0, "cal": 40, "tl": 66, "lcq": 100, "cb": 0, "tb": 0, "bcq": 0 }, { "et": "12/02/2025 - 01:17:35", "cl": 40, "ucl": 40, "cal": 80, "tl": 66, "lcq": 50, "cb": 0, "tb": 0, "bcq": 0 }, { "et": "12/02/2025 - 01:19:22", "cl": 40, "ucl": 0, "cal": 40, "tl": 66, "lcq": 100, "cb": 0, "tb": 0, "bcq": 0 }] },
+      { "name": "DropDownManager", "rp": "Scripts_DropDownManager.html", "cl": 14, "ucl": 8, "cal": 22, "tl": 41, "ct": "LineCoverage", "mc": "-", "cb": 0, "tb": 0, "lch": [63.6,31.8,63.6], "bch": [], "hc": [{ "et": "01/09/2024 - 17:52:08", "cl": 14, "ucl": 8, "cal": 22, "tl": 41, "lcq": 63.6, "cb": 0, "tb": 0, "bcq": 0 }, { "et": "01/09/2024 - 17:52:21", "cl": 14, "ucl": 8, "cal": 22, "tl": 41, "lcq": 63.6, "cb": 0, "tb": 0, "bcq": 0 }, { "et": "12/02/2025 - 01:17:35", "cl": 14, "ucl": 30, "cal": 44, "tl": 41, "lcq": 31.8, "cb": 0, "tb": 0, "bcq": 0 }, { "et": "12/02/2025 - 01:19:22", "cl": 14, "ucl": 8, "cal": 22, "tl": 41, "lcq": 63.6, "cb": 0, "tb": 0, "bcq": 0 }] },
+      { "name": "DynamometerScrewDriver", "rp": "Scripts_DynamometerScrewDriver.html", "cl": 0, "ucl": 85, "cal": 85, "tl": 131, "ct": "LineCoverage", "mc": "-", "cb": 0, "tb": 0, "lch": [0], "bch": [], "hc": [{ "et": "12/02/2025 - 01:17:35", "cl": 0, "ucl": 85, "cal": 85, "tl": 131, "lcq": 0, "cb": 0, "tb": 0, "bcq": 0 }, { "et": "12/02/2025 - 01:19:22", "cl": 0, "ucl": 85, "cal": 85, "tl": 131, "lcq": 0, "cb": 0, "tb": 0, "bcq": 0 }] },
+      { "name": "ElectricScrewDriver", "rp": "Scripts_ElectricScrewDriver.html", "cl": 22, "ucl": 37, "cal": 59, "tl": 87, "ct": "LineCoverage", "mc": "-", "cb": 0, "tb": 0, "lch": [79.3,18,37.2], "bch": [], "hc": [{ "et": "01/09/2024 - 17:52:08", "cl": 50, "ucl": 13, "cal": 63, "tl": 90, "lcq": 79.3, "cb": 0, "tb": 0, "bcq": 0 }, { "et": "01/09/2024 - 17:52:21", "cl": 50, "ucl": 13, "cal": 63, "tl": 90, "lcq": 79.3, "cb": 0, "tb": 0, "bcq": 0 }, { "et": "12/02/2025 - 01:17:35", "cl": 22, "ucl": 100, "cal": 122, "tl": 87, "lcq": 18, "cb": 0, "tb": 0, "bcq": 0 }, { "et": "12/02/2025 - 01:19:22", "cl": 22, "ucl": 37, "cal": 59, "tl": 87, "lcq": 37.2, "cb": 0, "tb": 0, "bcq": 0 }] },
+      { "name": "Extensions", "rp": "Scripts_Extensions.html", "cl": 27, "ucl": 0, "cal": 27, "tl": 38, "ct": "LineCoverage", "mc": "-", "cb": 0, "tb": 0, "lch": [100,75.9,100], "bch": [], "hc": [{ "et": "01/09/2024 - 17:52:08", "cl": 27, "ucl": 0, "cal": 27, "tl": 38, "lcq": 100, "cb": 0, "tb": 0, "bcq": 0 }, { "et": "01/09/2024 - 17:52:21", "cl": 27, "ucl": 0, "cal": 27, "tl": 38, "lcq": 100, "cb": 0, "tb": 0, "bcq": 0 }, { "et": "12/02/2025 - 01:17:35", "cl": 41, "ucl": 13, "cal": 54, "tl": 38, "lcq": 75.9, "cb": 0, "tb": 0, "bcq": 0 }, { "et": "12/02/2025 - 01:19:22", "cl": 27, "ucl": 0, "cal": 27, "tl": 38, "lcq": 100, "cb": 0, "tb": 0, "bcq": 0 }] },
+      { "name": "Fastener", "rp": "Scripts_Fastener.html", "cl": 52, "ucl": 168, "cal": 220, "tl": 385, "ct": "LineCoverage", "mc": "-", "cb": 0, "tb": 0, "lch": [76.3,14.8,23.6], "bch": [], "hc": [{ "et": "01/09/2024 - 17:52:08", "cl": 100, "ucl": 31, "cal": 131, "tl": 210, "lcq": 76.3, "cb": 0, "tb": 0, "bcq": 0 }, { "et": "01/09/2024 - 17:52:21", "cl": 100, "ucl": 31, "cal": 131, "tl": 210, "lcq": 76.3, "cb": 0, "tb": 0, "bcq": 0 }, { "et": "12/02/2025 - 01:17:35", "cl": 52, "ucl": 299, "cal": 351, "tl": 385, "lcq": 14.8, "cb": 0, "tb": 0, "bcq": 0 }, { "et": "12/02/2025 - 01:19:22", "cl": 52, "ucl": 168, "cal": 220, "tl": 385, "lcq": 23.6, "cb": 0, "tb": 0, "bcq": 0 }] },
+      { "name": "FileBrowserManager", "rp": "Scripts_FileBrowserManager.html", "cl": 30, "ucl": 6, "cal": 36, "tl": 81, "ct": "LineCoverage", "mc": "-", "cb": 0, "tb": 0, "lch": [83.3,41.6,83.3], "bch": [], "hc": [{ "et": "01/09/2024 - 17:52:08", "cl": 30, "ucl": 6, "cal": 36, "tl": 81, "lcq": 83.3, "cb": 0, "tb": 0, "bcq": 0 }, { "et": "01/09/2024 - 17:52:21", "cl": 30, "ucl": 6, "cal": 36, "tl": 81, "lcq": 83.3, "cb": 0, "tb": 0, "bcq": 0 }, { "et": "12/02/2025 - 01:17:35", "cl": 30, "ucl": 42, "cal": 72, "tl": 81, "lcq": 41.6, "cb": 0, "tb": 0, "bcq": 0 }, { "et": "12/02/2025 - 01:19:22", "cl": 30, "ucl": 6, "cal": 36, "tl": 81, "lcq": 83.3, "cb": 0, "tb": 0, "bcq": 0 }] },
+      { "name": "FileChecker", "rp": "Scripts_FileChecker.html", "cl": 8, "ucl": 0, "cal": 8, "tl": 19, "ct": "LineCoverage", "mc": "-", "cb": 0, "tb": 0, "lch": [100,81.2,100], "bch": [], "hc": [{ "et": "01/09/2024 - 17:52:08", "cl": 8, "ucl": 0, "cal": 8, "tl": 19, "lcq": 100, "cb": 0, "tb": 0, "bcq": 0 }, { "et": "01/09/2024 - 17:52:21", "cl": 8, "ucl": 0, "cal": 8, "tl": 19, "lcq": 100, "cb": 0, "tb": 0, "bcq": 0 }, { "et": "12/02/2025 - 01:17:35", "cl": 13, "ucl": 3, "cal": 16, "tl": 19, "lcq": 81.2, "cb": 0, "tb": 0, "bcq": 0 }, { "et": "12/02/2025 - 01:19:22", "cl": 8, "ucl": 0, "cal": 8, "tl": 19, "lcq": 100, "cb": 0, "tb": 0, "bcq": 0 }] },
+      { "name": "FileMonitor", "rp": "Scripts_FileMonitor.html", "cl": 41, "ucl": 1, "cal": 42, "tl": 86, "ct": "LineCoverage", "mc": "-", "cb": 0, "tb": 0, "lch": [97.6,48.8,97.6], "bch": [], "hc": [{ "et": "01/09/2024 - 17:52:08", "cl": 41, "ucl": 1, "cal": 42, "tl": 86, "lcq": 97.6, "cb": 0, "tb": 0, "bcq": 0 }, { "et": "01/09/2024 - 17:52:21", "cl": 41, "ucl": 1, "cal": 42, "tl": 86, "lcq": 97.6, "cb": 0, "tb": 0, "bcq": 0 }, { "et": "12/02/2025 - 01:17:35", "cl": 41, "ucl": 43, "cal": 84, "tl": 86, "lcq": 48.8, "cb": 0, "tb": 0, "bcq": 0 }, { "et": "12/02/2025 - 01:19:22", "cl": 41, "ucl": 1, "cal": 42, "tl": 86, "lcq": 97.6, "cb": 0, "tb": 0, "bcq": 0 }] },
+      { "name": "FinishManager", "rp": "Scripts_FinishManager.html", "cl": 12, "ucl": 29, "cal": 41, "tl": 75, "ct": "LineCoverage", "mc": "-", "cb": 0, "tb": 0, "lch": [83.3,18.4,29.2], "bch": [], "hc": [{ "et": "01/09/2024 - 17:52:08", "cl": 20, "ucl": 4, "cal": 24, "tl": 46, "lcq": 83.3, "cb": 0, "tb": 0, "bcq": 0 }, { "et": "01/09/2024 - 17:52:21", "cl": 20, "ucl": 4, "cal": 24, "tl": 46, "lcq": 83.3, "cb": 0, "tb": 0, "bcq": 0 }, { "et": "12/02/2025 - 01:17:35", "cl": 12, "ucl": 53, "cal": 65, "tl": 75, "lcq": 18.4, "cb": 0, "tb": 0, "bcq": 0 }, { "et": "12/02/2025 - 01:19:22", "cl": 12, "ucl": 29, "cal": 41, "tl": 75, "lcq": 29.2, "cb": 0, "tb": 0, "bcq": 0 }] },
+      { "name": "HandMenuController", "rp": "Scripts_HandMenuController.html", "cl": 0, "ucl": 14, "cal": 14, "tl": 33, "ct": "LineCoverage", "mc": "-", "cb": 0, "tb": 0, "lch": [0,0,0], "bch": [], "hc": [{ "et": "01/09/2024 - 17:52:08", "cl": 0, "ucl": 14, "cal": 14, "tl": 33, "lcq": 0, "cb": 0, "tb": 0, "bcq": 0 }, { "et": "01/09/2024 - 17:52:21", "cl": 0, "ucl": 14, "cal": 14, "tl": 33, "lcq": 0, "cb": 0, "tb": 0, "bcq": 0 }, { "et": "12/02/2025 - 01:17:35", "cl": 0, "ucl": 28, "cal": 28, "tl": 33, "lcq": 0, "cb": 0, "tb": 0, "bcq": 0 }, { "et": "12/02/2025 - 01:19:22", "cl": 0, "ucl": 14, "cal": 14, "tl": 33, "lcq": 0, "cb": 0, "tb": 0, "bcq": 0 }] },
+      { "name": "HandMenuManager", "rp": "Scripts_HandMenuManager.html", "cl": 264, "ucl": 25, "cal": 289, "tl": 451, "ct": "LineCoverage", "mc": "-", "cb": 0, "tb": 0, "lch": [98.6,45.9,91.3], "bch": [], "hc": [{ "et": "01/09/2024 - 17:52:08", "cl": 282, "ucl": 4, "cal": 286, "tl": 449, "lcq": 98.6, "cb": 0, "tb": 0, "bcq": 0 }, { "et": "01/09/2024 - 17:52:21", "cl": 282, "ucl": 4, "cal": 286, "tl": 449, "lcq": 98.6, "cb": 0, "tb": 0, "bcq": 0 }, { "et": "12/02/2025 - 01:17:35", "cl": 264, "ucl": 311, "cal": 575, "tl": 451, "lcq": 45.9, "cb": 0, "tb": 0, "bcq": 0 }, { "et": "12/02/2025 - 01:19:22", "cl": 264, "ucl": 25, "cal": 289, "tl": 451, "lcq": 91.3, "cb": 0, "tb": 0, "bcq": 0 }] },
+      { "name": "HintManager", "rp": "Scripts_HintManager.html", "cl": 7, "ucl": 123, "cal": 130, "tl": 210, "ct": "LineCoverage", "mc": "-", "cb": 0, "tb": 0, "lch": [93.3,3.6,5.3], "bch": [], "hc": [{ "et": "01/09/2024 - 17:52:08", "cl": 56, "ucl": 4, "cal": 60, "tl": 111, "lcq": 93.3, "cb": 0, "tb": 0, "bcq": 0 }, { "et": "01/09/2024 - 17:52:21", "cl": 56, "ucl": 4, "cal": 60, "tl": 111, "lcq": 93.3, "cb": 0, "tb": 0, "bcq": 0 }, { "et": "12/02/2025 - 01:17:35", "cl": 7, "ucl": 183, "cal": 190, "tl": 210, "lcq": 3.6, "cb": 0, "tb": 0, "bcq": 0 }, { "et": "12/02/2025 - 01:19:22", "cl": 7, "ucl": 123, "cal": 130, "tl": 210, "lcq": 5.3, "cb": 0, "tb": 0, "bcq": 0 }] },
+      { "name": "InitializeComponentManager", "rp": "Scripts_InitializeComponentManager.html", "cl": 0, "ucl": 236, "cal": 236, "tl": 356, "ct": "LineCoverage", "mc": "-", "cb": 0, "tb": 0, "lch": [95.6,0,0], "bch": [], "hc": [{ "et": "01/09/2024 - 17:52:08", "cl": 88, "ucl": 4, "cal": 92, "tl": 161, "lcq": 95.6, "cb": 0, "tb": 0, "bcq": 0 }, { "et": "01/09/2024 - 17:52:21", "cl": 88, "ucl": 4, "cal": 92, "tl": 161, "lcq": 95.6, "cb": 0, "tb": 0, "bcq": 0 }, { "et": "12/02/2025 - 01:17:35", "cl": 0, "ucl": 328, "cal": 328, "tl": 356, "lcq": 0, "cb": 0, "tb": 0, "bcq": 0 }, { "et": "12/02/2025 - 01:19:22", "cl": 0, "ucl": 236, "cal": 236, "tl": 356, "lcq": 0, "cb": 0, "tb": 0, "bcq": 0 }] },
+      { "name": "InitializedDataManager", "rp": "Scripts_InitializedDataManager.html", "cl": 0, "ucl": 100, "cal": 100, "tl": 180, "ct": "LineCoverage", "mc": "-", "cb": 0, "tb": 0, "lch": [95,0,0], "bch": [], "hc": [{ "et": "01/09/2024 - 17:52:08", "cl": 57, "ucl": 3, "cal": 60, "tl": 112, "lcq": 95, "cb": 0, "tb": 0, "bcq": 0 }, { "et": "01/09/2024 - 17:52:21", "cl": 57, "ucl": 3, "cal": 60, "tl": 112, "lcq": 95, "cb": 0, "tb": 0, "bcq": 0 }, { "et": "12/02/2025 - 01:17:35", "cl": 0, "ucl": 160, "cal": 160, "tl": 180, "lcq": 0, "cb": 0, "tb": 0, "bcq": 0 }, { "et": "12/02/2025 - 01:19:22", "cl": 0, "ucl": 100, "cal": 100, "tl": 180, "lcq": 0, "cb": 0, "tb": 0, "bcq": 0 }] },
+      { "name": "InteractionManager", "rp": "Scripts_InteractionManager.html", "cl": 43, "ucl": 25, "cal": 68, "tl": 104, "ct": "LineCoverage", "mc": "-", "cb": 0, "tb": 0, "lch": [61.5,32.3,63.2], "bch": [], "hc": [{ "et": "01/09/2024 - 17:52:08", "cl": 40, "ucl": 25, "cal": 65, "tl": 100, "lcq": 61.5, "cb": 0, "tb": 0, "bcq": 0 }, { "et": "01/09/2024 - 17:52:21", "cl": 40, "ucl": 25, "cal": 65, "tl": 100, "lcq": 61.5, "cb": 0, "tb": 0, "bcq": 0 }, { "et": "12/02/2025 - 01:17:35", "cl": 43, "ucl": 90, "cal": 133, "tl": 104, "lcq": 32.3, "cb": 0, "tb": 0, "bcq": 0 }, { "et": "12/02/2025 - 01:19:22", "cl": 43, "ucl": 25, "cal": 68, "tl": 104, "lcq": 63.2, "cb": 0, "tb": 0, "bcq": 0 }] },
+      { "name": "JsonData", "rp": "Scripts_JsonData.html", "cl": 0, "ucl": 1, "cal": 1, "tl": 180, "ct": "LineCoverage", "mc": "-", "cb": 0, "tb": 0, "lch": [100,0,0], "bch": [], "hc": [{ "et": "01/09/2024 - 17:52:08", "cl": 1, "ucl": 0, "cal": 1, "tl": 112, "lcq": 100, "cb": 0, "tb": 0, "bcq": 0 }, { "et": "01/09/2024 - 17:52:21", "cl": 1, "ucl": 0, "cal": 1, "tl": 112, "lcq": 100, "cb": 0, "tb": 0, "bcq": 0 }, { "et": "12/02/2025 - 01:17:35", "cl": 0, "ucl": 2, "cal": 2, "tl": 180, "lcq": 0, "cb": 0, "tb": 0, "bcq": 0 }, { "et": "12/02/2025 - 01:19:22", "cl": 0, "ucl": 1, "cal": 1, "tl": 180, "lcq": 0, "cb": 0, "tb": 0, "bcq": 0 }] },
+      { "name": "MakeGrabbable", "rp": "Scripts_MakeGrabbable.html", "cl": 105, "ucl": 19, "cal": 124, "tl": 190, "ct": "LineCoverage", "mc": "-", "cb": 0, "tb": 0, "lch": [83.1,43.2,84.6], "bch": [], "hc": [{ "et": "01/09/2024 - 17:52:08", "cl": 99, "ucl": 20, "cal": 119, "tl": 183, "lcq": 83.1, "cb": 0, "tb": 0, "bcq": 0 }, { "et": "01/09/2024 - 17:52:21", "cl": 99, "ucl": 20, "cal": 119, "tl": 183, "lcq": 83.1, "cb": 0, "tb": 0, "bcq": 0 }, { "et": "12/02/2025 - 01:17:35", "cl": 105, "ucl": 138, "cal": 243, "tl": 190, "lcq": 43.2, "cb": 0, "tb": 0, "bcq": 0 }, { "et": "12/02/2025 - 01:19:22", "cl": 105, "ucl": 19, "cal": 124, "tl": 190, "lcq": 84.6, "cb": 0, "tb": 0, "bcq": 0 }] },
+      { "name": "Manager", "rp": "Scripts_Manager.html", "cl": 107, "ucl": 260, "cal": 367, "tl": 631, "ct": "LineCoverage", "mc": "-", "cb": 0, "tb": 0, "lch": [90.7,17.3,29.1], "bch": [], "hc": [{ "et": "01/09/2024 - 17:52:08", "cl": 225, "ucl": 23, "cal": 248, "tl": 398, "lcq": 90.7, "cb": 0, "tb": 0, "bcq": 0 }, { "et": "01/09/2024 - 17:52:21", "cl": 225, "ucl": 23, "cal": 248, "tl": 398, "lcq": 90.7, "cb": 0, "tb": 0, "bcq": 0 }, { "et": "12/02/2025 - 01:17:35", "cl": 107, "ucl": 508, "cal": 615, "tl": 631, "lcq": 17.3, "cb": 0, "tb": 0, "bcq": 0 }, { "et": "12/02/2025 - 01:19:22", "cl": 107, "ucl": 260, "cal": 367, "tl": 631, "lcq": 29.1, "cb": 0, "tb": 0, "bcq": 0 }] },
+      { "name": "ManualScrewDriver", "rp": "Scripts_ManualScrewDriver.html", "cl": 25, "ucl": 7, "cal": 32, "tl": 60, "ct": "LineCoverage", "mc": "-", "cb": 0, "tb": 0, "lch": [78.1,39,78.1], "bch": [], "hc": [{ "et": "01/09/2024 - 17:52:08", "cl": 25, "ucl": 7, "cal": 32, "tl": 60, "lcq": 78.1, "cb": 0, "tb": 0, "bcq": 0 }, { "et": "01/09/2024 - 17:52:21", "cl": 25, "ucl": 7, "cal": 32, "tl": 60, "lcq": 78.1, "cb": 0, "tb": 0, "bcq": 0 }, { "et": "12/02/2025 - 01:17:35", "cl": 25, "ucl": 39, "cal": 64, "tl": 60, "lcq": 39, "cb": 0, "tb": 0, "bcq": 0 }, { "et": "12/02/2025 - 01:19:22", "cl": 25, "ucl": 7, "cal": 32, "tl": 60, "lcq": 78.1, "cb": 0, "tb": 0, "bcq": 0 }] },
+      { "name": "ModeChooserManager", "rp": "Scripts_ModeChooserManager.html", "cl": 36, "ucl": 8, "cal": 44, "tl": 78, "ct": "LineCoverage", "mc": "-", "cb": 0, "tb": 0, "lch": [84,40.9,81.8], "bch": [], "hc": [{ "et": "01/09/2024 - 17:52:08", "cl": 37, "ucl": 7, "cal": 44, "tl": 78, "lcq": 84, "cb": 0, "tb": 0, "bcq": 0 }, { "et": "01/09/2024 - 17:52:21", "cl": 37, "ucl": 7, "cal": 44, "tl": 78, "lcq": 84, "cb": 0, "tb": 0, "bcq": 0 }, { "et": "12/02/2025 - 01:17:35", "cl": 36, "ucl": 52, "cal": 88, "tl": 78, "lcq": 40.9, "cb": 0, "tb": 0, "bcq": 0 }, { "et": "12/02/2025 - 01:19:22", "cl": 36, "ucl": 8, "cal": 44, "tl": 78, "lcq": 81.8, "cb": 0, "tb": 0, "bcq": 0 }] },
+      { "name": "ModelLoader", "rp": "Scripts_ModelLoader.html", "cl": 17, "ucl": 0, "cal": 17, "tl": 38, "ct": "LineCoverage", "mc": "-", "cb": 0, "tb": 0, "lch": [100,50,100], "bch": [], "hc": [{ "et": "01/09/2024 - 17:52:08", "cl": 17, "ucl": 0, "cal": 17, "tl": 38, "lcq": 100, "cb": 0, "tb": 0, "bcq": 0 }, { "et": "01/09/2024 - 17:52:21", "cl": 17, "ucl": 0, "cal": 17, "tl": 38, "lcq": 100, "cb": 0, "tb": 0, "bcq": 0 }, { "et": "12/02/2025 - 01:17:35", "cl": 17, "ucl": 17, "cal": 34, "tl": 38, "lcq": 50, "cb": 0, "tb": 0, "bcq": 0 }, { "et": "12/02/2025 - 01:19:22", "cl": 17, "ucl": 0, "cal": 17, "tl": 38, "lcq": 100, "cb": 0, "tb": 0, "bcq": 0 }] },
+      { "name": "ModelSelectionManager", "rp": "Scripts_ModelSelectionManager.html", "cl": 19, "ucl": 2, "cal": 21, "tl": 43, "ct": "LineCoverage", "mc": "-", "cb": 0, "tb": 0, "lch": [90.4,45.2,90.4], "bch": [], "hc": [{ "et": "01/09/2024 - 17:52:08", "cl": 19, "ucl": 2, "cal": 21, "tl": 43, "lcq": 90.4, "cb": 0, "tb": 0, "bcq": 0 }, { "et": "01/09/2024 - 17:52:21", "cl": 19, "ucl": 2, "cal": 21, "tl": 43, "lcq": 90.4, "cb": 0, "tb": 0, "bcq": 0 }, { "et": "12/02/2025 - 01:17:35", "cl": 19, "ucl": 23, "cal": 42, "tl": 43, "lcq": 45.2, "cb": 0, "tb": 0, "bcq": 0 }, { "et": "12/02/2025 - 01:19:22", "cl": 19, "ucl": 2, "cal": 21, "tl": 43, "lcq": 90.4, "cb": 0, "tb": 0, "bcq": 0 }] },
+      { "name": "Nail", "rp": "Scripts_Nail.html", "cl": 4, "ucl": 42, "cal": 46, "tl": 75, "ct": "LineCoverage", "mc": "-", "cb": 0, "tb": 0, "lch": [100,3.4,8.6], "bch": [], "hc": [{ "et": "01/09/2024 - 17:52:08", "cl": 69, "ucl": 0, "cal": 69, "tl": 115, "lcq": 100, "cb": 0, "tb": 0, "bcq": 0 }, { "et": "01/09/2024 - 17:52:21", "cl": 69, "ucl": 0, "cal": 69, "tl": 115, "lcq": 100, "cb": 0, "tb": 0, "bcq": 0 }, { "et": "12/02/2025 - 01:17:35", "cl": 4, "ucl": 111, "cal": 115, "tl": 75, "lcq": 3.4, "cb": 0, "tb": 0, "bcq": 0 }, { "et": "12/02/2025 - 01:19:22", "cl": 4, "ucl": 42, "cal": 46, "tl": 75, "lcq": 8.6, "cb": 0, "tb": 0, "bcq": 0 }] },
+      { "name": "ObjectData", "rp": "Scripts_ObjectData.html", "cl": 0, "ucl": 1, "cal": 1, "tl": 152, "ct": "LineCoverage", "mc": "-", "cb": 0, "tb": 0, "lch": [100,0,0], "bch": [], "hc": [{ "et": "01/09/2024 - 17:52:08", "cl": 1, "ucl": 0, "cal": 1, "tl": 127, "lcq": 100, "cb": 0, "tb": 0, "bcq": 0 }, { "et": "01/09/2024 - 17:52:21", "cl": 1, "ucl": 0, "cal": 1, "tl": 127, "lcq": 100, "cb": 0, "tb": 0, "bcq": 0 }, { "et": "12/02/2025 - 01:17:35", "cl": 0, "ucl": 2, "cal": 2, "tl": 152, "lcq": 0, "cb": 0, "tb": 0, "bcq": 0 }, { "et": "12/02/2025 - 01:19:22", "cl": 0, "ucl": 1, "cal": 1, "tl": 152, "lcq": 0, "cb": 0, "tb": 0, "bcq": 0 }] },
+      { "name": "OpenMenu", "rp": "Scripts_OpenMenu.html", "cl": 0, "ucl": 6, "cal": 6, "tl": 14, "ct": "LineCoverage", "mc": "-", "cb": 0, "tb": 0, "lch": [0,0,0], "bch": [], "hc": [{ "et": "01/09/2024 - 17:52:08", "cl": 0, "ucl": 6, "cal": 6, "tl": 14, "lcq": 0, "cb": 0, "tb": 0, "bcq": 0 }, { "et": "01/09/2024 - 17:52:21", "cl": 0, "ucl": 6, "cal": 6, "tl": 14, "lcq": 0, "cb": 0, "tb": 0, "bcq": 0 }, { "et": "12/02/2025 - 01:17:35", "cl": 0, "ucl": 12, "cal": 12, "tl": 14, "lcq": 0, "cb": 0, "tb": 0, "bcq": 0 }, { "et": "12/02/2025 - 01:19:22", "cl": 0, "ucl": 6, "cal": 6, "tl": 14, "lcq": 0, "cb": 0, "tb": 0, "bcq": 0 }] },
+      { "name": "PdfLoader", "rp": "Scripts_PdfLoader.html", "cl": 111, "ucl": 6, "cal": 117, "tl": 189, "ct": "LineCoverage", "mc": "-", "cb": 0, "tb": 0, "lch": [94.8,47.4,94.8], "bch": [], "hc": [{ "et": "01/09/2024 - 17:52:08", "cl": 111, "ucl": 6, "cal": 117, "tl": 189, "lcq": 94.8, "cb": 0, "tb": 0, "bcq": 0 }, { "et": "01/09/2024 - 17:52:21", "cl": 111, "ucl": 6, "cal": 117, "tl": 189, "lcq": 94.8, "cb": 0, "tb": 0, "bcq": 0 }, { "et": "12/02/2025 - 01:17:35", "cl": 111, "ucl": 123, "cal": 234, "tl": 189, "lcq": 47.4, "cb": 0, "tb": 0, "bcq": 0 }, { "et": "12/02/2025 - 01:19:22", "cl": 111, "ucl": 6, "cal": 117, "tl": 189, "lcq": 94.8, "cb": 0, "tb": 0, "bcq": 0 }] },
+      { "name": "PlayBackManager", "rp": "Scripts_PlayBackManager.html", "cl": 46, "ucl": 22, "cal": 68, "tl": 109, "ct": "LineCoverage", "mc": "-", "cb": 0, "tb": 0, "lch": [91.9,35.3,67.6], "bch": [], "hc": [{ "et": "01/09/2024 - 17:52:08", "cl": 57, "ucl": 5, "cal": 62, "tl": 101, "lcq": 91.9, "cb": 0, "tb": 0, "bcq": 0 }, { "et": "01/09/2024 - 17:52:21", "cl": 57, "ucl": 5, "cal": 62, "tl": 101, "lcq": 91.9, "cb": 0, "tb": 0, "bcq": 0 }, { "et": "12/02/2025 - 01:17:35", "cl": 46, "ucl": 84, "cal": 130, "tl": 109, "lcq": 35.3, "cb": 0, "tb": 0, "bcq": 0 }, { "et": "12/02/2025 - 01:19:22", "cl": 46, "ucl": 22, "cal": 68, "tl": 109, "lcq": 67.6, "cb": 0, "tb": 0, "bcq": 0 }] },
+      { "name": "PrefabManager", "rp": "Scripts_PrefabManager.html", "cl": 86, "ucl": 3, "cal": 89, "tl": 129, "ct": "LineCoverage", "mc": "-", "cb": 0, "tb": 0, "lch": [93.2,48.3,96.6], "bch": [], "hc": [{ "et": "01/09/2024 - 17:52:08", "cl": 83, "ucl": 6, "cal": 89, "tl": 129, "lcq": 93.2, "cb": 0, "tb": 0, "bcq": 0 }, { "et": "01/09/2024 - 17:52:21", "cl": 83, "ucl": 6, "cal": 89, "tl": 129, "lcq": 93.2, "cb": 0, "tb": 0, "bcq": 0 }, { "et": "12/02/2025 - 01:17:35", "cl": 86, "ucl": 92, "cal": 178, "tl": 129, "lcq": 48.3, "cb": 0, "tb": 0, "bcq": 0 }, { "et": "12/02/2025 - 01:19:22", "cl": 86, "ucl": 3, "cal": 89, "tl": 129, "lcq": 96.6, "cb": 0, "tb": 0, "bcq": 0 }] },
+      { "name": "RecordManager", "rp": "Scripts_RecordManager.html", "cl": 12, "ucl": 5, "cal": 17, "tl": 36, "ct": "LineCoverage", "mc": "-", "cb": 0, "tb": 0, "lch": [70.5,35.2,70.5], "bch": [], "hc": [{ "et": "01/09/2024 - 17:52:08", "cl": 12, "ucl": 5, "cal": 17, "tl": 36, "lcq": 70.5, "cb": 0, "tb": 0, "bcq": 0 }, { "et": "01/09/2024 - 17:52:21", "cl": 12, "ucl": 5, "cal": 17, "tl": 36, "lcq": 70.5, "cb": 0, "tb": 0, "bcq": 0 }, { "et": "12/02/2025 - 01:17:35", "cl": 12, "ucl": 22, "cal": 34, "tl": 36, "lcq": 35.2, "cb": 0, "tb": 0, "bcq": 0 }, { "et": "12/02/2025 - 01:19:22", "cl": 12, "ucl": 5, "cal": 17, "tl": 36, "lcq": 70.5, "cb": 0, "tb": 0, "bcq": 0 }] },
+      { "name": "SaveSequence", "rp": "Scripts_SaveSequence.html", "cl": 0, "ucl": 62, "cal": 62, "tl": 152, "ct": "LineCoverage", "mc": "-", "cb": 0, "tb": 0, "lch": [93.6,0,0], "bch": [], "hc": [{ "et": "01/09/2024 - 17:52:08", "cl": 44, "ucl": 3, "cal": 47, "tl": 127, "lcq": 93.6, "cb": 0, "tb": 0, "bcq": 0 }, { "et": "01/09/2024 - 17:52:21", "cl": 44, "ucl": 3, "cal": 47, "tl": 127, "lcq": 93.6, "cb": 0, "tb": 0, "bcq": 0 }, { "et": "12/02/2025 - 01:17:35", "cl": 0, "ucl": 109, "cal": 109, "tl": 152, "lcq": 0, "cb": 0, "tb": 0, "bcq": 0 }, { "et": "12/02/2025 - 01:19:22", "cl": 0, "ucl": 62, "cal": 62, "tl": 152, "lcq": 0, "cb": 0, "tb": 0, "bcq": 0 }] },
+      { "name": "Screw", "rp": "Scripts_Screw.html", "cl": 2, "ucl": 56, "cal": 58, "tl": 85, "ct": "LineCoverage", "mc": "-", "cb": 0, "tb": 0, "lch": [100,1.4,3.4], "bch": [], "hc": [{ "et": "01/09/2024 - 17:52:08", "cl": 84, "ucl": 0, "cal": 84, "tl": 117, "lcq": 100, "cb": 0, "tb": 0, "bcq": 0 }, { "et": "01/09/2024 - 17:52:21", "cl": 84, "ucl": 0, "cal": 84, "tl": 117, "lcq": 100, "cb": 0, "tb": 0, "bcq": 0 }, { "et": "12/02/2025 - 01:17:35", "cl": 2, "ucl": 140, "cal": 142, "tl": 85, "lcq": 1.4, "cb": 0, "tb": 0, "bcq": 0 }, { "et": "12/02/2025 - 01:19:22", "cl": 2, "ucl": 56, "cal": 58, "tl": 85, "lcq": 3.4, "cb": 0, "tb": 0, "bcq": 0 }] },
+      { "name": "SequenceManager", "rp": "Scripts_SequenceManager.html", "cl": 0, "ucl": 68, "cal": 68, "tl": 116, "ct": "LineCoverage", "mc": "-", "cb": 0, "tb": 0, "lch": [83.3,0,0], "bch": [], "hc": [{ "et": "01/09/2024 - 17:52:08", "cl": 45, "ucl": 9, "cal": 54, "tl": 99, "lcq": 83.3, "cb": 0, "tb": 0, "bcq": 0 }, { "et": "01/09/2024 - 17:52:21", "cl": 45, "ucl": 9, "cal": 54, "tl": 99, "lcq": 83.3, "cb": 0, "tb": 0, "bcq": 0 }, { "et": "12/02/2025 - 01:17:35", "cl": 0, "ucl": 122, "cal": 122, "tl": 116, "lcq": 0, "cb": 0, "tb": 0, "bcq": 0 }, { "et": "12/02/2025 - 01:19:22", "cl": 0, "ucl": 68, "cal": 68, "tl": 116, "lcq": 0, "cb": 0, "tb": 0, "bcq": 0 }] },
+      { "name": "SequenceReader", "rp": "Scripts_SequenceReader.html", "cl": 7, "ucl": 125, "cal": 132, "tl": 222, "ct": "LineCoverage", "mc": "-", "cb": 0, "tb": 0, "lch": [88.4,2.9,5.3], "bch": [], "hc": [{ "et": "01/09/2024 - 17:52:08", "cl": 92, "ucl": 12, "cal": 104, "tl": 173, "lcq": 88.4, "cb": 0, "tb": 0, "bcq": 0 }, { "et": "01/09/2024 - 17:52:21", "cl": 92, "ucl": 12, "cal": 104, "tl": 173, "lcq": 88.4, "cb": 0, "tb": 0, "bcq": 0 }, { "et": "12/02/2025 - 01:17:35", "cl": 7, "ucl": 229, "cal": 236, "tl": 222, "lcq": 2.9, "cb": 0, "tb": 0, "bcq": 0 }, { "et": "12/02/2025 - 01:19:22", "cl": 7, "ucl": 125, "cal": 132, "tl": 222, "lcq": 5.3, "cb": 0, "tb": 0, "bcq": 0 }] },
+      { "name": "SimpleHammer", "rp": "Scripts_SimpleHammer.html", "cl": 22, "ucl": 3, "cal": 25, "tl": 53, "ct": "LineCoverage", "mc": "-", "cb": 0, "tb": 0, "lch": [90.6,38.5,88], "bch": [], "hc": [{ "et": "01/09/2024 - 17:52:08", "cl": 29, "ucl": 3, "cal": 32, "tl": 62, "lcq": 90.6, "cb": 0, "tb": 0, "bcq": 0 }, { "et": "01/09/2024 - 17:52:21", "cl": 29, "ucl": 3, "cal": 32, "tl": 62, "lcq": 90.6, "cb": 0, "tb": 0, "bcq": 0 }, { "et": "12/02/2025 - 01:17:35", "cl": 22, "ucl": 35, "cal": 57, "tl": 53, "lcq": 38.5, "cb": 0, "tb": 0, "bcq": 0 }, { "et": "12/02/2025 - 01:19:22", "cl": 22, "ucl": 3, "cal": 25, "tl": 53, "lcq": 88, "cb": 0, "tb": 0, "bcq": 0 }] },
+      { "name": "SnapToPosition", "rp": "Scripts_SnapToPosition.html", "cl": 0, "ucl": 118, "cal": 118, "tl": 224, "ct": "LineCoverage", "mc": "-", "cb": 0, "tb": 0, "lch": [84.7,0,0], "bch": [], "hc": [{ "et": "01/09/2024 - 17:52:08", "cl": 78, "ucl": 14, "cal": 92, "tl": 168, "lcq": 84.7, "cb": 0, "tb": 0, "bcq": 0 }, { "et": "01/09/2024 - 17:52:21", "cl": 78, "ucl": 14, "cal": 92, "tl": 168, "lcq": 84.7, "cb": 0, "tb": 0, "bcq": 0 }, { "et": "12/02/2025 - 01:17:35", "cl": 0, "ucl": 210, "cal": 210, "tl": 224, "lcq": 0, "cb": 0, "tb": 0, "bcq": 0 }, { "et": "12/02/2025 - 01:19:22", "cl": 0, "ucl": 118, "cal": 118, "tl": 224, "lcq": 0, "cb": 0, "tb": 0, "bcq": 0 }] },
+      { "name": "StateManager", "rp": "Scripts_StateManager.html", "cl": 15, "ucl": 0, "cal": 15, "tl": 39, "ct": "LineCoverage", "mc": "-", "cb": 0, "tb": 0, "lch": [100,50,100], "bch": [], "hc": [{ "et": "01/09/2024 - 17:52:08", "cl": 15, "ucl": 0, "cal": 15, "tl": 29, "lcq": 100, "cb": 0, "tb": 0, "bcq": 0 }, { "et": "01/09/2024 - 17:52:21", "cl": 15, "ucl": 0, "cal": 15, "tl": 29, "lcq": 100, "cb": 0, "tb": 0, "bcq": 0 }, { "et": "12/02/2025 - 01:17:35", "cl": 15, "ucl": 15, "cal": 30, "tl": 39, "lcq": 50, "cb": 0, "tb": 0, "bcq": 0 }, { "et": "12/02/2025 - 01:19:22", "cl": 15, "ucl": 0, "cal": 15, "tl": 39, "lcq": 100, "cb": 0, "tb": 0, "bcq": 0 }] },
+      { "name": "StepsManager", "rp": "Scripts_StepsManager.html", "cl": 0, "ucl": 183, "cal": 183, "tl": 254, "ct": "LineCoverage", "mc": "-", "cb": 0, "tb": 0, "lch": [0], "bch": [], "hc": [{ "et": "12/02/2025 - 01:17:35", "cl": 0, "ucl": 183, "cal": 183, "tl": 254, "lcq": 0, "cb": 0, "tb": 0, "bcq": 0 }, { "et": "12/02/2025 - 01:19:22", "cl": 0, "ucl": 183, "cal": 183, "tl": 254, "lcq": 0, "cb": 0, "tb": 0, "bcq": 0 }] },
+      { "name": "TableComponentDataSO", "rp": "Scripts_TableComponentDataSO.html", "cl": 0, "ucl": 1, "cal": 1, "tl": 251, "ct": "LineCoverage", "mc": "-", "cb": 0, "tb": 0, "lch": [0], "bch": [], "hc": [{ "et": "12/02/2025 - 01:17:35", "cl": 0, "ucl": 1, "cal": 1, "tl": 251, "lcq": 0, "cb": 0, "tb": 0, "bcq": 0 }, { "et": "12/02/2025 - 01:19:22", "cl": 0, "ucl": 1, "cal": 1, "tl": 251, "lcq": 0, "cb": 0, "tb": 0, "bcq": 0 }] },
+      { "name": "TableComponentListSO", "rp": "Scripts_TableComponentListSO.html", "cl": 0, "ucl": 1, "cal": 1, "tl": 251, "ct": "LineCoverage", "mc": "-", "cb": 0, "tb": 0, "lch": [0], "bch": [], "hc": [{ "et": "12/02/2025 - 01:17:35", "cl": 0, "ucl": 1, "cal": 1, "tl": 251, "lcq": 0, "cb": 0, "tb": 0, "bcq": 0 }, { "et": "12/02/2025 - 01:19:22", "cl": 0, "ucl": 1, "cal": 1, "tl": 251, "lcq": 0, "cb": 0, "tb": 0, "bcq": 0 }] },
+      { "name": "TableUIManager", "rp": "Scripts_TableUIManager.html", "cl": 0, "ucl": 149, "cal": 149, "tl": 251, "ct": "LineCoverage", "mc": "-", "cb": 0, "tb": 0, "lch": [0], "bch": [], "hc": [{ "et": "12/02/2025 - 01:17:35", "cl": 0, "ucl": 149, "cal": 149, "tl": 251, "lcq": 0, "cb": 0, "tb": 0, "bcq": 0 }, { "et": "12/02/2025 - 01:19:22", "cl": 0, "ucl": 149, "cal": 149, "tl": 251, "lcq": 0, "cb": 0, "tb": 0, "bcq": 0 }] },
+      { "name": "Tool", "rp": "Scripts_Tool.html", "cl": 18, "ucl": 1, "cal": 19, "tl": 32, "ct": "LineCoverage", "mc": "-", "cb": 0, "tb": 0, "lch": [100,48.6,94.7], "bch": [], "hc": [{ "et": "01/09/2024 - 17:52:08", "cl": 18, "ucl": 0, "cal": 18, "tl": 28, "lcq": 100, "cb": 0, "tb": 0, "bcq": 0 }, { "et": "01/09/2024 - 17:52:21", "cl": 18, "ucl": 0, "cal": 18, "tl": 28, "lcq": 100, "cb": 0, "tb": 0, "bcq": 0 }, { "et": "12/02/2025 - 01:17:35", "cl": 18, "ucl": 19, "cal": 37, "tl": 32, "lcq": 48.6, "cb": 0, "tb": 0, "bcq": 0 }, { "et": "12/02/2025 - 01:19:22", "cl": 18, "ucl": 1, "cal": 19, "tl": 32, "lcq": 94.7, "cb": 0, "tb": 0, "bcq": 0 }] },
+      { "name": "ToolManager", "rp": "Scripts_ToolManager.html", "cl": 0, "ucl": 55, "cal": 55, "tl": 79, "ct": "LineCoverage", "mc": "-", "cb": 0, "tb": 0, "lch": [100,0,0], "bch": [], "hc": [{ "et": "01/09/2024 - 17:52:08", "cl": 39, "ucl": 0, "cal": 39, "tl": 71, "lcq": 100, "cb": 0, "tb": 0, "bcq": 0 }, { "et": "01/09/2024 - 17:52:21", "cl": 39, "ucl": 0, "cal": 39, "tl": 71, "lcq": 100, "cb": 0, "tb": 0, "bcq": 0 }, { "et": "12/02/2025 - 01:17:35", "cl": 0, "ucl": 94, "cal": 94, "tl": 79, "lcq": 0, "cb": 0, "tb": 0, "bcq": 0 }, { "et": "12/02/2025 - 01:19:22", "cl": 0, "ucl": 55, "cal": 55, "tl": 79, "lcq": 0, "cb": 0, "tb": 0, "bcq": 0 }] },
+      { "name": "Unity.VRTemplate.XRKnob", "rp": "Scripts_XRKnob.html", "cl": 0, "ucl": 209, "cal": 209, "tl": 440, "ct": "LineCoverage", "mc": "-", "cb": 0, "tb": 0, "lch": [0], "bch": [], "hc": [{ "et": "12/02/2025 - 01:17:35", "cl": 0, "ucl": 209, "cal": 209, "tl": 440, "lcq": 0, "cb": 0, "tb": 0, "bcq": 0 }, { "et": "12/02/2025 - 01:19:22", "cl": 0, "ucl": 209, "cal": 209, "tl": 440, "lcq": 0, "cb": 0, "tb": 0, "bcq": 0 }] },
+      { "name": "WoodenPin", "rp": "Scripts_WoodenPin.html", "cl": 4, "ucl": 65, "cal": 69, "tl": 109, "ct": "LineCoverage", "mc": "-", "cb": 0, "tb": 0, "lch": [100,2.8,5.7], "bch": [], "hc": [{ "et": "01/09/2024 - 17:52:08", "cl": 69, "ucl": 0, "cal": 69, "tl": 115, "lcq": 100, "cb": 0, "tb": 0, "bcq": 0 }, { "et": "01/09/2024 - 17:52:21", "cl": 69, "ucl": 0, "cal": 69, "tl": 115, "lcq": 100, "cb": 0, "tb": 0, "bcq": 0 }, { "et": "12/02/2025 - 01:17:35", "cl": 4, "ucl": 134, "cal": 138, "tl": 109, "lcq": 2.8, "cb": 0, "tb": 0, "bcq": 0 }, { "et": "12/02/2025 - 01:19:22", "cl": 4, "ucl": 65, "cal": 69, "tl": 109, "lcq": 5.7, "cb": 0, "tb": 0, "bcq": 0 }] },
     ]},
 ];
 
-var historicCoverageExecutionTimes = ["01/09/2024 - 17:52:08"];
+var historicCoverageExecutionTimes = ["12/02/2025 - 01:17:35", "01/09/2024 - 17:52:21", "01/09/2024 - 17:52:08"];
 
 var riskHotspotMetrics = [
       { "name": "Cyclomatic complexity", "explanationUrl": "https://en.wikipedia.org/wiki/Cyclomatic_complexity" },
@@ -283,18 +289,242 @@ var riskHotspotMetrics = [
 
 var riskHotspots = [
   {
-    "assembly": "Scripts", "class": "HandMenuManager", "reportPath": "Scripts_HandMenuManager.html", "methodName": "System.Void HandMenuManager::GroupSelection()", "methodShortName": "GroupSelection()", "fileIndex": 0, "line": 315,
+    "assembly": "Scripts", "class": "SnapToPosition", "reportPath": "Scripts_SnapToPosition.html", "methodName": "System.Void SnapToPosition::CheckSnap(UnityEngine.Collider)", "methodShortName": "CheckSnap(...)", "fileIndex": 0, "line": 86,
+    "metrics": [
+      { "value": 21, "exceeded": true },
+      { "value": 0, "exceeded": false },
+      { "value": 462, "exceeded": true },
+    ]},
+  {
+    "assembly": "Scripts", "class": "InitializedDataManager", "reportPath": "Scripts_InitializedDataManager.html", "methodName": "System.Void InitializedDataManager::SaveComponentsData()", "methodShortName": "SaveComponentsData()", "fileIndex": 0, "line": 41,
+    "metrics": [
+      { "value": 16, "exceeded": true },
+      { "value": 0, "exceeded": false },
+      { "value": 272, "exceeded": true },
+    ]},
+  {
+    "assembly": "Scripts", "class": "Manager", "reportPath": "Scripts_Manager.html", "methodName": "System.Void Manager::UpdateComponentsPerCurrentStep()", "methodShortName": "UpdateComponentsPerCurrentStep()", "fileIndex": 0, "line": 193,
+    "metrics": [
+      { "value": 16, "exceeded": true },
+      { "value": 0, "exceeded": false },
+      { "value": 272, "exceeded": true },
+    ]},
+  {
+    "assembly": "Scripts", "class": "InitializeComponentManager", "reportPath": "Scripts_InitializeComponentManager.html", "methodName": "System.Void InitializeComponentManager::UpdateDropdownsForSelectedComponent(UnityEngine.GameObject)", "methodShortName": "UpdateDropdownsForSelectedComponent(...)", "fileIndex": 0, "line": 248,
+    "metrics": [
+      { "value": 13, "exceeded": false },
+      { "value": 0, "exceeded": false },
+      { "value": 182, "exceeded": true },
+    ]},
+  {
+    "assembly": "Scripts", "class": "Unity.VRTemplate.XRKnob", "reportPath": "Scripts_XRKnob.html", "methodName": "System.Void Unity.VRTemplate.XRKnob::UpdateRotation(System.Boolean)", "methodShortName": "UpdateRotation(...)", "fileIndex": 0, "line": 260,
+    "metrics": [
+      { "value": 13, "exceeded": false },
+      { "value": 0, "exceeded": false },
+      { "value": 182, "exceeded": true },
+    ]},
+  {
+    "assembly": "Scripts", "class": "Manager", "reportPath": "Scripts_Manager.html", "methodName": "System.Void Manager::PlaybackSpawnComponents()", "methodShortName": "PlaybackSpawnComponents()", "fileIndex": 0, "line": 317,
+    "metrics": [
+      { "value": 16, "exceeded": true },
+      { "value": 0, "exceeded": false },
+      { "value": 164.13, "exceeded": true },
+    ]},
+  {
+    "assembly": "Scripts", "class": "StepsManager", "reportPath": "Scripts_StepsManager.html", "methodName": "System.Void StepsManager::UpdateComponentsForStepManager(System.Int32)", "methodShortName": "UpdateComponentsForStepManager(...)", "fileIndex": 0, "line": 210,
+    "metrics": [
+      { "value": 12, "exceeded": false },
+      { "value": 0, "exceeded": false },
+      { "value": 156, "exceeded": true },
+    ]},
+  {
+    "assembly": "Scripts", "class": "InitializedDataManager", "reportPath": "Scripts_InitializedDataManager.html", "methodName": "System.Void InitializedDataManager::LoadComponentsData()", "methodShortName": "LoadComponentsData()", "fileIndex": 0, "line": 122,
+    "metrics": [
+      { "value": 11, "exceeded": false },
+      { "value": 0, "exceeded": false },
+      { "value": 132, "exceeded": true },
+    ]},
+  {
+    "assembly": "Scripts", "class": "StepsManager", "reportPath": "Scripts_StepsManager.html", "methodName": "System.Void StepsManager::ShowPlacement(System.Int32)", "methodShortName": "ShowPlacement(...)", "fileIndex": 0, "line": 156,
+    "metrics": [
+      { "value": 11, "exceeded": false },
+      { "value": 0, "exceeded": false },
+      { "value": 132, "exceeded": true },
+    ]},
+  {
+    "assembly": "Scripts", "class": "ToolManager", "reportPath": "Scripts_ToolManager.html", "methodName": "System.Void ToolManager::HighlightToolByName(System.String)", "methodShortName": "HighlightToolByName(...)", "fileIndex": 0, "line": 13,
+    "metrics": [
+      { "value": 11, "exceeded": false },
+      { "value": 0, "exceeded": false },
+      { "value": 132, "exceeded": true },
+    ]},
+  {
+    "assembly": "Scripts", "class": "Screw", "reportPath": "Scripts_Screw.html", "methodName": "System.Void Screw::HandleInteraction()", "methodShortName": "HandleInteraction()", "fileIndex": 0, "line": 12,
+    "metrics": [
+      { "value": 10, "exceeded": false },
+      { "value": 0, "exceeded": false },
+      { "value": 110, "exceeded": true },
+    ]},
+  {
+    "assembly": "Scripts", "class": "Screw", "reportPath": "Scripts_Screw.html", "methodName": "System.Void Screw::Interaction()", "methodShortName": "Interaction()", "fileIndex": 0, "line": 31,
+    "metrics": [
+      { "value": 9, "exceeded": false },
+      { "value": 0, "exceeded": false },
+      { "value": 90, "exceeded": true },
+    ]},
+  {
+    "assembly": "Scripts", "class": "SequenceReader", "reportPath": "Scripts_SequenceReader.html", "methodName": "UnityEngine.GameObject SequenceReader::CreateSnapParentObject(UnityEngine.GameObject, RootObject)", "methodShortName": "CreateSnapParentObject(...)", "fileIndex": 0, "line": 78,
+    "metrics": [
+      { "value": 9, "exceeded": false },
+      { "value": 0, "exceeded": false },
+      { "value": 90, "exceeded": true },
+    ]},
+  {
+    "assembly": "Scripts", "class": "TableUIManager", "reportPath": "Scripts_TableUIManager.html", "methodName": "System.Void TableUIManager::UpdatePrefabButtons(System.String)", "methodShortName": "UpdatePrefabButtons(...)", "fileIndex": 0, "line": 190,
+    "metrics": [
+      { "value": 9, "exceeded": false },
+      { "value": 0, "exceeded": false },
+      { "value": 90, "exceeded": true },
+    ]},
+  {
+    "assembly": "Scripts", "class": "Fastener", "reportPath": "Scripts_Fastener.html", "methodName": "System.Void Fastener::AlignWithComponent(UnityEngine.Vector3, UnityEngine.Vector3)", "methodShortName": "AlignWithComponent(...)", "fileIndex": 0, "line": 230,
+    "metrics": [
+      { "value": 10, "exceeded": false },
+      { "value": 0, "exceeded": false },
+      { "value": 89.02, "exceeded": true },
+    ]},
+  {
+    "assembly": "Scripts", "class": "Nail", "reportPath": "Scripts_Nail.html", "methodName": "System.Void Nail::HandleInteraction()", "methodShortName": "HandleInteraction()", "fileIndex": 0, "line": 15,
+    "metrics": [
+      { "value": 8, "exceeded": false },
+      { "value": 0, "exceeded": false },
+      { "value": 72, "exceeded": true },
+    ]},
+  {
+    "assembly": "Scripts", "class": "Nail", "reportPath": "Scripts_Nail.html", "methodName": "System.Void Nail::Interaction()", "methodShortName": "Interaction()", "fileIndex": 0, "line": 32,
+    "metrics": [
+      { "value": 8, "exceeded": false },
+      { "value": 0, "exceeded": false },
+      { "value": 72, "exceeded": true },
+    ]},
+  {
+    "assembly": "Scripts", "class": "SequenceManager", "reportPath": "Scripts_SequenceManager.html", "methodName": "System.Void SequenceManager::ValidateComponent(UnityEngine.GameObject)", "methodShortName": "ValidateComponent(...)", "fileIndex": 0, "line": 86,
+    "metrics": [
+      { "value": 8, "exceeded": false },
+      { "value": 0, "exceeded": false },
+      { "value": 72, "exceeded": true },
+    ]},
+  {
+    "assembly": "Scripts", "class": "TableUIManager", "reportPath": "Scripts_TableUIManager.html", "methodName": "System.Void TableUIManager::PopulateAttributesUI(System.String)", "methodShortName": "PopulateAttributesUI(...)", "fileIndex": 0, "line": 98,
+    "metrics": [
+      { "value": 8, "exceeded": false },
+      { "value": 0, "exceeded": false },
+      { "value": 72, "exceeded": true },
+    ]},
+  {
+    "assembly": "Scripts", "class": "Fastener", "reportPath": "Scripts_Fastener.html", "methodName": "System.Void Fastener::FixedUpdate()", "methodShortName": "FixedUpdate()", "fileIndex": 0, "line": 92,
+    "metrics": [
+      { "value": 7, "exceeded": false },
+      { "value": 0, "exceeded": false },
+      { "value": 56, "exceeded": true },
+    ]},
+  {
+    "assembly": "Scripts", "class": "Fastener", "reportPath": "Scripts_Fastener.html", "methodName": "UnityEngine.Vector3 Fastener::MapSelectedAxisToTransformDirection(UnityEngine.Vector3)", "methodShortName": "MapSelectedAxisToTransformDirection(...)", "fileIndex": 0, "line": 367,
+    "metrics": [
+      { "value": 7, "exceeded": false },
+      { "value": 0, "exceeded": false },
+      { "value": 56, "exceeded": true },
+    ]},
+  {
+    "assembly": "Scripts", "class": "InitializeComponentManager", "reportPath": "Scripts_InitializeComponentManager.html", "methodName": "System.Void InitializeComponentManager::OnAxisDropdownValueChanged(System.Int32)", "methodShortName": "OnAxisDropdownValueChanged(...)", "fileIndex": 0, "line": 319,
+    "metrics": [
+      { "value": 7, "exceeded": false },
+      { "value": 0, "exceeded": false },
+      { "value": 56, "exceeded": true },
+    ]},
+  {
+    "assembly": "Scripts", "class": "SnapToPosition", "reportPath": "Scripts_SnapToPosition.html", "methodName": "System.Void SnapToPosition::OnTriggerStay(UnityEngine.Collider)", "methodShortName": "OnTriggerStay(...)", "fileIndex": 0, "line": 72,
+    "metrics": [
+      { "value": 7, "exceeded": false },
+      { "value": 0, "exceeded": false },
+      { "value": 56, "exceeded": true },
+    ]},
+  {
+    "assembly": "Scripts", "class": "WoodenPin", "reportPath": "Scripts_WoodenPin.html", "methodName": "System.Void WoodenPin::HandleInteraction()", "methodShortName": "HandleInteraction()", "fileIndex": 0, "line": 14,
+    "metrics": [
+      { "value": 7, "exceeded": false },
+      { "value": 0, "exceeded": false },
+      { "value": 56, "exceeded": true },
+    ]},
+  {
+    "assembly": "Scripts", "class": "DynamometerScrewDriver", "reportPath": "Scripts_DynamometerScrewDriver.html", "methodName": "System.Void DynamometerScrewDriver::ActivateAudio(System.Single)", "methodShortName": "ActivateAudio(...)", "fileIndex": 0, "line": 66,
+    "metrics": [
+      { "value": 6, "exceeded": false },
+      { "value": 0, "exceeded": false },
+      { "value": 42, "exceeded": true },
+    ]},
+  {
+    "assembly": "Scripts", "class": "ElectricScrewDriver", "reportPath": "Scripts_ElectricScrewDriver.html", "methodName": "System.Void ElectricScrewDriver::ActivateAudio(System.Single)", "methodShortName": "ActivateAudio(...)", "fileIndex": 0, "line": 52,
+    "metrics": [
+      { "value": 6, "exceeded": false },
+      { "value": 0, "exceeded": false },
+      { "value": 42, "exceeded": true },
+    ]},
+  {
+    "assembly": "Scripts", "class": "InitializeComponentManager", "reportPath": "Scripts_InitializeComponentManager.html", "methodName": "System.Void InitializeComponentManager::UpdateSelectedFastener()", "methodShortName": "UpdateSelectedFastener()", "fileIndex": 0, "line": 336,
+    "metrics": [
+      { "value": 6, "exceeded": false },
+      { "value": 0, "exceeded": false },
+      { "value": 42, "exceeded": true },
+    ]},
+  {
+    "assembly": "Scripts", "class": "Manager", "reportPath": "Scripts_Manager.html", "methodName": "System.Void Manager::CopyComponentObjectToInteractor()", "methodShortName": "CopyComponentObjectToInteractor()", "fileIndex": 0, "line": 537,
+    "metrics": [
+      { "value": 6, "exceeded": false },
+      { "value": 0, "exceeded": false },
+      { "value": 42, "exceeded": true },
+    ]},
+  {
+    "assembly": "Scripts", "class": "SaveSequence", "reportPath": "Scripts_SaveSequence.html", "methodName": "System.Void SaveSequence::SaveComponent(UnityEngine.GameObject)", "methodShortName": "SaveComponent(...)", "fileIndex": 0, "line": 66,
+    "metrics": [
+      { "value": 6, "exceeded": false },
+      { "value": 0, "exceeded": false },
+      { "value": 42, "exceeded": true },
+    ]},
+  {
+    "assembly": "Scripts", "class": "StepsManager", "reportPath": "Scripts_StepsManager.html", "methodName": "System.Void StepsManager::Update()", "methodShortName": "Update()", "fileIndex": 0, "line": 71,
+    "metrics": [
+      { "value": 6, "exceeded": false },
+      { "value": 0, "exceeded": false },
+      { "value": 42, "exceeded": true },
+    ]},
+  {
+    "assembly": "Scripts", "class": "TableUIManager", "reportPath": "Scripts_TableUIManager.html", "methodName": "System.Void TableUIManager::InitializeComponentType(UnityEngine.GameObject)", "methodShortName": "InitializeComponentType(...)", "fileIndex": 0, "line": 230,
+    "metrics": [
+      { "value": 6, "exceeded": false },
+      { "value": 0, "exceeded": false },
+      { "value": 42, "exceeded": true },
+    ]},
+  {
+    "assembly": "Scripts", "class": "Fastener", "reportPath": "Scripts_Fastener.html", "methodName": "System.Void Fastener::PerformComponentRaycast()", "methodShortName": "PerformComponentRaycast()", "fileIndex": 0, "line": 163,
+    "metrics": [
+      { "value": 7, "exceeded": false },
+      { "value": 0, "exceeded": false },
+      { "value": 41.05, "exceeded": true },
+    ]},
+  {
+    "assembly": "Scripts", "class": "Fastener", "reportPath": "Scripts_Fastener.html", "methodName": "System.Void Fastener::OnTriggerEnter(UnityEngine.Collider)", "methodShortName": "OnTriggerEnter(...)", "fileIndex": 0, "line": 106,
+    "metrics": [
+      { "value": 10, "exceeded": false },
+      { "value": 0, "exceeded": false },
+      { "value": 30.14, "exceeded": true },
+    ]},
+  {
+    "assembly": "Scripts", "class": "HandMenuManager", "reportPath": "Scripts_HandMenuManager.html", "methodName": "System.Void HandMenuManager::GroupSelection()", "methodShortName": "GroupSelection()", "fileIndex": 0, "line": 317,
     "metrics": [
       { "value": 18, "exceeded": true },
       { "value": 0, "exceeded": false },
       { "value": 18, "exceeded": false },
-    ]},
-  {
-    "assembly": "Scripts", "class": "SnapToPosition", "reportPath": "Scripts_SnapToPosition.html", "methodName": "System.Void SnapToPosition::CheckSnap(UnityEngine.Collider)", "methodShortName": "CheckSnap(...)", "fileIndex": 0, "line": 75,
-    "metrics": [
-      { "value": 17, "exceeded": true },
-      { "value": 0, "exceeded": false },
-      { "value": 18.86, "exceeded": false },
     ]},
 ];
 
