@@ -4,33 +4,6 @@ using UnityEngine;
 using TMPro;
 using UnityEngine.UI;
 using Newtonsoft.Json;
-using System;
-
-
-[CreateAssetMenu(fileName = "TableComponentData", menuName = "ScriptableObjects/TableComponentData", order = 1)]
-[Serializable]
-public class TableComponentDataSO : ScriptableObject
-{
-    public string id;
-    public string type;
-    public List<AttributeData> attributes = new List<AttributeData>();
-    public GameObject prefab;
-}
-
-[Serializable]
-public class AttributeData
-{
-    public string key;
-    public string value;
-}
-
-
-[CreateAssetMenu(fileName = "TableComponentList", menuName = "ScriptableObjects/TableComponentList", order = 2)]
-[Serializable]
-public class TableComponentListSO : ScriptableObject
-{
-    public List<TableComponentDataSO> components = new List<TableComponentDataSO>();
-}
 
 
 public class TableUIManager : MonoBehaviour
