@@ -157,7 +157,7 @@ public class PdfLoader : MonoBehaviour
         return int.MaxValue; // Put files without a valid number at the end
     }
 
-    private void ShowPage(int pageIndex)
+    public void ShowPage(int pageIndex)
     {
         if (pages.Count == 0 || pageIndex < 0 || pageIndex >= pages.Count)
         {

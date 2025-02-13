@@ -254,6 +254,14 @@ public class Manager : MonoBehaviour
             return;
         }
 
+        if (LoaderPDF.CanActivePanel && CurrentStep + 1 < AssemblySequence.Count)
+        {
+            var nextStep = AssemblySequence[CurrentStep + 1];
+            if (nextStep != null)
+            {
+                LoaderPDF.ShowPage(nextStep.pdfIndex);
+            }
+        }
         sequenceManager.IncrementCurrentStep();
 
         UpdateComponentsPerCurrentStep();
