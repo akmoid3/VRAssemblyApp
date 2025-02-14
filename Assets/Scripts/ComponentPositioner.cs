@@ -72,6 +72,7 @@ public class ComponentPositioner : MonoBehaviour
         {
             audioSource.loop = true;
         }
+        progressPanel.SetActive(false);
     }
 
     public void Update()
@@ -127,21 +128,24 @@ public class ComponentPositioner : MonoBehaviour
             Destroy(instantiatedPrefab);
         }
 
-        // Per ogni componente, aggiungiamo i collider generati dalla convex decomposition
+        
         await AddVHACDCollidersToComponentsAsync(Manager.Instance.Components);
     }
 
     public async Task AddVHACDCollidersToComponentsAsync(List<Transform> components)
     {
-        // Attiva il pannello di progresso e azzera lo slider
         if (progressPanel != null)
             progressPanel.SetActive(true);
         if (progressBar != null)
             progressBar.value = 0;
         if (progressText != null)
-            progressText.text = "Loading colliders: 0%";
+            progressText.text = "Generating colliders: 0%";
 
         int totalComponents = components.Count;
+        
+        VHACD vhacd = GetComponent<VHACD>();
+        if (vhacd != null)
+            vhacd = this.gameObject.AddComponent<VHACD>();
         for (int i = 0; i < totalComponents; i++)
         {
             Transform comp = components[i];
@@ -152,15 +156,9 @@ public class ComponentPositioner : MonoBehaviour
                 continue;
             }
 
-            // Aggiungi il componente VHACD se non esiste già
-            VHACD vhacd = comp.GetComponent<VHACD>();
-            if (vhacd == null)
-            {
-                vhacd = comp.gameObject.AddComponent<VHACD>();
-            }
+            
 
             Mesh mesh = mf.sharedMesh;
-            // Esegui la convex decomposition in background (passando mesh, vertici e triangoli)
             List<Mesh> convexMeshes = await vhacd.GenerateConvexMeshesAsync(mesh, mesh.vertices, mesh.triangles);
             if (convexMeshes == null || convexMeshes.Count == 0)
             {
@@ -168,14 +166,14 @@ public class ComponentPositioner : MonoBehaviour
                 continue;
             }
 
-            // Rimuovi tutti i collider esistenti per evitare sovrapposizioni
+            // Rimozione tutti i collider esistenti per evitare sovrapposizioni
             Collider[] existingColliders = comp.GetComponents<Collider>();
             foreach (Collider col in existingColliders)
             {
                 Destroy(col);
             }
 
-            // Aggiungi i MeshCollider (sul thread principale)
+            // Aggiunta MeshCollider (sul thread principale)
             foreach (Mesh convexMesh in convexMeshes)
             {
                 MeshCollider meshCollider = comp.gameObject.AddComponent<MeshCollider>();
@@ -183,18 +181,15 @@ public class ComponentPositioner : MonoBehaviour
                 meshCollider.convex = true;
             }
 
-            // Aggiorna il progresso
             float progress = (float)(i + 1) / totalComponents;
             if (progressBar != null)
                 progressBar.value = progress;
             if (progressText != null)
-                progressText.text = $"Loading colliders: {(int)(progress * 100)}%";
+                progressText.text = $"Generating colliders: {(int)(progress * 100)}%";
 
-            // Rilascia il controllo per permettere l'aggiornamento dell'interfaccia
             await Task.Yield();
         }
 
-        // Nascondi il pannello di progresso al termine
         if (progressPanel != null)
             progressPanel.SetActive(false);
     }

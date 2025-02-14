@@ -133,7 +133,6 @@ namespace MeshProcess
 
         public VHACD() { m_parameters.Init(); }
 
-        // Struttura per contenere i dati "grezzi" dei convex hull (senza dipendenze Unity)
         public struct ConvexMeshData
         {
             public Vector3[] vertices;
