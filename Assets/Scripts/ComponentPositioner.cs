@@ -144,8 +144,7 @@ public class ComponentPositioner : MonoBehaviour
         int totalComponents = components.Count;
         
         VHACD vhacd = GetComponent<VHACD>();
-        if (vhacd != null)
-            vhacd = this.gameObject.AddComponent<VHACD>();
+      
         for (int i = 0; i < totalComponents; i++)
         {
             Transform comp = components[i];
