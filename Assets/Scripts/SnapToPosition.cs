@@ -132,17 +132,17 @@ public class SnapToPosition : MonoBehaviour
                     // Add the object to the snapped objects set
                     snappedObjects.Add(other.gameObject);
 
-                    snapPoint.meshRenderer.enabled = false;
+                    snapPoint.meshRenderer.enabled = true;
 
                     other.transform.SetParent(snapPoint.snapTransform);
 
 
                     componentObject.SetIsPlaced(true);
 
-                    AddGrabbable(other as MeshCollider);
-
+                    //AddGrabbable(other as MeshCollider);
+                    TransferCollidersToSnapPoint(other.transform, snapPoint.snapTransform);
+                    AddChildCollidersToParentGrabbable();
                     componentObject.PlayBuildPopSound();
-
                     int currentStepId = Manager.Instance.AssemblySequence[Manager.Instance.CurrentStep].stepId;
 
                     if (!Manager.Instance.CurrentAssembledSequence.ContainsKey(currentStepId))
@@ -155,6 +155,27 @@ public class SnapToPosition : MonoBehaviour
                     OnComponentPlaced?.Invoke();
                 }
             }
+        }
+    }
+
+    private void TransferCollidersToSnapPoint(Transform snappedComponent, Transform snapPointTransform)
+    {
+        // Ottieni tutti i MeshCollider presenti sul componente (e nei suoi figli)
+        MeshCollider[] componentColliders = snappedComponent.GetComponentsInChildren<MeshCollider>();
+    
+        foreach (MeshCollider originalCollider in componentColliders)
+        {
+            // Cambia layer per il collider originale
+            originalCollider.gameObject.layer = LayerMask.NameToLayer("OriginalColliders");
+
+            // Clona il collider nel gameObject dello snap point
+            MeshCollider newCollider = snapPointTransform.gameObject.AddComponent<MeshCollider>();
+            newCollider.sharedMesh = originalCollider.sharedMesh;
+            newCollider.convex = originalCollider.convex;
+            newCollider.isTrigger = originalCollider.isTrigger;
+
+            // Cambia layer per il nuovo collider
+            newCollider.gameObject.layer = LayerMask.NameToLayer("SnapPointColliders");
         }
     }
 
@@ -183,42 +204,49 @@ public class SnapToPosition : MonoBehaviour
     }
 
 
-    private void AddGrabbable(MeshCollider collider)
+    private void AddChildCollidersToParentGrabbable()
     {
-        XRGrabInteractable xrGrabInteractable = GetComponent<XRGrabInteractable>();
-        MakeGrabbable makeGrabbable = collider.GetComponent<MakeGrabbable>();
-        makeGrabbable.DestroyInteractables();
-        if (xrGrabInteractable)
+        // Try to get or add an XRGrabInteractable on the parent (this object)
+        XRGrabInteractable grabInteractable = GetComponent<XRGrabInteractable>();
+        if (grabInteractable == null)
         {
-            // Unregister the interactable from the interaction manager
-            interactionManager.UnregisterInteractable(xrGrabInteractable as IXRInteractable);
-
-
-            xrGrabInteractable.throwOnDetach = false;
-            xrGrabInteractable.useDynamicAttach = true;
-            xrGrabInteractable.selectMode = InteractableSelectMode.Multiple;
-            xrGrabInteractable.movementType = XRBaseInteractable.MovementType.VelocityTracking;
-            if (!xrGrabInteractable.colliders.Contains(collider))
-                xrGrabInteractable.colliders.Add(collider);
-            // Re-register the interactable
-            interactionManager.RegisterInteractable(xrGrabInteractable as IXRInteractable);
+            grabInteractable = gameObject.AddComponent<XRGrabInteractable>();
+            grabInteractable.throwOnDetach = false;
+            grabInteractable.useDynamicAttach = true;
+            grabInteractable.selectMode = InteractableSelectMode.Multiple;
+            grabInteractable.movementType = XRBaseInteractable.MovementType.VelocityTracking;
         }
         else
         {
-            // If no interactable is present, add one
-            xrGrabInteractable = gameObject.AddComponent<XRGrabInteractable>();
-            xrGrabInteractable.throwOnDetach = false;
-            xrGrabInteractable.useDynamicAttach = true;
-            xrGrabInteractable.selectMode = InteractableSelectMode.Multiple;
-            xrGrabInteractable.movementType = XRBaseInteractable.MovementType.VelocityTracking;
-            if (!xrGrabInteractable.colliders.Contains(collider))
-                xrGrabInteractable.colliders.Add(collider);
-
-            // Register the newly added interactable
-            interactionManager.RegisterInteractable(xrGrabInteractable as IXRInteractable);
+            // Unregister if needed before updating
+            interactionManager?.UnregisterInteractable(grabInteractable as IXRInteractable);
         }
 
+        // Optionally clear any existing colliders from the XRGrabInteractable
+        grabInteractable.colliders.Clear();
 
-        xrGrabInteractable.enabled = true;
+        // Retrieve all colliders from the children of this GameObject.
+        // This will also include the parent's collider if it exists.
+        Collider[] childColliders = GetComponentsInChildren<Collider>();
+
+        // If you want only the children's colliders, you can remove the parent's own collider:
+        // Collider parentCollider = GetComponent<Collider>();
+        // childColliders = childColliders.Where(c => c != parentCollider).ToArray();
+
+        // Add each child collider to the XRGrabInteractable's collider list.
+        foreach (Collider col in childColliders)
+        {
+            if (!grabInteractable.colliders.Contains(col))
+            {
+                grabInteractable.colliders.Add(col);
+            }
+        }
+
+        // Re-register with the interaction manager, if necessary.
+        interactionManager?.RegisterInteractable(grabInteractable as IXRInteractable);
+
+        // Enable the XRGrabInteractable component.
+        grabInteractable.enabled = true;
     }
+
 }
