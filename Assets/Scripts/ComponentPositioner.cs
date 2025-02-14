@@ -1,6 +1,10 @@
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.UI; // Per le UI
+using MeshProcess;
+using TMPro;
 
 public class ComponentPositioner : MonoBehaviour
 {
@@ -28,12 +32,17 @@ public class ComponentPositioner : MonoBehaviour
     [SerializeField]
     private AudioClip loopScrollClip;
 
+    // Campi per il pannello di progresso
+    [Header("Progress UI")]
+    [SerializeField] private GameObject progressPanel; // Pannello intero (da attivare/disattivare)
+    [SerializeField] private Slider progressBar;        // Slider per il progresso
+    [SerializeField] private TextMeshProUGUI progressText;           // Testo che mostra la percentuale
+
     private bool isScrolling = false;
     private bool isScrollingLeft = false; // Tracks whether we are scrolling left or right
 
     private bool buttonRightPressed = false;
     private bool buttonLeftPressed = false;
-
 
     public bool ButtonRightPressed { get => buttonRightPressed; set => buttonRightPressed = value; }
     public bool ButtonLeftPressed { get => buttonLeftPressed; set => buttonLeftPressed = value; }
@@ -95,7 +104,7 @@ public class ComponentPositioner : MonoBehaviour
         }
     }
 
-    public void SpawnComponents()
+    public async void SpawnComponents()
     {
         if (tableRenderer == null)
         {
@@ -103,7 +112,7 @@ public class ComponentPositioner : MonoBehaviour
             return;
         }
 
-        GameObject prefab = manager.Model;
+        GameObject prefab = Manager.Instance.Model;
 
         if (prefab != null)
         {
@@ -115,10 +124,79 @@ public class ComponentPositioner : MonoBehaviour
 
             Manager.Instance.Components = allChildrenWithMesh;
 
-           
-
             Destroy(instantiatedPrefab);
         }
+
+        // Per ogni componente, aggiungiamo i collider generati dalla convex decomposition
+        await AddVHACDCollidersToComponentsAsync(Manager.Instance.Components);
+    }
+
+    public async Task AddVHACDCollidersToComponentsAsync(List<Transform> components)
+    {
+        // Attiva il pannello di progresso e azzera lo slider
+        if (progressPanel != null)
+            progressPanel.SetActive(true);
+        if (progressBar != null)
+            progressBar.value = 0;
+        if (progressText != null)
+            progressText.text = "Loading colliders: 0%";
+
+        int totalComponents = components.Count;
+        for (int i = 0; i < totalComponents; i++)
+        {
+            Transform comp = components[i];
+            MeshFilter mf = comp.GetComponent<MeshFilter>();
+            if (mf == null || mf.sharedMesh == null)
+            {
+                Debug.LogWarning($"Il componente {comp.name} non ha un MeshFilter o un mesh valido.");
+                continue;
+            }
+
+            // Aggiungi il componente VHACD se non esiste già
+            VHACD vhacd = comp.GetComponent<VHACD>();
+            if (vhacd == null)
+            {
+                vhacd = comp.gameObject.AddComponent<VHACD>();
+            }
+
+            Mesh mesh = mf.sharedMesh;
+            // Esegui la convex decomposition in background (passando mesh, vertici e triangoli)
+            List<Mesh> convexMeshes = await vhacd.GenerateConvexMeshesAsync(mesh, mesh.vertices, mesh.triangles);
+            if (convexMeshes == null || convexMeshes.Count == 0)
+            {
+                Debug.LogWarning($"VHACD non ha generato mesh per il componente {comp.name}.");
+                continue;
+            }
+
+            // Rimuovi tutti i collider esistenti per evitare sovrapposizioni
+            Collider[] existingColliders = comp.GetComponents<Collider>();
+            foreach (Collider col in existingColliders)
+            {
+                Destroy(col);
+            }
+
+            // Aggiungi i MeshCollider (sul thread principale)
+            foreach (Mesh convexMesh in convexMeshes)
+            {
+                MeshCollider meshCollider = comp.gameObject.AddComponent<MeshCollider>();
+                meshCollider.sharedMesh = convexMesh;
+                meshCollider.convex = true;
+            }
+
+            // Aggiorna il progresso
+            float progress = (float)(i + 1) / totalComponents;
+            if (progressBar != null)
+                progressBar.value = progress;
+            if (progressText != null)
+                progressText.text = $"Loading colliders: {(int)(progress * 100)}%";
+
+            // Rilascia il controllo per permettere l'aggiornamento dell'interfaccia
+            await Task.Yield();
+        }
+
+        // Nascondi il pannello di progresso al termine
+        if (progressPanel != null)
+            progressPanel.SetActive(false);
     }
 
     public void RepositionComponentsOnTable(List<Transform> components)
@@ -152,15 +230,15 @@ public class ComponentPositioner : MonoBehaviour
                 child.position = newPosition;
                 currentX += width + extraSpacing;
 
-                if(!child.GetComponent<ComponentObject>())
+                if (!child.GetComponent<ComponentObject>())
                     child.gameObject.AddComponent<ComponentObject>();
 
-                if(!child.GetComponent<MakeGrabbable>())
+                if (!child.GetComponent<MakeGrabbable>())
                     child.gameObject.AddComponent<MakeGrabbable>();
 
                 child.SetParent(parent.transform);
 
-                // Deactivate if out of bounds
+                // Disattiva se fuori dai limiti
                 if (child.position.x > tableBounds.max.x)
                 {
                     child.gameObject.SetActive(false);
@@ -182,7 +260,7 @@ public class ComponentPositioner : MonoBehaviour
                 resultList.Add(child);
             }
 
-            // Recursive call for nested children
+            // Chiamata ricorsiva per i figli
             if (child.childCount > 0)
             {
                 CollectChildrenWithMesh(child, resultList);
@@ -195,14 +273,13 @@ public class ComponentPositioner : MonoBehaviour
         Transform rightmostChild = null;
         float rightmostX = float.MinValue;
         var components = Manager.Instance.Components;
-        // Scroll all children to the left and find the rightmost child
+        // Muovi tutti i figli a sinistra e trova il più a destra
         foreach (Transform child in components)
         {
             Vector3 position = child.position;
             position.x -= scrollSpeed * Time.deltaTime;
             child.position = position;
 
-            // Find the rightmost child
             float childRightX = position.x + child.GetComponent<Renderer>().bounds.size.x / 2;
             if (childRightX > rightmostX)
             {
@@ -211,7 +288,7 @@ public class ComponentPositioner : MonoBehaviour
             }
         }
 
-        // If the rightmost child goes out of bounds, reposition it to the right
+        // Se il figlio più a destra esce dai limiti, lo riposiziona a destra
         if (rightmostChild != null && rightmostChild.position.x < tableBounds.min.x - rightmostChild.GetComponent<Renderer>().bounds.size.x / 2)
         {
             float startPosition = tableBounds.max.x;
@@ -238,7 +315,7 @@ public class ComponentPositioner : MonoBehaviour
             }
         }
 
-        // Activate or deactivate children based on their position relative to the table bounds
+        // Attiva o disattiva i figli in base alla loro posizione
         foreach (Transform child in components)
         {
             if (child.position.x < tableBounds.min.x || child.position.x > tableBounds.max.x)
@@ -258,14 +335,13 @@ public class ComponentPositioner : MonoBehaviour
         float leftmostX = float.MaxValue;
         var components = Manager.Instance.Components;
 
-        // Scroll all children to the right and find the leftmost child
+        // Muovi tutti i figli a destra e trova il più a sinistra
         foreach (Transform child in components)
         {
             Vector3 position = child.position;
             position.x += scrollSpeed * Time.deltaTime;
             child.position = position;
 
-            // Find the leftmost child
             float childLeftX = position.x - child.GetComponent<Renderer>().bounds.size.x / 2;
             if (childLeftX < leftmostX)
             {
@@ -274,7 +350,7 @@ public class ComponentPositioner : MonoBehaviour
             }
         }
 
-        // If the leftmost child goes out of bounds, reposition it to the left
+        // Se il figlio più a sinistra esce dai limiti, lo riposiziona a sinistra
         if (leftmostChild != null && leftmostChild.position.x > tableBounds.max.x + leftmostChild.GetComponent<Renderer>().bounds.size.x / 2)
         {
             float startPosition = tableBounds.min.x;
@@ -301,7 +377,7 @@ public class ComponentPositioner : MonoBehaviour
             }
         }
 
-        // Activate or deactivate children based on their position relative to the table bounds
+        // Attiva o disattiva i figli in base alla loro posizione
         foreach (Transform child in components)
         {
             if (child.position.x < tableBounds.min.x || child.position.x > tableBounds.max.x)
@@ -322,7 +398,6 @@ public class ComponentPositioner : MonoBehaviour
             audioSource.clip = startScrollClip;
             audioSource.Play();
 
-            // Schedule the looped clip to start after the start clip
             if (startScrollClip != null)
                 Invoke("StartLoopingSound", startScrollClip.length);
         }
