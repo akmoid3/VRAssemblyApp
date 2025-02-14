@@ -16,6 +16,7 @@ public class Manager : MonoBehaviour
 
 
     [SerializeField] private GameObject model;
+    [SerializeField] private string modelName;
     [SerializeField] private List<Transform> components = new List<Transform>();
     [SerializeField] private List<Transform> removedComponents = new List<Transform>();
     [SerializeField] private ComponentPositioner componentPositioner;
@@ -114,6 +115,12 @@ public class Manager : MonoBehaviour
     {
         get => pdfLoaderPdf;
         set => pdfLoaderPdf = value;
+    }
+
+    public string ModelName
+    {
+        get => modelName;
+        set => modelName = value;
     }
 
     private void Awake()
@@ -308,19 +315,19 @@ public class Manager : MonoBehaviour
     public void SaveBuildingSequence()
     {
         if (sequenceManager != null)
-            sequenceManager.SaveBuildingSequence(CurrentSelectedComponent, model.name);
+            sequenceManager.SaveBuildingSequence(CurrentSelectedComponent, modelName);
     }
 
     public void ModifyBuildingSequence()
     {
         if (sequenceManager != null)
-            sequenceManager.ModifyBuildingSequence(CurrentSelectedComponent, model.name);
+            sequenceManager.ModifyBuildingSequence(CurrentSelectedComponent, modelName);
     }
 
     public void RemoveComponentFromSequence()
     {
         if (sequenceManager != null)
-            sequenceManager.RemoveComponentFromSequence(CurrentSelectedComponent, model.name);
+            sequenceManager.RemoveComponentFromSequence(CurrentSelectedComponent, modelName);
     }
 
     public void RepositionComponentsOnTable(List<Transform> components)
@@ -481,7 +488,7 @@ public class Manager : MonoBehaviour
     private void LoadPDF()
     {
         if (LoaderPDF != null)
-            LoaderPDF.LoadPDF(model.name);
+            LoaderPDF.LoadPDF(modelName);
     }
 
     private void MakeComponentsGrabbable()

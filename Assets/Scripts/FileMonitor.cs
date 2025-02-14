@@ -71,6 +71,7 @@ public class FileMonitor : MonoBehaviour, IFileMonitor
         }
         catch (Exception ex)
         {
+            Debug.LogException(ex);
             return;
         }
         if (files == null)

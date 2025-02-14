@@ -278,7 +278,7 @@ public class HandMenuManager : MonoBehaviour
 
                     if (makeGrabbable != null)
                     {
-                      currentSelectedComponent.GetComponent<MeshCollider>().convex = false;
+                      //currentSelectedComponent.GetComponent<MeshCollider>().convex = false;
                       makeGrabbable.MakeObjectNonGrabbable();
                     }
 
