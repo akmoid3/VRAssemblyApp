@@ -33,7 +33,7 @@ public class SequenceReader : MonoBehaviour
             return;
         }
 
-        string fileName = manager.Model.name;
+        string fileName = manager.ModelName;
         string filePath = Path.Combine(Application.persistentDataPath, "SavedBuildData");
 
         if (FileChecker.DoesJsonFileExist(filePath, fileName))

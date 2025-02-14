@@ -35,6 +35,7 @@ public class DropDownManager : MonoBehaviour
         }
 
         string selectedModelName = dropdown.options[index].text;
+        Manager.Instance.ModelName = selectedModelName;
         prefabManager.ShowModel(selectedModelName);
     }
 

@@ -47,7 +47,7 @@ public class ModeChooserManager : MonoBehaviour
 
     public void UpdateButtonStates()
     {
-        string modelName = Manager.Instance.Model.name;
+        string modelName = Manager.Instance.ModelName;
         string initializedModelsPath = Path.Combine(Application.persistentDataPath, "InitializedModels", modelName + ".json");
         string savedBuildDataPath = Path.Combine(Application.persistentDataPath, "SavedBuildData", modelName + ".json");
 

@@ -42,7 +42,7 @@ public class InitializedDataManager : MonoBehaviour
         components = Manager.Instance.Components;
         if (components == null) return;
 
-        string fileName = Manager.Instance.Model.name + ".json";
+        string fileName = Manager.Instance.ModelName + ".json";
         if (string.IsNullOrEmpty(fileName)) return;
 
         string filePath = Path.Combine(directoryPath, fileName);
@@ -123,7 +123,7 @@ public class InitializedDataManager : MonoBehaviour
         components = Manager.Instance.Components;
         if (components == null) return;
 
-        string fileName = Manager.Instance.Model.name + ".json";
+        string fileName = Manager.Instance.ModelName + ".json";
         if (string.IsNullOrEmpty(fileName)) return;
 
         string filePath = Path.Combine(directoryPath, fileName);

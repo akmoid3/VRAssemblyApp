@@ -61,7 +61,7 @@ public class FileBrowserManager : MonoBehaviour
         if (Path.GetExtension(filePath).ToLower() == ".pdf")
         {
             // Generate a new file name for the PDF
-            string newFileName = Manager.Instance.Model.name.ToString() + ".pdf"; // Replace with your desired new file name
+            string newFileName = Manager.Instance.ModelName + ".pdf"; // Replace with your desired new file name
             string newDestinationPath = Path.Combine(modelsDirectory, newFileName);
 
             // Check if the new destination path already exists
