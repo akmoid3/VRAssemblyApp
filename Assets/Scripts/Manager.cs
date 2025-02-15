@@ -474,6 +474,7 @@ public class Manager : MonoBehaviour
                 CopyComponentObjectToInteractor();
                 UpdateComponentsPerCurrentStep();
                 HandleCurrentStepPlayBack();
+                MakeComponentsNonKinematic();
                 PlaceInitialComponent();
                 break;
             case State.Finish:
@@ -485,6 +486,13 @@ public class Manager : MonoBehaviour
         }
     }
 
+    private void MakeComponentsNonKinematic()
+    {
+        foreach (var component in components)
+        {
+            component.GetComponent<Rigidbody>().isKinematic = false;
+        }
+    }
     private void LoadPDF()
     {
         if (LoaderPDF != null)
@@ -610,8 +618,12 @@ public class Manager : MonoBehaviour
     public void PlaceInitialComponent()
     {
         if (automaticPlacementManager != null)
+        {
+            componentsThatCanSnap[0].GetComponent<Rigidbody>().isKinematic = true;
             automaticPlacementManager.PlaceCurrentStepComponent(CurrentStep, componentsThatCanSnap[0], Interactor,
                 1.0f);
+        }
+            
     }
 
     public void PlaceCurrentComponent(float timePlacement)
@@ -619,6 +631,7 @@ public class Manager : MonoBehaviour
         if (automaticPlacementManager != null)
         {
             componentsThatCanSnap[0].GetComponent<ComponentObject>().IsAutomaticSnap = true;
+            componentsThatCanSnap[0].GetComponent<Rigidbody>().isKinematic = true;
             automaticPlacementManager.PlaceCurrentStepComponent(CurrentStep, componentsThatCanSnap[0], Interactor,
                 timePlacement);
         }
@@ -629,6 +642,7 @@ public class Manager : MonoBehaviour
     public void PlaceComponent(int step, Transform component)
     {
         if (automaticPlacementManager != null)
+            componentsThatCanSnap[0].GetComponent<Rigidbody>().isKinematic = true;
             automaticPlacementManager.PlaceStepComponent(step, component, Interactor);
         hintManager.HideHints(Interactor);
     }

@@ -21,6 +21,7 @@ public class SnapToPosition : MonoBehaviour
     private HashSet<GameObject> snappedObjects = new HashSet<GameObject>(); // Track snapped objects
     public static event Action OnComponentPlaced;
     private XRInteractionManager interactionManager;
+    private bool isKinematic = true;
 
     public float SnapDistance
     {
@@ -76,9 +77,17 @@ public class SnapToPosition : MonoBehaviour
               Manager.Instance.CurrentStep < Manager.Instance.AssemblySequence.Count))
             return;
 
+        if (StateManager.Instance.CurrentState != State.PlayBack && !isKinematic)
+        {
+            isKinematic = true;
+            this.GetComponent<Rigidbody>().isKinematic = true;
+        }
+        
         if (Manager.Instance.ComponentsThatCanSnap.Contains(other.transform))
         {
             CheckSnap(other);
+            
+                
         }
     }
 
@@ -136,9 +145,13 @@ public class SnapToPosition : MonoBehaviour
 
                     other.transform.SetParent(snapPoint.snapTransform);
 
-
                     componentObject.SetIsPlaced(true);
 
+                    if (StateManager.Instance.CurrentState == State.PlayBack && isKinematic)
+                    {
+                        isKinematic = false;
+                        this.GetComponent<Rigidbody>().isKinematic = false;
+                    }
                     //AddGrabbable(other as MeshCollider);
                     TransferCollidersToSnapPoint(other.transform, snapPoint.snapTransform);
                     AddChildCollidersToParentGrabbable();
