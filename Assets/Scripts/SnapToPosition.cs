@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.XR.Interaction.Toolkit;
 
@@ -238,20 +239,14 @@ public class SnapToPosition : MonoBehaviour
         // Optionally clear any existing colliders from the XRGrabInteractable
         grabInteractable.colliders.Clear();
 
-        // Retrieve all colliders from the children of this GameObject.
-        // This will also include the parent's collider if it exists.
-        Collider[] childColliders = GetComponentsInChildren<Collider>();
-
-        // If you want only the children's colliders, you can remove the parent's own collider:
-        // Collider parentCollider = GetComponent<Collider>();
-        // childColliders = childColliders.Where(c => c != parentCollider).ToArray();
-
-        // Add each child collider to the XRGrabInteractable's collider list.
-        foreach (Collider col in childColliders)
+        // Loop through only the immediate children to collect their colliders.
+        for (int i = 0; i < transform.childCount; i++)
         {
-            if (!grabInteractable.colliders.Contains(col))
+            Transform child = transform.GetChild(i);
+            Collider childCollider = child.GetComponent<Collider>();
+            if (childCollider != null && !grabInteractable.colliders.Contains(childCollider))
             {
-                grabInteractable.colliders.Add(col);
+                grabInteractable.colliders.Add(childCollider);
             }
         }
 
@@ -261,5 +256,6 @@ public class SnapToPosition : MonoBehaviour
         // Enable the XRGrabInteractable component.
         grabInteractable.enabled = true;
     }
+
 
 }
