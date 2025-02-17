@@ -12,6 +12,9 @@ public class ComponentObject : MonoBehaviour
     private bool isDestroyed = false;
     [SerializeField]
     private bool isAutomaticSnap = false;
+    
+    private bool hasMoved = false;
+
     public enum ComponentType
     {
         None,
@@ -38,6 +41,12 @@ public class ComponentObject : MonoBehaviour
     {
         get => isAutomaticSnap;
         set => isAutomaticSnap = value;
+    }
+
+    public bool HasMoved
+    {
+        get => hasMoved;
+        set => hasMoved = value;
     }
 
 

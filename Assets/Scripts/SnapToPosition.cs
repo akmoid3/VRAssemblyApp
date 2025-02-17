@@ -174,15 +174,12 @@ public class SnapToPosition : MonoBehaviour
 
     private void TransferCollidersToSnapPoint(Transform snappedComponent, Transform snapPointTransform)
     {
-        // Ottieni tutti i MeshCollider presenti sul componente (e nei suoi figli)
         MeshCollider[] componentColliders = snappedComponent.GetComponentsInChildren<MeshCollider>();
     
         foreach (MeshCollider originalCollider in componentColliders)
         {
-            // Cambia layer per il collider originale
             originalCollider.gameObject.layer = LayerMask.NameToLayer("OriginalColliders");
 
-            // Clona il collider nel gameObject dello snap point
             MeshCollider newCollider = snapPointTransform.gameObject.AddComponent<MeshCollider>();
             newCollider.sharedMesh = originalCollider.sharedMesh;
             newCollider.convex = originalCollider.convex;
@@ -198,7 +195,6 @@ public class SnapToPosition : MonoBehaviour
         float distance = Vector3.Distance(component.transform.position, snapPoint.snapTransform.position);
         float angle = Quaternion.Angle(component.transform.rotation, snapPoint.snapTransform.rotation);
 
-        // Use the appropriate snap distance for the calculation
         float effectiveSnapDistance = isFastener ? fastenerSnapDistance : snapDistance;
 
         // Calculate distance performance
@@ -220,7 +216,6 @@ public class SnapToPosition : MonoBehaviour
 
     private void AddChildCollidersToParentGrabbable()
     {
-        // Try to get or add an XRGrabInteractable on the parent (this object)
         XRGrabInteractable grabInteractable = GetComponent<XRGrabInteractable>();
         if (grabInteractable == null)
         {
@@ -232,14 +227,11 @@ public class SnapToPosition : MonoBehaviour
         }
         else
         {
-            // Unregister if needed before updating
             interactionManager?.UnregisterInteractable(grabInteractable as IXRInteractable);
         }
 
-        // Optionally clear any existing colliders from the XRGrabInteractable
         grabInteractable.colliders.Clear();
 
-        // Loop through only the immediate children to collect their colliders.
         for (int i = 0; i < transform.childCount; i++)
         {
             Transform child = transform.GetChild(i);
@@ -250,10 +242,8 @@ public class SnapToPosition : MonoBehaviour
             }
         }
 
-        // Re-register with the interaction manager, if necessary.
         interactionManager?.RegisterInteractable(grabInteractable as IXRInteractable);
 
-        // Enable the XRGrabInteractable component.
         grabInteractable.enabled = true;
     }
 

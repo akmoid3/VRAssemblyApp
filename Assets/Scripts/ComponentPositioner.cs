@@ -7,6 +7,7 @@ using UnityEngine.InputSystem;
 using UnityEngine.UI;
 using TMPro;
 using UnityEngine.SceneManagement;
+using UnityEngine.XR.Interaction.Toolkit;
 
 public class ComponentPositioner : MonoBehaviour
 {
@@ -14,7 +15,6 @@ public class ComponentPositioner : MonoBehaviour
     [SerializeField] private GameObject tableRoll;
     [SerializeField] private float extraSpacing = 0.1f;
 
-    private Manager manager;
     [SerializeField] private float scrollSpeed = 1.0f;
 
     [SerializeField] private GameObject parent;
@@ -104,7 +104,6 @@ public class ComponentPositioner : MonoBehaviour
     {
         tableRenderer = tableRoll.GetComponent<MeshRenderer>();
         tableBounds = tableRenderer.bounds;
-        manager = Manager.Instance;
 
         audioSource = GetComponent<AudioSource>();
 
@@ -206,7 +205,7 @@ public class ComponentPositioner : MonoBehaviour
                         Destroy(col);
                     }
 
-                    // Ricostruisco e assegno i MeshCollider per ciascun collider convesso
+                    // Ricostruisco e assegno i MeshCollider per ciascuna mesh convesso
                     foreach (MeshData mData in group.computedMeshes)
                     {
                         Mesh convexMesh = MeshDataConverter.ConvertMeshDataToMesh(mData);
@@ -218,7 +217,6 @@ public class ComponentPositioner : MonoBehaviour
 
                 if (progressPanel != null)
                     progressPanel.SetActive(false);
-                Debug.Log("Collider data loaded from file.");
                 return;
             }
             else
@@ -272,7 +270,7 @@ public class ComponentPositioner : MonoBehaviour
             List<CoACD.ComputedMeshData> computedData = await Task.Run(() =>
                 coacd.RunACD_ComputeData(mesh, vertices, triangles, vertexCount, token), token);
 
-            // Ricostruisco le Mesh Unity
+            // Ricostruisco le Mesh in Unity
             List<Mesh> convexMeshes = coacd.CreateMeshesFromData(computedData);
 
             // Rimuovo eventuali collider esistenti
@@ -344,6 +342,12 @@ public class ComponentPositioner : MonoBehaviour
 
         foreach (Transform child in components)
         {
+            ComponentObject component = child.GetComponent<ComponentObject>();
+            if (component != null)
+            {
+                if((component.HasMoved && child.GetComponent<XRSimpleInteractable>() == null) || component.IsAutomaticSnap)
+                    continue;
+            }
             child.SetParent(null);
             child.rotation = Quaternion.identity;
             Renderer renderer = child.GetComponent<Renderer>();
@@ -411,6 +415,9 @@ public class ComponentPositioner : MonoBehaviour
         // Muovi tutti i figli a sinistra e trova il più a destra
         foreach (Transform child in components)
         {
+            if((child.GetComponent<ComponentObject>().HasMoved && child.GetComponent<XRSimpleInteractable>() == null) || child.GetComponent<ComponentObject>().IsAutomaticSnap)
+                continue;
+                
             Vector3 position = child.position;
             position.x -= scrollSpeed * Time.deltaTime;
             child.position = position;
@@ -434,6 +441,8 @@ public class ComponentPositioner : MonoBehaviour
             for (int i = 0; i < childCount; i++)
             {
                 Transform child = components[i];
+                if((child.GetComponent<ComponentObject>().HasMoved && child.GetComponent<XRSimpleInteractable>() == null) || child.GetComponent<ComponentObject>().IsAutomaticSnap)
+                    continue;
                 Renderer renderer = child.GetComponent<Renderer>();
                 if (renderer != null)
                 {
@@ -455,6 +464,8 @@ public class ComponentPositioner : MonoBehaviour
         // Attiva o disattiva i figli in base alla loro posizione
         foreach (Transform child in components)
         {
+            if((child.GetComponent<ComponentObject>().HasMoved && child.GetComponent<XRSimpleInteractable>() == null) || child.GetComponent<ComponentObject>().IsAutomaticSnap)
+                continue;
             if (child.position.x < tableBounds.min.x || child.position.x > tableBounds.max.x)
             {
                 child.gameObject.SetActive(false);
@@ -475,6 +486,8 @@ public class ComponentPositioner : MonoBehaviour
         // Muovi tutti i figli a destra e trova il più a sinistra
         foreach (Transform child in components)
         {
+            if((child.GetComponent<ComponentObject>().HasMoved && child.GetComponent<XRSimpleInteractable>() == null) || child.GetComponent<ComponentObject>().IsAutomaticSnap)
+                continue;
             Vector3 position = child.position;
             position.x += scrollSpeed * Time.deltaTime;
             child.position = position;
@@ -498,6 +511,8 @@ public class ComponentPositioner : MonoBehaviour
             for (int i = childCount - 1; i >= 0; i--)
             {
                 Transform child = components[i];
+                if((child.GetComponent<ComponentObject>().HasMoved && child.GetComponent<XRSimpleInteractable>() == null) || child.GetComponent<ComponentObject>().IsAutomaticSnap)
+                    continue;
                 Renderer renderer = child.GetComponent<Renderer>();
                 if (renderer != null)
                 {
@@ -519,6 +534,8 @@ public class ComponentPositioner : MonoBehaviour
         // Attiva o disattiva i figli in base alla loro posizione
         foreach (Transform child in components)
         {
+            if((child.GetComponent<ComponentObject>().HasMoved && child.GetComponent<XRSimpleInteractable>() == null) || child.GetComponent<ComponentObject>().IsAutomaticSnap)
+                continue;
             if (child.position.x < tableBounds.min.x || child.position.x > tableBounds.max.x)
             {
                 child.gameObject.SetActive(false);
