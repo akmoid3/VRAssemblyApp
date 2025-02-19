@@ -167,7 +167,7 @@ public class StepsManager : MonoBehaviour
 
         if (!processOneTimeComponentsPerSteps)
         {
-            for (int i = 0; i < Manager.Instance.Components.Count; i++)
+            for (int i = 0; i < Manager.Instance.AssemblySequence.Count; i++)
                 UpdateComponentsForStepManager(i);
             processOneTimeComponentsPerSteps = true;
         }

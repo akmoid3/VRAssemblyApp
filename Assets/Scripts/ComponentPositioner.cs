@@ -343,7 +343,7 @@ public class ComponentPositioner : MonoBehaviour
         foreach (Transform child in components)
         {
             ComponentObject component = child.GetComponent<ComponentObject>();
-            if (component != null)
+            if (component != null && StateManager.Instance.CurrentState == State.PlayBack)
             {
                 if((component.HasMoved && child.GetComponent<XRSimpleInteractable>() == null) || component.IsAutomaticSnap)
                     continue;
