@@ -477,7 +477,7 @@ public class Manager : MonoBehaviour
                 CopyComponentObjectToInteractor();
                 UpdateComponentsPerCurrentStep();
                 HandleCurrentStepPlayBack();
-                MakeComponentsNonKinematic();
+                //MakeComponentsNonKinematic();
                 PlaceInitialComponent();
                 break;
             case State.Finish:

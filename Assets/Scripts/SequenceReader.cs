@@ -198,6 +198,7 @@ public class SequenceReader : MonoBehaviour
         socket.enabled = true;
         Rigidbody rb = parent.AddComponent<Rigidbody>();
         rb.isKinematic = true;
+        rb.collisionDetectionMode = CollisionDetectionMode.ContinuousDynamic;
     }
 
     private Transform FindChildRecursive(Transform parent, string childName)

@@ -78,11 +78,11 @@ public class SnapToPosition : MonoBehaviour
               Manager.Instance.CurrentStep < Manager.Instance.AssemblySequence.Count))
             return;
 
-        if (StateManager.Instance.CurrentState != State.PlayBack && !isKinematic)
-        {
-            isKinematic = true;
-            this.GetComponent<Rigidbody>().isKinematic = true;
-        }
+        // if (StateManager.Instance.CurrentState != State.PlayBack && !isKinematic)
+        // {
+        //     isKinematic = true;
+        //     this.GetComponent<Rigidbody>().isKinematic = true;
+        // }
         
         if (Manager.Instance.ComponentsThatCanSnap.Contains(other.transform))
         {
@@ -148,11 +148,12 @@ public class SnapToPosition : MonoBehaviour
 
                     componentObject.SetIsPlaced(true);
 
-                    if (StateManager.Instance.CurrentState == State.PlayBack && isKinematic)
-                    {
-                        isKinematic = false;
-                        this.GetComponent<Rigidbody>().isKinematic = false;
-                    }
+                    // if (StateManager.Instance.CurrentState == State.PlayBack && isKinematic)
+                    // {
+                    //     isKinematic = false;
+                    //     this.GetComponent<Rigidbody>().isKinematic = false;
+                    // }
+                    
                     //AddGrabbable(other as MeshCollider);
                     TransferCollidersToSnapPoint(other.transform, snapPoint.snapTransform);
                     AddChildCollidersToParentGrabbable();

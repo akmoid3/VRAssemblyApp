@@ -37,7 +37,7 @@ public class MakeGrabbable : MonoBehaviour
         {
             Rigidbody rigidbody = this.gameObject.AddComponent<Rigidbody>();
             rigidbody.isKinematic = true;
-            rigidbody.collisionDetectionMode = CollisionDetectionMode.Continuous;
+            rigidbody.collisionDetectionMode = CollisionDetectionMode.ContinuousDynamic;
         }
 
         if(GetComponent<XRSimpleInteractable>())
