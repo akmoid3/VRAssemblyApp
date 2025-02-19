@@ -15,7 +15,6 @@ public class ComponentPositioner : MonoBehaviour
     [SerializeField] private GameObject tableRoll;
     [SerializeField] private float extraSpacing = 0.1f;
 
-    private Manager manager;
     [SerializeField] private float scrollSpeed = 1.0f;
 
     [SerializeField] private GameObject parent;
@@ -105,7 +104,6 @@ public class ComponentPositioner : MonoBehaviour
     {
         tableRenderer = tableRoll.GetComponent<MeshRenderer>();
         tableBounds = tableRenderer.bounds;
-        manager = Manager.Instance;
 
         audioSource = GetComponent<AudioSource>();
 
@@ -207,7 +205,7 @@ public class ComponentPositioner : MonoBehaviour
                         Destroy(col);
                     }
 
-                    // Ricostruisco e assegno i MeshCollider per ciascun collider convesso
+                    // Ricostruisco e assegno i MeshCollider per ciascuna mesh convesso
                     foreach (MeshData mData in group.computedMeshes)
                     {
                         Mesh convexMesh = MeshDataConverter.ConvertMeshDataToMesh(mData);
@@ -219,7 +217,6 @@ public class ComponentPositioner : MonoBehaviour
 
                 if (progressPanel != null)
                     progressPanel.SetActive(false);
-                Debug.Log("Collider data loaded from file.");
                 return;
             }
             else
@@ -273,7 +270,7 @@ public class ComponentPositioner : MonoBehaviour
             List<CoACD.ComputedMeshData> computedData = await Task.Run(() =>
                 coacd.RunACD_ComputeData(mesh, vertices, triangles, vertexCount, token), token);
 
-            // Ricostruisco le Mesh Unity
+            // Ricostruisco le Mesh in Unity
             List<Mesh> convexMeshes = coacd.CreateMeshesFromData(computedData);
 
             // Rimuovo eventuali collider esistenti

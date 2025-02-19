@@ -12,7 +12,9 @@ public class Manager : MonoBehaviour
     [SerializeField] private SequenceManager sequenceManager;
     [SerializeField] private HintManager hintManager;
     [SerializeField] private AutomaticPlacementManager automaticPlacementManager;
-    [FormerlySerializedAs("pdfLoader")] [SerializeField] private PdfLoader pdfLoaderPdf;
+
+    [FormerlySerializedAs("pdfLoader")] [SerializeField]
+    private PdfLoader pdfLoaderPdf;
 
 
     [SerializeField] private GameObject model;
@@ -269,6 +271,7 @@ public class Manager : MonoBehaviour
                 LoaderPDF.ShowPage(nextStep.pdfIndex);
             }
         }
+
         sequenceManager.IncrementCurrentStep();
 
         UpdateComponentsPerCurrentStep();
@@ -474,6 +477,7 @@ public class Manager : MonoBehaviour
                 CopyComponentObjectToInteractor();
                 UpdateComponentsPerCurrentStep();
                 HandleCurrentStepPlayBack();
+                MakeComponentsNonKinematic();
                 PlaceInitialComponent();
                 break;
             case State.Finish:
@@ -482,6 +486,14 @@ public class Manager : MonoBehaviour
                 break;
             default:
                 break;
+        }
+    }
+
+    private void MakeComponentsNonKinematic()
+    {
+        foreach (var component in components)
+        {
+            component.GetComponent<Rigidbody>().isKinematic = false;
         }
     }
 
@@ -619,8 +631,12 @@ public class Manager : MonoBehaviour
     public void PlaceInitialComponent()
     {
         if (automaticPlacementManager != null)
+        {
+            componentsThatCanSnap[0].GetComponent<Rigidbody>().isKinematic = true;
+            componentsThatCanSnap[0].GetComponent<ComponentObject>().IsAutomaticSnap = true;
             automaticPlacementManager.PlaceCurrentStepComponent(CurrentStep, componentsThatCanSnap[0], Interactor,
                 1.0f);
+        }
     }
 
     public void PlaceCurrentComponent(float timePlacement)
@@ -628,17 +644,24 @@ public class Manager : MonoBehaviour
         if (automaticPlacementManager != null)
         {
             componentsThatCanSnap[0].GetComponent<ComponentObject>().IsAutomaticSnap = true;
+            componentsThatCanSnap[0].GetComponent<Rigidbody>().isKinematic = true;
             automaticPlacementManager.PlaceCurrentStepComponent(CurrentStep, componentsThatCanSnap[0], Interactor,
                 timePlacement);
         }
-            
+
         hintManager.HideHints(Interactor);
     }
 
     public void PlaceComponent(int step, Transform component)
     {
         if (automaticPlacementManager != null)
-            automaticPlacementManager.PlaceStepComponent(step, component, Interactor);
+        {
+            componentsThatCanSnap[0].GetComponent<Rigidbody>().isKinematic = true;
+            componentsThatCanSnap[0].GetComponent<ComponentObject>().IsAutomaticSnap = true;
+        }
+
+
+        automaticPlacementManager.PlaceStepComponent(step, component, Interactor);
         hintManager.HideHints(Interactor);
     }
 
@@ -657,6 +680,4 @@ public class Manager : MonoBehaviour
         ApplicationQuit applicationQuit = new ApplicationQuit();
         applicationQuit.QuitApplication();
     }
-    
-    
 }

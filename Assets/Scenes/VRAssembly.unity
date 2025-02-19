@@ -15915,6 +15915,10 @@ PrefabInstance:
         type: 3}
       insertIndex: -1
       addedObject: {fileID: 918629781}
+    - targetCorrespondingSourceObject: {fileID: 7611632039628224827, guid: 15e7a401df519f442b06e6c4250eabcf,
+        type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 918629785}
   m_SourcePrefab: {fileID: 100100000, guid: 15e7a401df519f442b06e6c4250eabcf, type: 3}
 --- !u!1 &918629775 stripped
 GameObject:
@@ -15943,6 +15947,33 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 67.368454, y: 0.000014648437, z: 67.34261}
   m_Center: {x: 33.684227, y: 0.0000073242186, z: 33.671307}
+--- !u!54 &918629785
+Rigidbody:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 918629775}
+  serializedVersion: 4
+  m_Mass: 1
+  m_Drag: 0
+  m_AngularDrag: 0.05
+  m_CenterOfMass: {x: 0, y: 0, z: 0}
+  m_InertiaTensor: {x: 1, y: 1, z: 1}
+  m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ImplicitCom: 1
+  m_ImplicitTensor: 1
+  m_UseGravity: 1
+  m_IsKinematic: 1
+  m_Interpolate: 0
+  m_Constraints: 0
+  m_CollisionDetection: 1
 --- !u!1 &920634601
 GameObject:
   m_ObjectHideFlags: 0
@@ -25798,7 +25829,15 @@ PrefabInstance:
       propertyPath: m_StaticEditorFlags
       value: 2147483647
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 7931218220414090995, guid: f57c0b0f808e55e4ab1b3963ef73fc84, type: 3}
+    - {fileID: 5930080791074037089, guid: f57c0b0f808e55e4ab1b3963ef73fc84, type: 3}
+    - {fileID: 22353501099202844, guid: f57c0b0f808e55e4ab1b3963ef73fc84, type: 3}
+    - {fileID: 8039760548715062101, guid: f57c0b0f808e55e4ab1b3963ef73fc84, type: 3}
+    - {fileID: 6522270404597803271, guid: f57c0b0f808e55e4ab1b3963ef73fc84, type: 3}
+    - {fileID: 5501510467463694517, guid: f57c0b0f808e55e4ab1b3963ef73fc84, type: 3}
+    - {fileID: 5306812607207856440, guid: f57c0b0f808e55e4ab1b3963ef73fc84, type: 3}
+    - {fileID: 2787535673532573767, guid: f57c0b0f808e55e4ab1b3963ef73fc84, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []
@@ -26851,6 +26890,16 @@ PrefabInstance:
       propertyPath: m_Layer
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 3385890772825029785, guid: 895f6f3c2d334633b5800312285058d2,
+        type: 3}
+      propertyPath: m_PhysicsLayerMask.m_Bits
+      value: 4294967295
+      objectReference: {fileID: 0}
+    - target: {fileID: 3385890772825029785, guid: 895f6f3c2d334633b5800312285058d2,
+        type: 3}
+      propertyPath: m_InteractionLayers.m_Bits
+      value: 4294967295
+      objectReference: {fileID: 0}
     - target: {fileID: 3412649390972202448, guid: 895f6f3c2d334633b5800312285058d2,
         type: 3}
       propertyPath: m_Layer
@@ -26976,6 +27025,16 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Layer
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6688015753839463788, guid: 895f6f3c2d334633b5800312285058d2,
+        type: 3}
+      propertyPath: m_PhysicsLayerMask.m_Bits
+      value: 4294967295
+      objectReference: {fileID: 0}
+    - target: {fileID: 6688015753839463788, guid: 895f6f3c2d334633b5800312285058d2,
+        type: 3}
+      propertyPath: m_InteractionLayers.m_Bits
+      value: 4294967295
       objectReference: {fileID: 0}
     - target: {fileID: 6694496370488184912, guid: 895f6f3c2d334633b5800312285058d2,
         type: 3}
@@ -27222,6 +27281,16 @@ PrefabInstance:
       propertyPath: m_HitDetectionType
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 9032954039820430273, guid: 895f6f3c2d334633b5800312285058d2,
+        type: 3}
+      propertyPath: m_RaycastMask.m_Bits
+      value: 2147483809
+      objectReference: {fileID: 0}
+    - target: {fileID: 9032954039820430273, guid: 895f6f3c2d334633b5800312285058d2,
+        type: 3}
+      propertyPath: m_InteractionLayers.m_Bits
+      value: 4294967295
+      objectReference: {fileID: 0}
     - target: {fileID: 9067829889149138881, guid: 895f6f3c2d334633b5800312285058d2,
         type: 3}
       propertyPath: m_Layer
@@ -27246,6 +27315,16 @@ PrefabInstance:
         type: 3}
       propertyPath: m_HitDetectionType
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 9146015503685400394, guid: 895f6f3c2d334633b5800312285058d2,
+        type: 3}
+      propertyPath: m_RaycastMask.m_Bits
+      value: 2147483809
+      objectReference: {fileID: 0}
+    - target: {fileID: 9146015503685400394, guid: 895f6f3c2d334633b5800312285058d2,
+        type: 3}
+      propertyPath: m_InteractionLayers.m_Bits
+      value: 4294967295
       objectReference: {fileID: 0}
     - target: {fileID: 9146015503685400394, guid: 895f6f3c2d334633b5800312285058d2,
         type: 3}
@@ -36317,6 +36396,11 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1873968161}
     m_Modifications:
+    - target: {fileID: 22353501099202844, guid: f57c0b0f808e55e4ab1b3963ef73fc84,
+        type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 383375248942484927, guid: f57c0b0f808e55e4ab1b3963ef73fc84,
         type: 3}
       propertyPath: m_StaticEditorFlags
@@ -36351,6 +36435,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_StaticEditorFlags
       value: 2147483647
+      objectReference: {fileID: 0}
+    - target: {fileID: 5306812607207856440, guid: f57c0b0f808e55e4ab1b3963ef73fc84,
+        type: 3}
+      propertyPath: m_Enabled
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5425303491680778583, guid: f57c0b0f808e55e4ab1b3963ef73fc84,
         type: 3}
@@ -36402,6 +36491,21 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 5501510467463694517, guid: f57c0b0f808e55e4ab1b3963ef73fc84,
+        type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5930080791074037089, guid: f57c0b0f808e55e4ab1b3963ef73fc84,
+        type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6522270404597803271, guid: f57c0b0f808e55e4ab1b3963ef73fc84,
+        type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 7585442252085854887, guid: f57c0b0f808e55e4ab1b3963ef73fc84,
         type: 3}
       propertyPath: m_StaticEditorFlags
@@ -36412,12 +36516,29 @@ PrefabInstance:
       propertyPath: m_StaticEditorFlags
       value: 2147483647
       objectReference: {fileID: 0}
+    - target: {fileID: 7931218220414090995, guid: f57c0b0f808e55e4ab1b3963ef73fc84,
+        type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8039760548715062101, guid: f57c0b0f808e55e4ab1b3963ef73fc84,
+        type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 8199328540754276544, guid: f57c0b0f808e55e4ab1b3963ef73fc84,
         type: 3}
       propertyPath: m_StaticEditorFlags
       value: 2147483647
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 7931218220414090995, guid: f57c0b0f808e55e4ab1b3963ef73fc84, type: 3}
+    - {fileID: 5930080791074037089, guid: f57c0b0f808e55e4ab1b3963ef73fc84, type: 3}
+    - {fileID: 22353501099202844, guid: f57c0b0f808e55e4ab1b3963ef73fc84, type: 3}
+    - {fileID: 8039760548715062101, guid: f57c0b0f808e55e4ab1b3963ef73fc84, type: 3}
+    - {fileID: 6522270404597803271, guid: f57c0b0f808e55e4ab1b3963ef73fc84, type: 3}
+    - {fileID: 5501510467463694517, guid: f57c0b0f808e55e4ab1b3963ef73fc84, type: 3}
+    - {fileID: 5306812607207856440, guid: f57c0b0f808e55e4ab1b3963ef73fc84, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []

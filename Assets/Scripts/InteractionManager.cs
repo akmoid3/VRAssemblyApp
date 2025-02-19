@@ -23,7 +23,7 @@ public class InteractionManager : MonoBehaviour
             if (StateManager.Instance.CurrentState != State.Initialize)
                 ResetParentIfNotGroup(currentSelectedComponent);
             canHover = false;
-
+            
             if (currentSelectedComponent.GetComponent<Fastener>())
             {
                 currentSelectedComponent.GetComponent<Fastener>().IsAligned = false;
@@ -62,6 +62,7 @@ public class InteractionManager : MonoBehaviour
         if (componentObject != null)
         {
             componentObject.IsReleased = isReleased;
+            componentObject.HasMoved = true;
         }
     }
 
