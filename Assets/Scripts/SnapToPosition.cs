@@ -155,8 +155,14 @@ public class SnapToPosition : MonoBehaviour
                     // }
                     
                     //AddGrabbable(other as MeshCollider);
+                    
                     TransferCollidersToSnapPoint(other.transform, snapPoint.snapTransform);
                     AddChildCollidersToParentGrabbable();
+
+                    if (fastener != null)
+                    {
+                        snapPoint.snapTransform.GetComponent<Collider>().enabled = false;
+                    }
                     componentObject.PlayBuildPopSound();
                     int currentStepId = Manager.Instance.AssemblySequence[Manager.Instance.CurrentStep].stepId;
 
