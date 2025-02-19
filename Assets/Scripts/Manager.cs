@@ -565,11 +565,19 @@ public class Manager : MonoBehaviour
 
         foreach (var component in components)
         {
-            // Find the corresponding child in the interactor
-            Transform interactorChild = Interactor.transform.Find(component.name);
-            if (interactorChild != null)
+            // Trova tutti i figli in Interactor che hanno lo stesso nome del componente
+            var matchingChildren = Interactor.GetComponentsInChildren<Transform>()
+                .Where(child => child.name == component.name);
+
+            if (!matchingChildren.Any())
             {
-                // Copy the ComponentObject from the original component
+                Debug.LogWarning($"No childs named: {component.name}");
+                continue;
+            }
+
+            foreach (var interactorChild in matchingChildren)
+            {
+                // Copia il ComponentObject dal componente originale
                 ComponentObject sourceComponentObject = component.GetComponent<ComponentObject>();
                 if (sourceComponentObject != null)
                 {
@@ -579,7 +587,7 @@ public class Manager : MonoBehaviour
                         targetComponentObject = interactorChild.gameObject.AddComponent<ComponentObject>();
                     }
 
-                    // Copy properties
+                    // Copia le proprietà
                     targetComponentObject.SetComponentType(sourceComponentObject.GetComponentType());
                     targetComponentObject.SetGroup(sourceComponentObject.GetGroup());
                     targetComponentObject.SetIsPlaced(sourceComponentObject.GetIsPlaced());
@@ -587,11 +595,12 @@ public class Manager : MonoBehaviour
                 }
                 else
                 {
-                    Debug.LogWarning($"ComponentObject not found on source component: {component.name}");
+                    Debug.LogWarning($"Component object missing: {component.name}");
                 }
             }
         }
     }
+
 
     void RemoveExistingScripts<T>(GameObject target) where T : Component
     {

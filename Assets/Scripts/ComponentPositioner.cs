@@ -7,6 +7,7 @@ using UnityEngine.InputSystem;
 using UnityEngine.UI;
 using TMPro;
 using UnityEngine.SceneManagement;
+using UnityEngine.XR.Interaction.Toolkit;
 
 public class ComponentPositioner : MonoBehaviour
 {
@@ -251,7 +252,7 @@ public class ComponentPositioner : MonoBehaviour
             // Controlla se l'operazione è stata annullata
             if (token.IsCancellationRequested)
             {
-                Debug.Log("Operazione annullata dall'utente.");
+                Debug.Log("Operation cancelled.");
                 break;
             }
 
@@ -322,7 +323,7 @@ public class ComponentPositioner : MonoBehaviour
         if (cancellationTokenSource != null)
         {
             cancellationTokenSource.Cancel();
-            Debug.Log("Richiesta di annullamento inviata.");
+            Debug.Log("Cancellation sent.");
             SceneManager.LoadScene(SceneManager.GetActiveScene().name);
         }
     }
@@ -344,6 +345,12 @@ public class ComponentPositioner : MonoBehaviour
 
         foreach (Transform child in components)
         {
+            ComponentObject component = child.GetComponent<ComponentObject>();
+            if (component != null)
+            {
+                if((component.HasMoved && child.GetComponent<XRSimpleInteractable>() == null) || component.IsAutomaticSnap)
+                    continue;
+            }
             child.SetParent(null);
             child.rotation = Quaternion.identity;
             Renderer renderer = child.GetComponent<Renderer>();
@@ -411,6 +418,9 @@ public class ComponentPositioner : MonoBehaviour
         // Muovi tutti i figli a sinistra e trova il più a destra
         foreach (Transform child in components)
         {
+            if((child.GetComponent<ComponentObject>().HasMoved && child.GetComponent<XRSimpleInteractable>() == null) || child.GetComponent<ComponentObject>().IsAutomaticSnap)
+                continue;
+                
             Vector3 position = child.position;
             position.x -= scrollSpeed * Time.deltaTime;
             child.position = position;
@@ -434,6 +444,8 @@ public class ComponentPositioner : MonoBehaviour
             for (int i = 0; i < childCount; i++)
             {
                 Transform child = components[i];
+                if((child.GetComponent<ComponentObject>().HasMoved && child.GetComponent<XRSimpleInteractable>() == null) || child.GetComponent<ComponentObject>().IsAutomaticSnap)
+                    continue;
                 Renderer renderer = child.GetComponent<Renderer>();
                 if (renderer != null)
                 {
@@ -455,6 +467,8 @@ public class ComponentPositioner : MonoBehaviour
         // Attiva o disattiva i figli in base alla loro posizione
         foreach (Transform child in components)
         {
+            if((child.GetComponent<ComponentObject>().HasMoved && child.GetComponent<XRSimpleInteractable>() == null) || child.GetComponent<ComponentObject>().IsAutomaticSnap)
+                continue;
             if (child.position.x < tableBounds.min.x || child.position.x > tableBounds.max.x)
             {
                 child.gameObject.SetActive(false);
@@ -475,6 +489,8 @@ public class ComponentPositioner : MonoBehaviour
         // Muovi tutti i figli a destra e trova il più a sinistra
         foreach (Transform child in components)
         {
+            if((child.GetComponent<ComponentObject>().HasMoved && child.GetComponent<XRSimpleInteractable>() == null) || child.GetComponent<ComponentObject>().IsAutomaticSnap)
+                continue;
             Vector3 position = child.position;
             position.x += scrollSpeed * Time.deltaTime;
             child.position = position;
@@ -498,6 +514,8 @@ public class ComponentPositioner : MonoBehaviour
             for (int i = childCount - 1; i >= 0; i--)
             {
                 Transform child = components[i];
+                if((child.GetComponent<ComponentObject>().HasMoved && child.GetComponent<XRSimpleInteractable>() == null) || child.GetComponent<ComponentObject>().IsAutomaticSnap)
+                    continue;
                 Renderer renderer = child.GetComponent<Renderer>();
                 if (renderer != null)
                 {
@@ -519,6 +537,8 @@ public class ComponentPositioner : MonoBehaviour
         // Attiva o disattiva i figli in base alla loro posizione
         foreach (Transform child in components)
         {
+            if((child.GetComponent<ComponentObject>().HasMoved && child.GetComponent<XRSimpleInteractable>() == null) || child.GetComponent<ComponentObject>().IsAutomaticSnap)
+                continue;
             if (child.position.x < tableBounds.min.x || child.position.x > tableBounds.max.x)
             {
                 child.gameObject.SetActive(false);
