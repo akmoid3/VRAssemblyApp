@@ -68,7 +68,9 @@ public class PlayBackManagerTests
         Object.DestroyImmediate(errorCountText.gameObject);
         Object.DestroyImmediate(hintCountText.gameObject);
         Object.DestroyImmediate(stepsText.gameObject);
+        if(manager != null)
         Object.DestroyImmediate(manager.gameObject);
+        if(stateManager != null)
         Object.DestroyImmediate(stateManager.gameObject);
     }
 

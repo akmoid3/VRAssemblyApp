@@ -90,7 +90,10 @@ public class HandMenuManagerTests
     public void TearDown()
     {
         // Clean up after each test
+        if(manager != null)
         Object.DestroyImmediate(manager.gameObject);
+        
+        if(stateManager != null)
         Object.DestroyImmediate(stateManager.gameObject);
         Object.DestroyImmediate(_handMenuManager.gameObject);
     }

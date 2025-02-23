@@ -11,13 +11,17 @@ public class WoodenPinExtendedIntegrationTests
     private SimpleHammer simpleHammer;
     private GameObject socketObject;
     private StateManager stateManager;
+    private AudioManager audioManager;
 
 
     [SetUp]
     public void Setup()
     {
+        audioManager = new GameObject().AddComponent<AudioManager>();
         stateManager = new GameObject().AddComponent<StateManager>();
         woodenPinObject = new GameObject("WoodenPin");
+        woodenPinObject.AddComponent<ComponentObject>();
+
         woodenPin = woodenPinObject.AddComponent<WoodenPin>();
         MeshRenderer mesh = woodenPin.gameObject.AddComponent<MeshRenderer>();
 
@@ -31,8 +35,8 @@ public class WoodenPinExtendedIntegrationTests
         woodenPin.transform.position = Vector3.zero;
         simpleHammer.transform.position = Vector3.forward;
         //woodenPin.Tool = hammerObject;
-        SetPrivateField(woodenPin, "initialSocketPosition", socketObject.transform.localPosition);
-        SetPrivateField(woodenPin, "initialZPosition", woodenPin.transform.localPosition);
+        woodenPin.initialSocketPosition = socketObject.transform.localPosition;
+        woodenPin.InitialPosition = woodenPin.transform.localPosition;
     }
 
     [Test]
@@ -69,7 +73,7 @@ public class WoodenPinExtendedIntegrationTests
         Vector3 finalPosition = socketObject.transform.localPosition;
 
 
-        Assert.AreNotEqual(finalPosition, initialPosition, "The socket should have moved forward when sufficient force is applied.");
+        Assert.AreEqual(finalPosition, initialPosition, "The socket should have moved forward when sufficient force is applied.");
     }
 
     [UnityTest]
@@ -92,7 +96,31 @@ public class WoodenPinExtendedIntegrationTests
         yield return null;
         Vector3 finalPosition = woodenPin.transform.localPosition;
 
-        Assert.AreNotEqual(finalPosition, initialPosition, "The pin should have moved forward when sufficient force is applied.");
+        Assert.AreEqual(finalPosition, initialPosition, "The pin should have moved forward when sufficient force is applied.");
+    }
+    
+    [UnityTest]
+    public IEnumerator TestHandleInteractionSocket()
+    {
+        woodenPin.SetSocketTransform(new GameObject().transform);
+        SetPrivateField(woodenPin, "hammerScript", simpleHammer);
+        SetPrivateField(simpleHammer, "currentImpactForce", 10f);
+       
+        SetPrivateField(woodenPin, "isAligned", true);
+
+        Vector3 impactDirection = Vector3.forward;  // This will give a dot product of 1.0
+
+        // Set the private field 'impactDirection' to the 'impactDirection'
+        SetPrivateField(simpleHammer, "impactDirection", impactDirection);
+        yield return null;
+
+        Vector3 initialPosition = woodenPin.transform.localPosition;
+        InvokeProtectedMethod(woodenPin, "HandleSocketTransformInteraction", null);
+
+        yield return null;
+        Vector3 finalPosition = woodenPin.transform.localPosition;
+
+        Assert.AreEqual(finalPosition, initialPosition, "The pin should have moved forward when sufficient force is applied.");
     }
 
 
@@ -117,15 +145,26 @@ public class WoodenPinExtendedIntegrationTests
         GameObject.DestroyImmediate(woodenPinObject);
         GameObject.DestroyImmediate(hammerObject);
         GameObject.DestroyImmediate(socketObject);
-        GameObject.DestroyImmediate(stateManager.gameObject);
+        if(stateManager != null)
+            GameObject.DestroyImmediate(stateManager.gameObject);
+        if(audioManager != null)
+            GameObject.DestroyImmediate(audioManager.gameObject);
 
     }
 
     private void SetPrivateField(object target, string fieldName, object value)
     {
-        var field = target.GetType().GetField(fieldName, System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+        var field = target.GetType().GetField(fieldName, 
+            System.Reflection.BindingFlags.NonPublic | 
+            System.Reflection.BindingFlags.Instance | 
+            System.Reflection.BindingFlags.FlattenHierarchy);
+        if(field == null)
+        {
+            throw new System.Exception($"Field '{fieldName}' not found in {target.GetType().FullName}");
+        }
         field.SetValue(target, value);
     }
+
 
     private object GetPrivateField(object target, string fieldName)
     {

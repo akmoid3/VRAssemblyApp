@@ -36,7 +36,7 @@ public class ScrewTests
         baseScrewDriver.transform.position = Vector3.forward;
         //screw.Tool = screwdriverObject;
         screw.CorrectToolName = screwdriverObject.name;
-        SetPrivateField(screw, "initialSocketPosition", socketObject.transform.localPosition);
+        screw.initialSocketPosition = socketObject.transform.localPosition;
         screw.InitialPosition = screw.transform.localPosition;
     }
 
@@ -65,6 +65,8 @@ public class ScrewTests
     [UnityTest]
     public IEnumerator TestHandleInteraction_SufficientForce()
     {
+        stateManager = new GameObject().AddComponent<StateManager>();
+
         SetPrivateField(screw, "screwdriverScript", baseScrewDriver);
         SetPrivateField(baseScrewDriver, "currentRotationSpeed", 100f);
         SetPrivateField(screw, "isAligned", true);
@@ -85,6 +87,8 @@ public class ScrewTests
     [UnityTest]
     public IEnumerator TestHandleInteraction_StatePlayBack_NotScrewing()
     {
+        stateManager = new GameObject().AddComponent<StateManager>();
+
         DynamometerScrewDriver dynamometerScrewDriver = new GameObject().AddComponent<DynamometerScrewDriver>();
         SetPrivateField(screw, "screwdriverScript", dynamometerScrewDriver);
         SetPrivateField(baseScrewDriver, "currentRotationSpeed", 100f);
@@ -109,6 +113,8 @@ public class ScrewTests
     [UnityTest]
     public IEnumerator TestHandleInteraction_SufficientForce_NotScrewing()
     {
+        stateManager = new GameObject().AddComponent<StateManager>();
+
         SetPrivateField(screw, "screwdriverScript", baseScrewDriver);
         SetPrivateField(baseScrewDriver, "currentRotationSpeed", 100f);
         SetPrivateField(screw, "isAligned", true);
@@ -149,7 +155,8 @@ public class ScrewTests
         GameObject.DestroyImmediate(screwObject);
         GameObject.DestroyImmediate(screwdriverObject);
         GameObject.DestroyImmediate(socketObject);
-        GameObject.DestroyImmediate(stateManager.gameObject);
+        if(stateManager != null)
+            GameObject.DestroyImmediate(stateManager.gameObject);
     }
 
     private void SetPrivateField(object target, string fieldName, object value)

@@ -29,7 +29,9 @@ public class MakeGrabbableTests
     {
         // Clean up after each test
         Object.DestroyImmediate(testObject);
+        if(manager != null)
         Object.DestroyImmediate(manager.gameObject);
+        if(stateManager != null)
         Object.DestroyImmediate(stateManager.gameObject);
     }
 

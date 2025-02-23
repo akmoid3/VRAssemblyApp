@@ -21,8 +21,8 @@ public class RootObject
 public class SequenceReader : MonoBehaviour
 {
     [SerializeField] private Manager manager;
-    [SerializeField] private Material holographicMaterial;
-    [SerializeField] private GameObject buildingPosition;
+    public Material holographicMaterial;
+    public GameObject buildingPosition;
 
     public void CreateSnapObjectFromJSON()
     {

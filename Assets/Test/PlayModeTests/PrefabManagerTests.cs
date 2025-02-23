@@ -36,7 +36,9 @@ public class PrefabManagerTests
     public void TearDown()
     {
         Object.DestroyImmediate(prefabManagerGameObject);
+        if(manager != null)
         Object.DestroyImmediate(manager.gameObject);
+        if(stateManager != null)
         Object.DestroyImmediate(stateManager.gameObject);
     }
 

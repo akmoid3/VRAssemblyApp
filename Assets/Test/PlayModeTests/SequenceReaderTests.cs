@@ -1,145 +1,167 @@
-using NUnit.Framework;
-using System.Collections;
 using System.Collections.Generic;
 using System.IO;
-using UnityEditor;
+using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.TestTools;
+
 public class SequenceReaderTests
 {
-    private GameObject testGameObject;
-    private GameObject testGameObject2;
+    private GameObject sequenceReaderGO;
     private SequenceReader sequenceReader;
-    private GameObject managerSequenceReaderTests;
-    private Manager managerScript;
-    private string directoryPath;
-    private string filePath;
+    private GameObject buildingPosition;
     private Material holographicMaterial;
-    private StateManager stateManager;
-    private GameObject buildPosition;
+    private GameObject managerGO;
+    private Manager manager; // Your concrete Manager component
+    private GameObject prefab; // Prefab with a child named "TestComponent"
+    private string jsonDir;
+    private string modelName;
 
     [SetUp]
-    public void SetUp()
+    public void Setup()
     {
-        buildPosition = new GameObject();
-        testGameObject = new GameObject();
-        sequenceReader = testGameObject.AddComponent<SequenceReader>();
+        // Create and set up the building position
+        buildingPosition = new GameObject("BuildingPosition");
+        buildingPosition.transform.position = Vector3.zero;
 
-        stateManager = new GameObject().AddComponent<StateManager>();
-        managerSequenceReaderTests = new GameObject("Manager2");
-        managerScript = managerSequenceReaderTests.AddComponent<Manager>();
+        // Create SequenceReader and assign required fields
+        sequenceReaderGO = new GameObject("SequenceReader");
+        sequenceReader = sequenceReaderGO.AddComponent<SequenceReader>();
+        sequenceReader.buildingPosition = buildingPosition;
+        holographicMaterial = new Material(Shader.Find("Standard"));
+        sequenceReader.holographicMaterial = holographicMaterial;
 
-        directoryPath = Path.Combine(Application.persistentDataPath, "SavedBuildData");
+        // Set up the Manager instance (using your concrete Manager)
+        managerGO = new GameObject("Manager");
+        manager = managerGO.AddComponent<Manager>();
+        manager.ModelName = "TestModel";
+        modelName = manager.ModelName;
+        
 
-        if (!Directory.Exists(directoryPath))
+        // Create a prefab GameObject with a child named "TestComponent"
+        prefab = new GameObject("Prefab");
+        GameObject child = new GameObject("TestComponent");
+        child.transform.SetParent(prefab.transform);
+        // Add required components for CopyMeshAndMaterial to work
+        child.AddComponent<MeshFilter>();
+        child.AddComponent<MeshRenderer>();
+        prefab.transform.localScale = Vector3.one;
+        manager.Model = prefab; // Assign the prefab in the manager
+
+        // Ensure the JSON directory exists in persistentDataPath
+        jsonDir = Path.Combine(Application.persistentDataPath, "SavedBuildData");
+        if (!Directory.Exists(jsonDir))
         {
-            Directory.CreateDirectory(directoryPath);
-        }
-
-        string materialPath = "Assets/Materials/HolographicMaterial.mat";
-        holographicMaterial = AssetDatabase.LoadAssetAtPath<Material>(materialPath);
-
-        testGameObject2 = CreateTestPrefab();
-
-        var buildingPositionField = typeof(SequenceReader).GetField("buildingPosition", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
-        if (buildingPositionField != null)
-        {
-            buildingPositionField.SetValue(sequenceReader, buildPosition);
+            Directory.CreateDirectory(jsonDir);
         }
     }
 
     [TearDown]
     public void TearDown()
     {
-        if (testGameObject != null)
-        {
-            GameObject.DestroyImmediate(testGameObject);
-        }
-        if (managerSequenceReaderTests != null)
-        {
-            GameObject.DestroyImmediate(managerSequenceReaderTests);
-        }
-        GameObject.DestroyImmediate(stateManager.gameObject);
+        if (sequenceReaderGO != null) GameObject.DestroyImmediate(sequenceReaderGO);
+        if (buildingPosition != null) GameObject.DestroyImmediate(buildingPosition);
+        if (managerGO != null) GameObject.DestroyImmediate(managerGO);
+        if (prefab != null) GameObject.DestroyImmediate(prefab);
 
-
-        if (File.Exists(filePath))
-        {
-            File.Delete(filePath);
-        }
+        // Delete the test JSON file if it exists
+        string jsonPath = Path.Combine(jsonDir, modelName + ".json");
+        if (File.Exists(jsonPath))
+            File.Delete(jsonPath);
     }
 
-    [UnityTest]
-    public IEnumerator TestCreateSnapObjectFromJSON_FileNotExist()
+  
+
+    [Test]
+    public void Test_CreateSnapObjectFromJSON_InvalidJson()
     {
-        managerScript.Model = new GameObject("TestModel");
-        filePath = Path.Combine(directoryPath, "TestModel.json");
-
-        if (File.Exists(filePath))
-        {
-            File.Delete(filePath);
-        }
-
-        sequenceReader.CreateSnapObjectFromJSON();
-
-        yield return null;
-
-
-        GameObject parentObject = GameObject.Find("SnapParentObject");
-        Assert.IsNull(parentObject, "SnapParentObject should not be created if the JSON file does not exist.");
-
-        yield return null;
+        // Write an invalid JSON file so that deserialization fails.
+        string jsonPath = Path.Combine(jsonDir, modelName + ".json");
+        File.WriteAllText(jsonPath, "invalid json");
+        
+        // Expect an exception to be thrown by JsonUtility.FromJson.
+        Assert.Throws<System.ArgumentException>(() => sequenceReader.CreateSnapObjectFromJSON());
     }
 
-    [UnityTest]
-    public IEnumerator TestCreateSnapObjectFromJSON_ValidFile()
+    [Test]
+    public void Test_CreateSnapObjectFromJSON_PrefabNull()
     {
-        managerScript.Model = testGameObject2;
-        string jsonContent = @"
-    {
-        ""components"": [
+        // Create a valid JSON file with one component entry using the updated ComponentData fields
+        RootObject rootObject = new RootObject
+        {
+            components = new List<ComponentData>
             {
-                ""componentName"": ""TestComponent"",
-                ""position"": {
-                    ""x"": 1.0,
-                    ""y"": 2.0,
-                    ""z"": 3.0
-                },
-                ""rotation"": {
-                    ""x"": 0,
-                    ""y"": 0,
-                    ""z"": 0,
-                    ""w"": 1
-                },
-                ""toolName"": ""null"",
-                ""group"": 0,
-                ""type"": 0
+                new ComponentData
+                {
+                    stepId = 1,
+                    componentName = "TestComponent",
+                    position = new Vector3(0, 0, 0),
+                    rotation = new Quaternion(0, 0, 0, 1),
+                    toolName = "",
+                    toolForce = 0,
+                    group = "",
+                    type = ComponentObject.ComponentType.None,
+                    pdfIndex = 0
+                }
             }
-        ]
-    }";
-        filePath = Path.Combine(directoryPath, "TestModel2.json");
+        };
+        string json = JsonUtility.ToJson(rootObject);
+        string jsonPath = Path.Combine(jsonDir, modelName + ".json");
+        File.WriteAllText(jsonPath, json);
 
-        File.WriteAllText(filePath, jsonContent);
+        // Set the Manager’s prefab reference to null to simulate a missing prefab.
+        manager.Model = null;
+        LogAssert.Expect(LogType.Error, $"Prefab not found at path: Prefabs/{modelName}");
+        sequenceReader.CreateSnapObjectFromJSON();
+    }
 
+    [Test]
+    public void Test_CreateSnapObjectFromJSON_Success()
+    {
+        // Create a valid JSON file with one component entry using the updated ComponentData fields
+        RootObject rootObject = new RootObject
+        {
+            components = new List<ComponentData>
+            {
+                new ComponentData
+                {
+                    stepId = 1,
+                    componentName = "TestComponent",
+                    position = new Vector3(1, 2, 3),
+                    rotation = new Quaternion(0, 0, 0, 1),
+                    toolName = "",
+                    toolForce = 0,
+                    group = "",
+                    type = ComponentObject.ComponentType.None,
+                    pdfIndex = 0
+                }
+            }
+        };
+        string json = JsonUtility.ToJson(rootObject);
+        string jsonPath = Path.Combine(jsonDir, modelName + ".json");
+        File.WriteAllText(jsonPath, json);
+
+        // Call the method under test.
         sequenceReader.CreateSnapObjectFromJSON();
 
-        yield return null;
+        // Verify that a SnapParentObject was created in the scene.
+        GameObject snapParent = GameObject.Find("SnapParentObject");
+        Assert.IsNotNull(snapParent, "SnapParentObject should be created.");
 
-        GameObject parentObject = GameObject.Find("SnapParentObject");
-        Assert.IsNotNull(parentObject, "SnapParentObject was not created.");
+        // Verify required components on the snap parent.
+        Assert.IsNotNull(snapParent.GetComponent<SnapToPosition>(), "SnapParentObject should have a SnapToPosition component.");
+        BoxCollider boxCollider = snapParent.GetComponent<BoxCollider>();
+        Assert.IsNotNull(boxCollider, "SnapParentObject should have a BoxCollider.");
+        Assert.IsTrue(boxCollider.isTrigger, "BoxCollider should be set as a trigger.");
+        Assert.IsNotNull(snapParent.GetComponent<Rigidbody>(), "SnapParentObject should have a Rigidbody component.");
 
+        // Verify that the child object ("TestComponent") exists under the snap parent.
+        Transform childTransform = snapParent.transform.Find("TestComponent");
+        Assert.IsNotNull(childTransform, "TestComponent should exist as a child of SnapParentObject.");
 
-       
+        // Check that the holographic material was assigned and that the MeshRenderer is disabled.
+        MeshRenderer renderer = childTransform.GetComponent<MeshRenderer>();
+        Assert.IsNotNull(renderer, "TestComponent should have a MeshRenderer.");
+        Assert.AreEqual(holographicMaterial, renderer.sharedMaterial, "MeshRenderer should have the holographic material assigned.");
+        Assert.IsFalse(renderer.enabled, "MeshRenderer should be disabled.");
     }
-
-    private GameObject CreateTestPrefab()
-    {
-        GameObject prefab = new GameObject("TestModel2");
-        GameObject component = new GameObject("TestComponent");
-        component.transform.SetParent(prefab.transform);
-        component.AddComponent<MeshFilter>();
-        component.AddComponent<MeshRenderer>();
-
-        return prefab;
-    }
-
 }

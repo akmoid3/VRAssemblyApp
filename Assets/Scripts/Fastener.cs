@@ -15,7 +15,7 @@ public abstract class Fastener : MonoBehaviour
     [SerializeField] protected float rayLength = 0.15f;
 
     [SerializeField] protected Transform socketTransform;
-    protected Vector3 initialSocketPosition;
+    public Vector3 initialSocketPosition;
     private Tool tool;
     protected Renderer fastenerRenderer;
     protected Color alignedColor = Color.green;
@@ -58,7 +58,7 @@ public abstract class Fastener : MonoBehaviour
 
     protected AudioSource audioSource;
 
-    protected virtual void Start()
+    public virtual void Start()
     {
         fastenerRenderer = GetComponent<Renderer>();
         defaultColor = fastenerRenderer.material.color;
@@ -341,26 +341,6 @@ public abstract class Fastener : MonoBehaviour
     public Transform GetSocketTransform()
     {
         return socketTransform;
-    }
-
-    protected void PlaySound(string clipName, bool loop = false, float volume = 1.0f)
-    {
-        AudioManager.Instance.PlaySound(audioSource, clipName, loop, volume);
-    }
-
-    protected void StopSound()
-    {
-        AudioManager.Instance.StopSound(audioSource);
-    }
-
-    protected void SetPitch(float pitch)
-    {
-        AudioManager.Instance.SetPitch(audioSource, pitch);
-    }
-
-    public void PlayBuildPopSound()
-    {
-        AudioManager.Instance.PlayOneShot(audioSource, "BuildPop", 1f);
     }
 
     public Vector3 MapSelectedAxisToTransformDirection(Vector3 selectedAxis)

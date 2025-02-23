@@ -22,7 +22,8 @@ public class StateManagerTests
     public void TearDown()
     {
         // Clean up after each test
-        GameObject.DestroyImmediate(gameObject);
+        if(stateManager != null)
+            GameObject.DestroyImmediate(gameObject);
     }
 
     [Test]

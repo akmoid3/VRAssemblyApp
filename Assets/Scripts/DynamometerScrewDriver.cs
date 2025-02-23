@@ -15,7 +15,7 @@ public class DynamometerScrewDriver : BaseScrewDriver
     public float TriggerValue { get => triggerValue; set => triggerValue = value; }
     public int Force { get => force; set => force = value; }
     private Coroutine showCorrectForceCoroutine;
-    private void Start()
+    public void Start()
     {
         // Ensure AudioManager is initialized
         if (AudioManager.Instance == null)

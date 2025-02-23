@@ -11,6 +11,8 @@ public class ToolManager : MonoBehaviour
  
     public void HighlightToolByName(string correctToolName)
     {
+        if(toolsList == null)
+            return;
         foreach (GameObject tool in toolsList)
         {
             if (tool == null)

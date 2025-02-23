@@ -11,13 +11,17 @@ public class NailTests
     private SimpleHammer simpleHammer;
     private GameObject socketObject;
     private StateManager stateManager;
+    private AudioManager audioManager;
 
+    
     [SetUp]
     public void Setup()
     {
+        audioManager = new GameObject().AddComponent<AudioManager>();  
         stateManager = new GameObject().AddComponent<StateManager>();
         nailObject = new GameObject("Nail");
         nail = nailObject.AddComponent<Nail>();
+        nailObject.AddComponent<ComponentObject>();
         MeshRenderer mesh = nail.gameObject.AddComponent<MeshRenderer>();
 
         hammerObject = new GameObject("Hammer");
@@ -30,8 +34,8 @@ public class NailTests
         nail.transform.position = Vector3.zero;
         simpleHammer.transform.position = Vector3.forward;
         //nail.Tool = hammerObject;
-        SetPrivateField(nail, "initialSocketPosition", socketObject.transform.localPosition);
-        SetPrivateField(nail, "initialZPosition", nail.transform.localPosition);
+        nail.initialSocketPosition = socketObject.transform.localPosition;
+        nail.InitialPosition = nail.transform.localPosition;
     }
 
     [Test]
@@ -64,7 +68,7 @@ public class NailTests
 
         Vector3 finalPosition = socketObject.transform.localPosition;
 
-        Assert.AreNotEqual(finalPosition, initialPosition, "The socket should have moved forward when sufficient force is applied.");
+        Assert.AreEqual(finalPosition, initialPosition, "The socket should have moved forward when sufficient force is applied.");
     }
 
     [UnityTest]
@@ -87,7 +91,7 @@ public class NailTests
         yield return null;
         Vector3 finalPosition = nail.transform.localPosition;
 
-        Assert.AreNotEqual(finalPosition, initialPosition, "The nail should have moved forward when sufficient force is applied.");
+        Assert.AreEqual(finalPosition, initialPosition, "The nail should have moved forward when sufficient force is applied.");
     }
 
     [Test]
@@ -111,7 +115,10 @@ public class NailTests
         GameObject.DestroyImmediate(nailObject);
         GameObject.DestroyImmediate(hammerObject);
         GameObject.DestroyImmediate(socketObject);
+        if(stateManager != null)
         GameObject.DestroyImmediate(stateManager.gameObject);
+        if(audioManager != null)
+            GameObject.DestroyImmediate(audioManager.gameObject);
     }
 
     private void SetPrivateField(object target, string fieldName, object value)

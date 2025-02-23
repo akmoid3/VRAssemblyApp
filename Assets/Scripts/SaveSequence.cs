@@ -36,7 +36,7 @@ public class SaveSequence : MonoBehaviour
 
     public ObjectData ObjectData { get => objectData; set => objectData = value; }
 
-    private void Start()
+    public void Start()
     {
         directoryPath = Path.Combine(Application.persistentDataPath, folderName);
         if (!Directory.Exists(directoryPath))

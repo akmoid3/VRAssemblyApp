@@ -77,7 +77,9 @@ public class FinishManagerTests
         Object.DestroyImmediate(errorCountText.gameObject);
         Object.DestroyImmediate(hintCountText.gameObject);
         Object.DestroyImmediate(finishButton.gameObject);
+        if(manager != null)
         Object.DestroyImmediate(manager.gameObject);
+        if(stateManager != null)
         Object.DestroyImmediate(stateManager.gameObject);
     }
 

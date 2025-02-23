@@ -63,7 +63,9 @@ public class ModeChooserManagerTests
         Object.DestroyImmediate(recordButton.gameObject);
         Object.DestroyImmediate(initializeButton.gameObject);
         Object.DestroyImmediate(returnBackButton.gameObject);
+        if(manager != null)
         Object.DestroyImmediate(manager.gameObject);
+        if(stateManager != null)
         Object.DestroyImmediate(stateManager.gameObject);
     }
 

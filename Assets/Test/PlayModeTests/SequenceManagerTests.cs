@@ -1,4 +1,4 @@
-/*using NUnit.Framework;
+using NUnit.Framework;
 using UnityEngine;
 using System.Collections.Generic;
 using System.Collections;
@@ -22,11 +22,11 @@ public class SequenceManagerTests
 
         // Initialize testComponent and testSequence for testing
         testComponent = new GameObject("TestComponent");
-        testComponent.AddComponent<ComponentObject>().SetGroup(ComponentObject.Group.None);
+        testComponent.AddComponent<ComponentObject>().SetGroup("None");
 
         testSequence = new List<ComponentData>
         {
-            new ComponentData { componentName = "TestComponent", group = ComponentObject.Group.None }
+            new ComponentData { componentName = "TestComponent", group = "None" }
         };
 
     }
@@ -111,7 +111,7 @@ public class SequenceManagerTests
         // Create an invalid GameObject and attach the ComponentObject component
         GameObject invalidComponent = new GameObject("InvalidComponent");
         var componentObject = invalidComponent.AddComponent<ComponentObject>();
-        componentObject.SetGroup(ComponentObject.Group.Group02); // Setting a group that is different from the expected one
+        componentObject.SetGroup("12"); // Setting a group that is different from the expected one
 
         // Validate the invalid component
         sequenceManager.ValidateComponent(invalidComponent);
@@ -219,4 +219,3 @@ public class SaveSequenceMock : SaveSequence
     }
 }
 
-*/
