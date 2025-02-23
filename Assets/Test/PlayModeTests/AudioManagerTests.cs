@@ -1,118 +1,114 @@
-/*using NUnit.Framework;
+using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.TestTools;
+using System.Collections.Generic;
+using System.Reflection;
 
 public class AudioManagerTests
 {
-    private GameObject _audioManagerGameObject;
-    private AudioManager _audioManager;
-    private AudioSource _audioSource;
+    private GameObject audioManagerGO;
+    private AudioManager audioManager;
+    private GameObject audioSourceGO;
+    private AudioSource audioSource;
 
     [SetUp]
-    public void Setup()
+    public void SetUp()
     {
-        // Create a new GameObject and attach the AudioManager component to it
-        _audioManagerGameObject = new GameObject();
-        _audioManager = _audioManagerGameObject.AddComponent<AudioManager>();
+        // Create a GameObject for the AudioManager and add the component
+        audioManagerGO = new GameObject("AudioManager");
+        audioManager = audioManagerGO.AddComponent<AudioManager>();
 
-        // Add an AudioSource to the GameObject for testing
-        _audioSource = _audioManagerGameObject.AddComponent<AudioSource>();
+        // Create a GameObject with an AudioSource component
+        audioSourceGO = new GameObject("AudioSource");
+        audioSource = audioSourceGO.AddComponent<AudioSource>();
 
-        // Access private fields and set them up for testing
-        typeof(AudioManager).GetField("audioSource", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)
-                            .SetValue(_audioManager, _audioSource);
+        // Create a dummy AudioClip (44100 samples, 1 channel, 44100 Hz)
+        AudioClip dummyClip = AudioClip.Create("TestClip", 44100, 1, 44100, false);
+
+        
+        FieldInfo audioClipsField = typeof(AudioManager).GetField("audioClips", BindingFlags.NonPublic | BindingFlags.Instance);
+        var clips = new Dictionary<string, AudioClip> { { "TestClip", dummyClip } };
+        audioClipsField.SetValue(audioManager, clips);
     }
 
     [TearDown]
-    public void Teardown()
+    public void TearDown()
     {
-        // Destroy the GameObject after each test
-        Object.DestroyImmediate(_audioManagerGameObject);
+        Object.DestroyImmediate(audioManagerGO);
+        Object.DestroyImmediate(audioSourceGO);
+    }
+    
+
+    [Test]
+    public void TestPlaySound_LogsWarningWhenClipNotFound()
+    {
+        // LogAssert will capture the expected warning message when a clip is not found
+        LogAssert.Expect(LogType.Warning, "AudioManager: Sound 'NonExistentClip' not found!");
+
+        audioManager.PlaySound(audioSource, "NonExistentClip");
     }
 
     [Test]
-    public void SingletonPattern_IsImplementedCorrectly()
+    public void TestPlayOneShot_DoesNotThrow()
     {
-        // Act: Create a second instance
-        var secondGameObject = new GameObject();
-        var secondAudioManager = secondGameObject.AddComponent<AudioManager>();
-
-        // Assert: Ensure the first instance remains the singleton and the second is destroyed
-        Assert.AreEqual(AudioManager.Instance, _audioManager);
-        Assert.IsTrue(secondAudioManager == null || AudioManager.Instance != secondAudioManager);
-
-        // Clean up the second GameObject if it wasn't destroyed
-        Object.DestroyImmediate(secondGameObject);
-    }
-
-
-    [Test]
-    public void PlayScrewSound_SetsCorrectAudioClipAndPlays()
-    {
-        // Arrange
-        var screwClip = AudioClip.Create("ScrewSound", 44100, 1, 44100, false);
-        typeof(AudioManager).GetField("screwSound", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)
-                            .SetValue(_audioManager, screwClip);
-
-        // Act
-        _audioManager.PlaySound("screw", true, 0.5f);
-
-        // Assert
-        Assert.AreEqual(screwClip, _audioSource.clip);
-        Assert.IsTrue(_audioSource.isPlaying);
-        Assert.IsTrue(_audioSource.loop);
-        Assert.AreEqual(0.5f, _audioSource.volume);
+        // Ensure PlayOneShot does not throw an exception when playing a valid clip
+        Assert.DoesNotThrow(() => audioManager.PlayOneShot(audioSource, "TestClip"));
     }
 
     [Test]
-    public void PlayPopSound_SetsCorrectAudioClipAndPlays()
+    public void TestStopSound_StopsAudioSource()
     {
-        // Arrange
-        var popClip = AudioClip.Create("PopSound", 44100, 1, 44100, false);
-        typeof(AudioManager).GetField("popSound", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)
-                            .SetValue(_audioManager, popClip);
+        // Start playing the sound
+        audioManager.PlaySound(audioSource, "TestClip");
+        Assert.IsTrue(audioSource.isPlaying);
 
-        // Act
-        _audioManager.PlaySound("BuildPop", false, 1f);
-
-
-        // Assert
-        Assert.AreEqual(popClip, _audioSource.clip);
-        Assert.IsTrue(_audioSource.isPlaying);
-        Assert.IsFalse(_audioSource.loop);
-        Assert.AreEqual(1.0f, _audioSource.volume);
+        // Stop the sound and check that the AudioSource is no longer playing
+        audioManager.StopSound(audioSource);
+        Assert.IsFalse(audioSource.isPlaying);
     }
 
     [Test]
-    public void StopSound_StopsPlayingAudio()
+    public void TestSetPitch_ClampsCorrectly()
     {
-        // Arrange
-        _audioSource.clip = AudioClip.Create("TestClip", 44100, 1, 44100, false);
-        _audioSource.Play();
+        // Test setting pitch within the allowed range
+        audioManager.SetPitch(audioSource, 2.0f);
+        Assert.AreEqual(2.0f, audioSource.pitch);
 
-        // Act
-        _audioManager.StopSound();
+        // Test setting pitch below the minimum (should clamp to 0.1)
+        audioManager.SetPitch(audioSource, 0.0f);
+        Assert.AreEqual(0.1f, audioSource.pitch);
 
-        // Assert
-        Assert.IsFalse(_audioSource.isPlaying);
+        // Test setting pitch above the maximum (should clamp to 3.0)
+        audioManager.SetPitch(audioSource, 4.0f);
+        Assert.AreEqual(3.0f, audioSource.pitch);
     }
 
     [Test]
-    public void SetPitch_AdjustsPitchCorrectly()
+    public void TestSetVolume_ClampsCorrectly()
     {
-        // Act
-        _audioManager.SetPitch(2.0f);
+        // Test setting volume within range
+        audioManager.SetVolume(audioSource, 0.5f);
+        Assert.AreEqual(0.5f, audioSource.volume);
 
-        // Assert
-        Assert.AreEqual(2.0f, _audioSource.pitch);
+        // Test setting volume below 0 (should clamp to 0)
+        audioManager.SetVolume(audioSource, -0.5f);
+        Assert.AreEqual(0f, audioSource.volume);
 
-        // Test lower boundary
-        _audioManager.SetPitch(0.0f);
-        Assert.AreEqual(0.1f, _audioSource.pitch);
+        // Test setting volume above 1 (should clamp to 1)
+        audioManager.SetVolume(audioSource, 2.0f);
+        Assert.AreEqual(1f, audioSource.volume);
+    }
 
-        // Test upper boundary
-        _audioManager.SetPitch(5.0f);
-        Assert.AreEqual(3.0f, _audioSource.pitch);
+    [Test]
+    public void TestSingletonPattern()
+    {
+        // Create a second AudioManager GameObject
+        GameObject anotherAMGO = new GameObject("AudioManager2");
+        AudioManager anotherAM = anotherAMGO.AddComponent<AudioManager>();
+
+        // The singleton Instance should remain the first one created in SetUp
+        Assert.AreEqual(audioManager, AudioManager.Instance);
+
+        Object.DestroyImmediate(anotherAMGO);
     }
 }
-*/

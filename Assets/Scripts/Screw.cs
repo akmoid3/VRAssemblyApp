@@ -18,7 +18,6 @@ public class Screw : Fastener
                 if (dynamometerScrewDriver && dynamometerScrewDriver.Force != CorrectToolForce)
                     return;
                 Interaction();
-
             }
         }
         else if (screwdriverScript != null && isAligned)

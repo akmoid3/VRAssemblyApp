@@ -59,7 +59,7 @@ public class HandMenuManagerTests
         _handMenuManager.groupSelectionButton = new GameObject("GroupSelectionButton").AddComponent<Button>();
         _handMenuManager.groupSelectionButton2 = new GameObject("GroupSelectionButton2").AddComponent<Button>();
         _handMenuManager.saveComponentButton = new GameObject("SaveComponentButton").AddComponent<Button>();
-
+        _handMenuManager.buildingPosition = new GameObject("BuildingPosition").transform;
         // Create a dummy dropdown
         _handMenuManager.incrementDropdown = new GameObject("IncrementDropdown").AddComponent<TMP_Dropdown>();
 

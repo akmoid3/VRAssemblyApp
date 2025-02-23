@@ -21884,6 +21884,21 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 4641051041997223011, guid: d67926f5e80c03b49a288d0130fad246,
+        type: 3}
+      propertyPath: m_OnValueChange.m_PersistentCalls.m_Calls.Array.data[0].m_Target
+      value: 
+      objectReference: {fileID: 1904702349}
+    - target: {fileID: 4641051041997223011, guid: d67926f5e80c03b49a288d0130fad246,
+        type: 3}
+      propertyPath: m_OnValueChange.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: SetForce
+      objectReference: {fileID: 0}
+    - target: {fileID: 4641051041997223011, guid: d67926f5e80c03b49a288d0130fad246,
+        type: 3}
+      propertyPath: m_OnValueChange.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
+      value: Unity.VRTemplate.XRKnob, XRKNOB
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -30396,6 +30411,18 @@ GameObject:
     type: 3}
   m_PrefabInstance: {fileID: 1346285739}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &1904702349 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 6513006979595684285, guid: d67926f5e80c03b49a288d0130fad246,
+    type: 3}
+  m_PrefabInstance: {fileID: 1346285739}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1904702348}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 98f02c90627febb4caee45763f87707a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1917727889
 GameObject:
   m_ObjectHideFlags: 0

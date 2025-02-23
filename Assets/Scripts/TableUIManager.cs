@@ -56,7 +56,7 @@ public class TableUIManager : MonoBehaviour
         OnComponentSelected();
     }
 
-    private void OnComponentSelected()
+    public void OnComponentSelected()
     {
         string selectedType = dropdownComponentTypes.options[dropdownComponentTypes.value].text.ToLower();
 
@@ -138,7 +138,7 @@ public class TableUIManager : MonoBehaviour
         }
     }
 
-    private void SpawnPrefabById(string componentId)
+    public void SpawnPrefabById(string componentId)
     {
         TableComponentDataSO component = componentListSO.components.Find(c => c.id.ToLower() == componentId.ToLower());
         if (component != null && component.prefab != null)
@@ -159,7 +159,7 @@ public class TableUIManager : MonoBehaviour
     }
 
 
-    private void UpdatePrefabButtons(string selectedType)
+    public void UpdatePrefabButtons(string selectedType)
     {
         foreach (Transform child in prefabButtonsContainer)
         {

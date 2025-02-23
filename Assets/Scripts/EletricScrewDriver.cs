@@ -10,7 +10,7 @@ public class ElectricScrewDriver : BaseScrewDriver
     public bool IsPlayingSound { get => isPlayingSound; set => isPlayingSound = value; }
     public float TriggerValue { get => triggerValue; set => triggerValue = value; }
 
-    private void Start()
+    public void Start()
     {
         // Ensure AudioManager is initialized
         if (AudioManager.Instance == null)

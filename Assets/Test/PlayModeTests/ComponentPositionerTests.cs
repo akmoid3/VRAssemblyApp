@@ -1,9 +1,11 @@
 using NUnit.Framework;
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEditor.Animations;
 using UnityEngine;
 using UnityEngine.TestTools;
+using UnityEngine.UI;
 
 [TestFixture]
 public class ComponentPositionerTests
@@ -11,7 +13,9 @@ public class ComponentPositionerTests
     private GameObject gameObject;
     private ComponentPositioner componentPositioner;
     private AudioSource audioSource;
-
+    private Slider progressBar;
+    private TextMeshProUGUI progressText;
+    private GameObject progressPanel;
     [SetUp]
     public void Setup()
     {
@@ -20,7 +24,25 @@ public class ComponentPositionerTests
         componentPositioner.TableRoll = new GameObject();
         componentPositioner.TableRoll.AddComponent<MeshRenderer>();
         componentPositioner.AudioSource = gameObject.AddComponent<AudioSource>();
+        gameObject.AddComponent<CoACD>();
+        
+        progressPanel = new GameObject("ProgressPanel");
 
+        GameObject progressBarObject = new GameObject("ProgressBar");
+        progressBar = progressBarObject.AddComponent<Slider>();
+
+        GameObject progressTextObject = new GameObject("ProgressText");
+        progressText = progressTextObject.AddComponent<TextMeshProUGUI>();
+        
+        componentPositioner.GetType().GetField("progressPanel", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)
+            .SetValue(componentPositioner, progressPanel);
+        
+        componentPositioner.GetType().GetField("progressText", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)
+            .SetValue(componentPositioner, progressText);
+        
+        componentPositioner.GetType().GetField("progressBar", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)
+            .SetValue(componentPositioner, progressBar);
+        
         // Add an AudioSource to the gameObject
         audioSource = gameObject.AddComponent<AudioSource>();
         componentPositioner.AudioSource = audioSource;
@@ -69,17 +91,54 @@ public class ComponentPositionerTests
         GameObject gameObject = GameObject.Find("Parent");
         // Assert
         Assert.IsNotNull(gameObject);
-        var spawnedChildren = (List<Transform>)componentPositioner.GetType().GetField("spawnedChildren", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance).GetValue(componentPositioner);
-        Assert.AreEqual(gameObject.transform.childCount, spawnedChildren.Count);
-
         Assert.AreEqual(gameObject.transform.childCount, 2);
 
+
+        
+            
         Object.DestroyImmediate(manager.gameObject);
         Object.DestroyImmediate(stateManager.gameObject);
 
 
     }
 
+    private Mesh CreateTestMesh()
+    {
+        Mesh mesh = new Mesh();
+        // Create a simple triangle mesh.
+        mesh.vertices = new Vector3[]
+        {
+            new Vector3(0, 0, 0),
+            new Vector3(1, 0, 0),
+            new Vector3(0, 1, 0)
+        };
+        mesh.triangles = new int[] { 0, 1, 2 };
+        mesh.RecalculateNormals();
+        return mesh;
+    }
+    [UnityTest]
+    public IEnumerator TestAddCoACDCollidersToComponentsAsync()
+    {
+        List<Transform> components = new List<Transform>();
+        Transform gameObject = new GameObject().transform;
+        MeshFilter mesh = gameObject.gameObject.AddComponent<MeshFilter>();
+        mesh.sharedMesh = CreateTestMesh();
+        components.Add(gameObject); 
+
+        // Call the asynchronous method.
+        
+        componentPositioner.AddCoACDCollidersToComponentsAsync(components,"prova");
+        
+        yield return new WaitForSeconds(20f);
+
+        // Verify that a MeshCollider has been added to the test object.
+        MeshCollider meshCollider = gameObject.GetComponent<MeshCollider>();
+        Assert.IsNotNull(meshCollider, "A MeshCollider should be added to the GameObject.");
+
+        // Optionally, check if the collider is set to convex.
+        Assert.IsTrue(meshCollider.convex, "The MeshCollider should be set to convex.");
+    }
+    
     [Test]
     public void TestProperties()
     {

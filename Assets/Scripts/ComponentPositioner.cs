@@ -3,11 +3,11 @@ using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using UnityEngine;
-using UnityEngine.InputSystem;
 using UnityEngine.UI;
 using TMPro;
 using UnityEngine.SceneManagement;
 using UnityEngine.XR.Interaction.Toolkit;
+
 
 public class ComponentPositioner : MonoBehaviour
 {
@@ -94,11 +94,6 @@ public class ComponentPositioner : MonoBehaviour
         set => isScrolling = value;
     }
 
-    public AudioClip LoopScrollClip1
-    {
-        get => loopScrollClip;
-        set => loopScrollClip = value;
-    }
 
     public void Start()
     {
@@ -173,17 +168,17 @@ public class ComponentPositioner : MonoBehaviour
             Destroy(instantiatedPrefab);
         }
 
-        //AddCoACDCollidersToComponentsAsync(Manager.Instance.Components);
+        //AddCoACDCollidersToComponentsAsync(Manager.Instance.Components,Manager.Instance.ModelName);
     }
 
     /// Processes each component, generates convex collider meshes using CoACD, assigns MeshColliders,
     /// and gathers all generated mesh data to save at runtime.
-    public async void AddCoACDCollidersToComponentsAsync(List<Transform> components)
+    public async void AddCoACDCollidersToComponentsAsync(List<Transform> components, string name)
     {
         cancellationTokenSource = new CancellationTokenSource();
         CancellationToken token = cancellationTokenSource.Token;
 
-        string fileName = Manager.Instance.ModelName + ".json";
+        string fileName = name + ".json";
         string directoryPath = Path.Combine(Application.persistentDataPath, "ColliderData");
         string filePath = Path.Combine(directoryPath, fileName);
 

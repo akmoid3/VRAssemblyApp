@@ -4,11 +4,12 @@ using UnityEngine.XR.Interaction.Toolkit;
 using Moq;
 using System;
 
-public class TestTool : Tool
+public class TestToolFake : Tool
 {
 
-    // No need to add additional code here, the subclass is used just for testing.
+    // The subclass is used just for testing.
 }
+
 
 public class TestManager : Manager
 {
@@ -29,7 +30,7 @@ public class TestManager : Manager
 [TestFixture]
 public class ToolTests
 {
-    private TestTool _tool;
+    private TestToolFake _toolFake;
     private TestManager _testManager;
     private StateManager stateManager;
 
@@ -39,23 +40,36 @@ public class ToolTests
         stateManager = new GameObject().AddComponent<StateManager>();
         // Create a GameObject and add the TestTool component
         var gameObject = new GameObject();
-        _tool = gameObject.AddComponent<TestTool>();
-
+        _toolFake = gameObject.AddComponent<TestToolFake>();
+        _toolFake.ToolName = "TestTool";
         // Create a GameObject and add the TestManager component
         _testManager = new GameObject().AddComponent<TestManager>();
 
         // Set the manager instance to the test manager
-        _tool.SetManager(_testManager);
+        _toolFake.SetManager(_testManager);
     }
 
     [TearDown]
     public void TearDown()
     {
         // Destroy the GameObject after each test
-        GameObject.DestroyImmediate(_tool.gameObject);
+        GameObject.DestroyImmediate(_toolFake.gameObject);
         GameObject.DestroyImmediate(_testManager.gameObject);
         GameObject.DestroyImmediate(stateManager.gameObject);
 
+    }
+
+    [Test]
+    public void GetNameTest()
+    {
+        Assert.AreEqual(_toolFake.ToolName, "TestTool");
+    }
+    
+    [Test]
+    public void SetNameTest()
+    {
+        _toolFake.ToolName = "TestTool2";
+        Assert.AreEqual(_toolFake.ToolName, "TestTool2");
     }
 
     [Test]
@@ -65,8 +79,8 @@ public class ToolTests
         var hoverArgs = new HoverEnterEventArgs();
 
         // Act
-        var method = _tool.GetType().GetMethod("OnHoverEntered", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance, null, new Type[] { typeof(HoverEnterEventArgs) }, null);
-        method.Invoke(_tool, new object[] { hoverArgs });
+        var method = _toolFake.GetType().GetMethod("OnHoverEntered", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance, null, new Type[] { typeof(HoverEnterEventArgs) }, null);
+        method.Invoke(_toolFake, new object[] { hoverArgs });
 
         // Assert
         Assert.IsTrue(_testManager.HoverEnterCalled, "Manager.OnHoverEnter should have been called.");
@@ -79,12 +93,14 @@ public class ToolTests
         var hoverArgs = new HoverExitEventArgs();
 
         // Act
-        var method = _tool.GetType().GetMethod("OnHoverExited", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance, null, new Type[] { typeof(HoverExitEventArgs) }, null);
-        method.Invoke(_tool, new object[] { hoverArgs });
+        var method = _toolFake.GetType().GetMethod("OnHoverExited", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance, null, new Type[] { typeof(HoverExitEventArgs) }, null);
+        method.Invoke(_toolFake, new object[] { hoverArgs });
 
         // Assert
         Assert.IsTrue(_testManager.HoverExitCalled, "Manager.OnHoverExit should have been called.");
     }
+
+
 }
 
 

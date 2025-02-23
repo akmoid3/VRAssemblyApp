@@ -80,13 +80,5 @@ public class FileMonitorTests
     }
 
 
-    [TearDown]
-    public void TearDown()
-    {
-        // Remove the test directory and its contents
-        if (Directory.Exists(testDirectoryPath))
-        {
-            Directory.Delete(testDirectoryPath, true);
-        }
-    }
+    
 }

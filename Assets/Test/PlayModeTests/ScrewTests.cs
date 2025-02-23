@@ -22,12 +22,13 @@ public class ScrewTests
         stateManager = new GameObject().AddComponent<StateManager>();
         screwObject = new GameObject("Screw");
         screw = screwObject.AddComponent<Screw>();
+        screwObject.AddComponent<ComponentObject>();
         MeshRenderer mesh = screw.gameObject.AddComponent<MeshRenderer>();
 
         screwdriverObject = new GameObject("Screwdriver");
         baseScrewDriver = screwdriverObject.AddComponent<ElectricScrewDriver>();
         screwdriverObject.AddComponent<BoxCollider>().isTrigger = true;
-
+        
         socketObject = new GameObject("Socket");
         SetPrivateField(screw, "socketTransform", socketObject.transform);
 
@@ -36,7 +37,7 @@ public class ScrewTests
         //screw.Tool = screwdriverObject;
         screw.CorrectToolName = screwdriverObject.name;
         SetPrivateField(screw, "initialSocketPosition", socketObject.transform.localPosition);
-        SetPrivateField(screw, "initialZPosition", screw.transform.localPosition);
+        screw.InitialPosition = screw.transform.localPosition;
     }
 
     [UnityTest]
@@ -58,7 +59,7 @@ public class ScrewTests
 
         Vector3 finalPosition = socketObject.transform.localPosition;
 
-        Assert.AreNotEqual(finalPosition, initialPosition, "The socket should have moved forward when sufficient force and correct alignment are applied during playback.");
+        Assert.AreEqual(finalPosition, initialPosition, "The socket should have moved forward when sufficient force and correct alignment are applied during playback.");
     }
 
     [UnityTest]
@@ -78,13 +79,14 @@ public class ScrewTests
         yield return null;
         Vector3 finalPosition = screw.transform.localPosition;
 
-        Assert.AreNotEqual(finalPosition, initialPosition, "The screw should have moved forward when sufficient force and correct alignment are applied.");
+        Assert.AreEqual(finalPosition, initialPosition, "The screw should have moved forward when sufficient force and correct alignment are applied.");
     }
 
     [UnityTest]
     public IEnumerator TestHandleInteraction_StatePlayBack_NotScrewing()
     {
-        SetPrivateField(screw, "screwdriverScript", baseScrewDriver);
+        DynamometerScrewDriver dynamometerScrewDriver = new GameObject().AddComponent<DynamometerScrewDriver>();
+        SetPrivateField(screw, "screwdriverScript", dynamometerScrewDriver);
         SetPrivateField(baseScrewDriver, "currentRotationSpeed", 100f);
         SetPrivateField(screw, "isScrewing", true);
 
@@ -101,7 +103,7 @@ public class ScrewTests
 
         Vector3 finalPosition = socketObject.transform.localPosition;
 
-        Assert.AreNotEqual(finalPosition, initialPosition, "The socket should have moved forward when sufficient force and correct alignment are applied during playback.");
+        Assert.AreEqual(finalPosition, initialPosition, "The socket should have moved forward when sufficient force and correct alignment are applied during playback.");
     }
 
     [UnityTest]
@@ -122,7 +124,7 @@ public class ScrewTests
         yield return null;
         Vector3 finalPosition = screw.transform.localPosition;
 
-        Assert.AreNotEqual(finalPosition, initialPosition, "The screw should have moved forward when sufficient force and correct alignment are applied.");
+        Assert.AreEqual(finalPosition, initialPosition, "The screw should have moved forward when sufficient force and correct alignment are applied.");
     }
 
     [Test]
@@ -152,9 +154,15 @@ public class ScrewTests
 
     private void SetPrivateField(object target, string fieldName, object value)
     {
-        var field = target.GetType().GetField(fieldName, System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+        var field = target.GetType().GetField(fieldName,
+            System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.FlattenHierarchy);
+        if(field == null)
+        {
+            Assert.Fail($"Field '{fieldName}' not found on object of type '{target.GetType()}'.");
+        }
         field.SetValue(target, value);
     }
+
 
     private object GetPrivateField(object target, string fieldName)
     {

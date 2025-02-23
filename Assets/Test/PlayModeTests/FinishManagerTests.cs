@@ -13,6 +13,7 @@ public class FinishManagerTests
     private TextMeshProUGUI timerText;
     private TextMeshProUGUI errorCountText;
     private TextMeshProUGUI hintCountText;
+    private TextMeshProUGUI accuracyText;
     private Button finishButton;
     private Manager manager;
     private StateManager stateManager;
@@ -49,6 +50,10 @@ public class FinishManagerTests
         finishManager.GetType().GetField("hintCountText", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)
             .SetValue(finishManager, hintCountText);
 
+        accuracyText = new GameObject().AddComponent<TextMeshProUGUI>();
+        finishManager.GetType().GetField("averagePerformanceText", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)
+            .SetValue(finishManager, accuracyText);
+        
         finishButton = new GameObject().AddComponent<Button>();
         finishManager.GetType().GetField("finishButton", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)
             .SetValue(finishManager, finishButton);
@@ -89,8 +94,8 @@ public class FinishManagerTests
 
         // Assert
         Assert.IsTrue(finishPanel.activeSelf, "finishPanel should be active when state is Finish");
-        Assert.AreEqual("5", errorCountText.text, "errorCountText should be updated with the correct error count");
-        Assert.AreEqual("10", hintCountText.text, "hintCountText should be updated with the correct hint count");
+        Assert.AreEqual("Errors: 5", errorCountText.text, "errorCountText should be updated with the correct error count");
+        Assert.AreEqual("Hints: 10", hintCountText.text, "hintCountText should be updated with the correct hint count");
     }
 
     [Test]
@@ -106,16 +111,7 @@ public class FinishManagerTests
         Assert.IsFalse(finishPanel.activeSelf, "finishPanel should be inactive when state is not Finish");
     }
 
-    [Test]
-    public void TestOnFinishClicked_ReloadsCurrentScene()
-    {
-        // Arrange
-        var initialScene = SceneManager.GetActiveScene().name;
-
-        // Act
-
-    }
-
+  
     [Test]
     public void TestUpdate_UpdatesTimerText_WhenStateIsFinishAndTimerIsZero()
     {
@@ -129,7 +125,7 @@ public class FinishManagerTests
         finishManager.Update();
 
         // Assert
-        Assert.AreEqual("10:45", timerText.text, "timerText should be updated with the Manager's FinishTime");
+        Assert.AreEqual("Time: 10:45", timerText.text, "timerText should be updated with the Manager's FinishTime");
     }
 
     private void SetPrivateField(object obj, string fieldName, object value)

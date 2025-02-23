@@ -9,40 +9,40 @@ public class HandMenuManager : MonoBehaviour
     private Manager manager;
     [SerializeField] private float increment = 0.1f;
 
-    [SerializeField] public GameObject handMenuPanel;
+    public GameObject handMenuPanel;
 
-    [SerializeField] public TMP_Text componentNameText;
-    [SerializeField] public TMP_Text positionXText;
-    [SerializeField] public TMP_Text positionYText;
-    [SerializeField] public TMP_Text positionZText;
-    [SerializeField] public TMP_Text rotationXText;
-    [SerializeField] public TMP_Text rotationYText;
-    [SerializeField] public TMP_Text rotationZText;
+    public TMP_Text componentNameText;
+    public TMP_Text positionXText;
+    public TMP_Text positionYText;
+    public TMP_Text positionZText;
+    public TMP_Text rotationXText;
+    public TMP_Text rotationYText;
+    public TMP_Text rotationZText;
 
-    [SerializeField] public Button addPosXButton;
-    [SerializeField] public Button addPosYButton;
-    [SerializeField] public Button addPosZButton;
-    [SerializeField] public Button addRotXButton;
-    [SerializeField] public Button addRotYButton;
-    [SerializeField] public Button addRotZButton;
+    public Button addPosXButton;
+    public Button addPosYButton;
+    public Button addPosZButton;
+    public Button addRotXButton;
+    public Button addRotYButton;
+    public Button addRotZButton;
 
-    [SerializeField] public Button reducePosXButton;
-    [SerializeField] public Button reducePosYButton;
-    [SerializeField] public Button reducePosZButton;
-    [SerializeField] public Button reduceRotXButton;
-    [SerializeField] public Button reduceRotYButton;
-    [SerializeField] public Button reduceRotZButton;
+    public Button reducePosXButton;
+    public Button reducePosYButton;
+    public Button reducePosZButton;
+    public Button reduceRotXButton;
+    public Button reduceRotYButton;
+    public Button reduceRotZButton;
 
-    [SerializeField] public Button saveComponentButton;
-    [SerializeField] public Button modifyButton;
-    [SerializeField] public Button addStepButton;
-    [SerializeField] public Button groupSelectionButton;
-    [SerializeField] public Button removeButton;
+    public Button saveComponentButton;
+    public Button modifyButton;
+    public Button addStepButton;
+    public Button groupSelectionButton;
+    public Button removeButton;
 
-    [SerializeField] public Button groupSelectionButton2;
+    public Button groupSelectionButton2;
 
-    [SerializeField] public TMP_Dropdown incrementDropdown;
-    [SerializeField] private Transform buildingPosition;
+    public TMP_Dropdown incrementDropdown;
+    public Transform buildingPosition;
 
     private MakeGrabbable makeGrabbable;
 
@@ -77,19 +77,31 @@ public class HandMenuManager : MonoBehaviour
         };
 
         // Set up button listeners
-        addPosXButton.onClick.AddListener(() => AddToPosition(Vector3.right * increment,manager.CurrentSelectedComponent));
-        addPosYButton.onClick.AddListener(() => AddToPosition(Vector3.up * increment, manager.CurrentSelectedComponent));
-        addPosZButton.onClick.AddListener(() => AddToPosition(Vector3.forward * increment, manager.CurrentSelectedComponent));
-        addRotXButton.onClick.AddListener(() => AddToRotation(Vector3.right * increment, manager.CurrentSelectedComponent));
-        addRotYButton.onClick.AddListener(() => AddToRotation(Vector3.up * increment, manager.CurrentSelectedComponent));
-        addRotZButton.onClick.AddListener(() => AddToRotation(Vector3.forward * increment, manager.CurrentSelectedComponent));
+        addPosXButton.onClick.AddListener(() =>
+            AddToPosition(Vector3.right * increment, manager.CurrentSelectedComponent));
+        addPosYButton.onClick.AddListener(() =>
+            AddToPosition(Vector3.up * increment, manager.CurrentSelectedComponent));
+        addPosZButton.onClick.AddListener(() =>
+            AddToPosition(Vector3.forward * increment, manager.CurrentSelectedComponent));
+        addRotXButton.onClick.AddListener(() =>
+            AddToRotation(Vector3.right * increment, manager.CurrentSelectedComponent));
+        addRotYButton.onClick.AddListener(() =>
+            AddToRotation(Vector3.up * increment, manager.CurrentSelectedComponent));
+        addRotZButton.onClick.AddListener(() =>
+            AddToRotation(Vector3.forward * increment, manager.CurrentSelectedComponent));
 
-        reducePosXButton.onClick.AddListener(() => AddToPosition(Vector3.left * increment, manager.CurrentSelectedComponent));
-        reducePosYButton.onClick.AddListener(() => AddToPosition(Vector3.down * increment, manager.CurrentSelectedComponent));
-        reducePosZButton.onClick.AddListener(() => AddToPosition(Vector3.back * increment, manager.CurrentSelectedComponent));
-        reduceRotXButton.onClick.AddListener(() => AddToRotation(Vector3.left * increment, manager.CurrentSelectedComponent));
-        reduceRotYButton.onClick.AddListener(() => AddToRotation(Vector3.down * increment, manager.CurrentSelectedComponent));
-        reduceRotZButton.onClick.AddListener(() => AddToRotation(Vector3.back * increment, manager.CurrentSelectedComponent));
+        reducePosXButton.onClick.AddListener(() =>
+            AddToPosition(Vector3.left * increment, manager.CurrentSelectedComponent));
+        reducePosYButton.onClick.AddListener(() =>
+            AddToPosition(Vector3.down * increment, manager.CurrentSelectedComponent));
+        reducePosZButton.onClick.AddListener(() =>
+            AddToPosition(Vector3.back * increment, manager.CurrentSelectedComponent));
+        reduceRotXButton.onClick.AddListener(() =>
+            AddToRotation(Vector3.left * increment, manager.CurrentSelectedComponent));
+        reduceRotYButton.onClick.AddListener(() =>
+            AddToRotation(Vector3.down * increment, manager.CurrentSelectedComponent));
+        reduceRotZButton.onClick.AddListener(() =>
+            AddToRotation(Vector3.back * increment, manager.CurrentSelectedComponent));
 
         modifyButton.onClick.AddListener(() => ModifyComponent(Manager.CurrentSelectedComponent));
         addStepButton.onClick.AddListener(() => ModifyComponent(Manager.CurrentSelectedComponent));
@@ -233,7 +245,6 @@ public class HandMenuManager : MonoBehaviour
 
     public void ModifyComponent(GameObject currentSelectedComponent)
     {
-
         if (currentSelectedComponent != null)
         {
             currentSelectedComponent.transform.SetParent(null);
@@ -244,7 +255,6 @@ public class HandMenuManager : MonoBehaviour
             {
                 if (componentObject.GetIsPlaced())
                 {
-
                     if (makeGrabbable != null)
                     {
                         currentSelectedComponent.GetComponent<MeshCollider>().convex = true;
@@ -265,7 +275,6 @@ public class HandMenuManager : MonoBehaviour
 
     public void SaveComponent(GameObject currentSelectedComponent)
     {
-
         if (currentSelectedComponent != null)
         {
             ComponentObject componentObject = currentSelectedComponent.GetComponent<ComponentObject>();
@@ -275,11 +284,10 @@ public class HandMenuManager : MonoBehaviour
             {
                 if (!componentObject.GetIsPlaced())
                 {
-
                     if (makeGrabbable != null)
                     {
-                      //currentSelectedComponent.GetComponent<MeshCollider>().convex = false;
-                      makeGrabbable.MakeObjectNonGrabbable();
+                        //currentSelectedComponent.GetComponent<MeshCollider>().convex = false;
+                        makeGrabbable.MakeObjectNonGrabbable();
                     }
 
                     componentObject.SetIsPlaced(true);
@@ -306,7 +314,7 @@ public class HandMenuManager : MonoBehaviour
                 manager.SaveBuildingSequence();
                 newStep = false;
             }
-            else if(!newStep)
+            else if (!newStep)
             {
                 manager.SaveBuildingSequence();
             }
@@ -324,7 +332,6 @@ public class HandMenuManager : MonoBehaviour
 
             if (isGrabInteractableEnabled)
             {
-               
                 // Disable all child XRSimpleInteractables
                 foreach (Transform child in group.transform)
                 {
@@ -358,6 +365,7 @@ public class HandMenuManager : MonoBehaviour
                 {
                     rb = group.AddComponent<Rigidbody>();
                 }
+
                 rb.isKinematic = true;
 
                 // Add XRGrabInteractable
@@ -366,29 +374,28 @@ public class HandMenuManager : MonoBehaviour
                 {
                     grabInteractable = group.AddComponent<XRGrabInteractable>();
                 }
+
                 grabInteractable.enabled = false;
                 grabInteractable.movementType = XRBaseInteractable.MovementType.Kinematic;
                 grabInteractable.selectMode = InteractableSelectMode.Multiple;
                 grabInteractable.useDynamicAttach = true;
                 grabInteractable.throwOnDetach = false;
 
-                if(manager != null) {
+                if (manager != null)
+                {
                     grabInteractable.selectEntered.AddListener(manager.OnSelectEnter);
                     grabInteractable.selectExited.AddListener(manager.OnSelectExit);
                 }
-               
-             
+
 
                 grabInteractable.colliders.Clear();
                 grabInteractable.colliders.AddRange(clonedColliders);
 
 
                 grabInteractable.enabled = true;
-
             }
             else
             {
-
                 XRBaseInteractable grabInteractable = group.GetComponent<XRBaseInteractable>();
                 if (grabInteractable != null)
                 {
@@ -400,6 +407,7 @@ public class HandMenuManager : MonoBehaviour
                 {
                     Destroy(col);
                 }
+
                 clonedColliders.Clear();
 
                 // Enable child interactable and restore original colliders
@@ -428,14 +436,53 @@ public class HandMenuManager : MonoBehaviour
 
     private static readonly float[] Increments = { 0.1f, 0.05f, 0.01f, 1f };
 
-    public float Increment { get => increment; set => increment = value; }
-    public GameObject Group { get => group; set => group = value; }
-    public XRInteractionManager InteractionManager { get => interactionManager; set => interactionManager = value; }
-    public bool IsGrabInteractableEnabled { get => isGrabInteractableEnabled; set => isGrabInteractableEnabled = value; }
-    public Manager Manager { get => manager; set => manager = value; }
-    public bool NewStep { get => newStep; set => newStep = value; }
-    public bool Modifying { get => modifying; set => modifying = value; }
-    public List<Button> AllButtonsToDeactivate { get => allButtonsToDeactivate; set => allButtonsToDeactivate = value; }
+    public float Increment
+    {
+        get => increment;
+        set => increment = value;
+    }
+
+    public GameObject Group
+    {
+        get => group;
+        set => group = value;
+    }
+
+    public XRInteractionManager InteractionManager
+    {
+        get => interactionManager;
+        set => interactionManager = value;
+    }
+
+    public bool IsGrabInteractableEnabled
+    {
+        get => isGrabInteractableEnabled;
+        set => isGrabInteractableEnabled = value;
+    }
+
+    public Manager Manager
+    {
+        get => manager;
+        set => manager = value;
+    }
+
+    public bool NewStep
+    {
+        get => newStep;
+        set => newStep = value;
+    }
+
+    public bool Modifying
+    {
+        get => modifying;
+        set => modifying = value;
+    }
+
+    public List<Button> AllButtonsToDeactivate
+    {
+        get => allButtonsToDeactivate;
+        set => allButtonsToDeactivate = value;
+    }
 
     public void UpdateIncrement(int index)
     {
