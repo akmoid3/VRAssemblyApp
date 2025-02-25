@@ -1,4 +1,4 @@
-/*using NUnit.Framework;
+using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.XR.Interaction.Toolkit;
 using System.Collections;
@@ -54,7 +54,7 @@ public class SnapToPositionTests
         rigidbody.isKinematic = false;
 
         // Assign group or type if necessary
-        componentObject.SetGroup(ComponentObject.Group.None);
+        componentObject.SetGroup("None");
         componentObject.SetComponentType(ComponentObject.ComponentType.None);
 
         // Set the other object to be dynamic
@@ -146,4 +146,3 @@ public class SnapToPositionTests
         return field.GetValue(target);
     }
 }
-*/
