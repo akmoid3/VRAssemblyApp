@@ -1,4 +1,4 @@
-/*using NUnit.Framework;
+using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.TestTools;
 using System.IO;
@@ -81,7 +81,7 @@ public class InitializedDataManagerTests
         initializedDataManager.GetType().GetMethod("Start", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance).Invoke(initializedDataManager, null);
 
         // Verifica che la directory sia stata creata
-        Assert.IsTrue(Directory.Exists(testDirectoryPath), "La directory non è stata creata correttamente");
+        Assert.IsTrue(Directory.Exists(testDirectoryPath), "La directory non ï¿½ stata creata correttamente");
     }
 
     [Test]
@@ -93,11 +93,11 @@ public class InitializedDataManagerTests
 
         // Verifica che il file JSON sia stato creato
         testFilePath = Path.Combine(testDirectoryPath, manager.Model.name + ".json");
-        Assert.IsTrue(File.Exists(testFilePath), "Il file JSON non è stato creato");
+        Assert.IsTrue(File.Exists(testFilePath), "Il file JSON non ï¿½ stato creato");
 
         // Verifica il contenuto del file
         string jsonContent = File.ReadAllText(testFilePath);
-        Assert.IsFalse(string.IsNullOrEmpty(jsonContent), "Il contenuto del file JSON è vuoto");
+        Assert.IsFalse(string.IsNullOrEmpty(jsonContent), "Il contenuto del file JSON ï¿½ vuoto");
     }
 
     [Test]
@@ -132,7 +132,7 @@ public class InitializedDataManagerTests
         var componentObject1 = child1.gameObject.AddComponent<ComponentObject>();
 
         componentObject1.SetComponentType(ComponentObject.ComponentType.None);
-        componentObject1.SetGroup(ComponentObject.Group.None);
+        componentObject1.SetGroup("None");
 
      
 
@@ -140,8 +140,8 @@ public class InitializedDataManagerTests
         initializedDataManager.LoadComponentsData();
 
         // Verifica che i dati siano stati caricati correttamente
-        Assert.AreEqual(ComponentObject.ComponentType.None, componentObject1.GetComponentType(), "Il tipo di componente 1 non è stato caricato correttamente");
-        Assert.AreEqual(ComponentObject.Group.None, componentObject1.GetGroup(), "Il gruppo del componente 1 non è stato caricato correttamente");
+        Assert.AreEqual(ComponentObject.ComponentType.None, componentObject1.GetComponentType(), "Il tipo di componente 1 non ï¿½ stato caricato correttamente");
+        Assert.AreEqual("None", componentObject1.GetGroup(), "Il gruppo del componente 1 non ï¿½ stato caricato correttamente");
 
         Assert.AreEqual(null, child2.GetComponent<ComponentObject>(), "ComponentObject non e' null");
     }
@@ -237,11 +237,10 @@ public class InitializedDataManagerTests
         // Verifica che il ComponentObject sia stato aggiunto e i dati siano stati correttamente impostati
         var componentObject = testChild.GetComponent<ComponentObject>();
         Assert.IsNotNull(componentObject, "ComponentObject dovrebbe essere stato aggiunto al GameObject");
-        Assert.AreEqual(ComponentObject.ComponentType.None, componentObject.GetComponentType(), "Il tipo di componente non è stato impostato correttamente");
-        Assert.AreEqual(ComponentObject.Group.None, componentObject.GetGroup(), "Il gruppo del componente non è stato impostato correttamente");
+        Assert.AreEqual(ComponentObject.ComponentType.None, componentObject.GetComponentType(), "Il tipo di componente non ï¿½ stato impostato correttamente");
+        Assert.AreEqual("None", componentObject.GetGroup(), "Il gruppo del componente non ï¿½ stato impostato correttamente");
 
        
     }
 
 }
-*/
