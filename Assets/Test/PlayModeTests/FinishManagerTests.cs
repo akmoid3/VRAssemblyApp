@@ -61,8 +61,7 @@ public class FinishManagerTests
         // Setup mock Manager and StateManager
         manager = new GameObject().AddComponent<Manager>();
         stateManager = new GameObject().AddComponent<StateManager>();
-
-        SetPrivateField(manager, "sequenceManager", sequenceManager);
+        manager.sequenceManager = sequenceManager;
 
         SetPrivateField(manager, "hintManager", hintManager);
     }

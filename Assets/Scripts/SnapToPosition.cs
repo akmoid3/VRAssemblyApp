@@ -42,7 +42,7 @@ public class SnapToPosition : MonoBehaviour
     }
 
 
-    private void Start()
+    public void Start()
     {
         snapPoints = new List<SnapPoint>();
 
@@ -72,6 +72,8 @@ public class SnapToPosition : MonoBehaviour
 
     private void OnTriggerStay(Collider other)
     {
+        if(Manager.Instance.sequenceManager == null)
+            return;
         if (other == null ||
             !((StateManager.Instance.CurrentState != State.PlayBack ||
                StateManager.Instance.CurrentState != State.Finish) &&

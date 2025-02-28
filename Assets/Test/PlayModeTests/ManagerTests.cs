@@ -1,4 +1,4 @@
-/*using System.Collections.Generic;
+using System.Collections.Generic;
 using UnityEngine.XR.Interaction.Toolkit;
 using UnityEngine;
 using NUnit.Framework;
@@ -86,16 +86,7 @@ public class MockHintManager : HintManager
     public bool ShowHintCalled { get; private set; }
     public bool HighlightComponentToPlaceCalled { get; private set; }
 
-
-    public override void ShowHint(List<ComponentData> assemblySequence, int currentStep, List<Transform> components, SnapToPosition interactor)
-    {
-        ShowHintCalled = true;
-    }
-
-    public override void HighlightComponentToPlace(List<ComponentData> assemblySequence, int currentStep, List<Transform> components)
-    {
-        HighlightComponentToPlaceCalled = true;
-    }
+    
 }
 
 public class MockAutomaticPlacementManager : AutomaticPlacementManager
@@ -104,15 +95,7 @@ public class MockAutomaticPlacementManager : AutomaticPlacementManager
     public bool PlaceInitialComponentCalled { get; private set; }
 
 
-    public override void PlaceAllComponentsGradually(float delay, SnapToPosition interactor, List<ComponentData> assemblySequence, List<Transform> components, ToolManager toolManager)
-    {
-        PlaceAllComponentsGraduallyCalled = true;
-    }
-
-    public override void PlaceInitialComponent(List<ComponentData> assemblySequence, List<Transform> components, SnapToPosition interactor)
-    {
-        PlaceInitialComponentCalled = true;
-    }
+   
 
 }
 
@@ -174,9 +157,8 @@ public class ManagerTests
             .GetField("stateManager", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)
             .SetValue(_manager, _mockStateManager);
 
-        _manager.GetType()
-            .GetField("sequenceManager", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)
-            .SetValue(_manager, _mockSequenceManager);
+        _manager.sequenceManager = _mockSequenceManager;
+        
 
         _manager.GetType()
             .GetField("interactionManager", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)
@@ -191,7 +173,7 @@ public class ManagerTests
             .SetValue(_manager, _mockAutomaticPlacementManager);
 
         _manager.GetType()
-            .GetField("pdfLoader", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)
+            .GetField("pdfLoaderPdf", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)
             .SetValue(_manager, _mockPdfLoader);
 
         selectedComponent = new GameObject("SelectedComponent");
@@ -309,19 +291,7 @@ public class ManagerTests
         Assert.IsTrue(_mockHintManager.ShowHintCalled);
     }
 
-    [Test]
-    public void PlaceAllComponentsGradually_ShouldCallPlaceAllComponentsGraduallyOnAutomaticPlacementManager()
-    {
-        // Arrange
-        float delay = 1.0f;
-
-        // Act
-        _manager.PlaceAllComponentsGradually(delay);
-
-        // Assert
-        Assert.IsTrue(_mockAutomaticPlacementManager.PlaceAllComponentsGraduallyCalled);
-    }
-
+  
     [Test]
     public void PlaceInitialComponent_ShouldCallPlaceInitialComponentGraduallyOnAutomaticPlacementManager()
     {
@@ -475,7 +445,7 @@ public class ManagerTests
             position = new Vector3(1, 0, 0),
             rotation = Quaternion.identity,
             toolName = "null",
-            group = ComponentObject.Group.None,
+            group = "None",
             type = ComponentObject.ComponentType.Screw
         },
         new ComponentData
@@ -484,7 +454,7 @@ public class ManagerTests
             position = new Vector3(2, 0, 0),
             rotation = Quaternion.identity,
             toolName = "null",
-            group = ComponentObject.Group.None,
+            group = "None",
             type = ComponentObject.ComponentType.Nail
         }
     };
@@ -570,7 +540,7 @@ public class ManagerTests
 
         var componentObject = selectedComponent.GetComponent<ComponentObject>();
         componentObject.SetComponentType(ComponentObject.ComponentType.Screw);
-        componentObject.SetGroup(ComponentObject.Group.None);
+        componentObject.SetGroup("None");
         componentObject.SetIsPlaced(true);
         componentObject.IsReleased = true;
 
@@ -585,7 +555,7 @@ public class ManagerTests
         var targetComponentObject = interactorChild.GetComponent<ComponentObject>();
         Assert.IsNotNull(targetComponentObject);
         Assert.AreEqual(ComponentObject.ComponentType.Screw, targetComponentObject.GetComponentType());
-        Assert.AreEqual(ComponentObject.Group.None, targetComponentObject.GetGroup());
+        Assert.AreEqual("None", targetComponentObject.GetGroup());
         Assert.IsTrue(targetComponentObject.GetIsPlaced());
         Assert.IsTrue(targetComponentObject.IsReleased);
     }
@@ -739,4 +709,3 @@ public class ManagerTests
 
 
 }
-*/

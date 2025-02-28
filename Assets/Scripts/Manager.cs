@@ -9,7 +9,7 @@ public class Manager : MonoBehaviour
 {
     [SerializeField] private StateManager stateManager;
     [SerializeField] private InteractionManager interactionManager;
-    [SerializeField] private SequenceManager sequenceManager;
+    [SerializeField] public SequenceManager sequenceManager;
     [SerializeField] private HintManager hintManager;
     [SerializeField] private AutomaticPlacementManager automaticPlacementManager;
 

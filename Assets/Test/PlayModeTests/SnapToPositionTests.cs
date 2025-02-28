@@ -1,148 +1,176 @@
+using System.Collections;
+using System.Collections.Generic;
+using System.Reflection;
 using NUnit.Framework;
 using UnityEngine;
-using UnityEngine.XR.Interaction.Toolkit;
-using System.Collections;
-using System.Reflection;
 using UnityEngine.TestTools;
-using System.Collections.Generic;
-
-[TestFixture]
+using UnityEngine.XR.Interaction.Toolkit;
 public class SnapToPositionTests
 {
-    private GameObject snapObject;
+    private GameObject managerGO;
+    private GameObject stateManagerGO;
+    private GameObject xrInteractionManagerGO;
+    private GameObject snapParent;       
     private SnapToPosition snapToPosition;
-    private GameObject otherObject;
-    private ComponentObject componentObject;
-    private Fastener fastener;
-    private MeshRenderer meshRenderer;
-    private Rigidbody rigidbody;
-    private XRInteractionManager interactionManager;
-    private StateManager stateManager;
-    private AudioManager audioManager;
+    private GameObject snapPointObj;     
+    private GameObject snapCandidate;   
 
     [SetUp]
     public void Setup()
     {
-        stateManager = new GameObject().AddComponent<StateManager>();
-        audioManager = new GameObject().AddComponent<AudioManager>();
+        // Create dummy Manager.
+        managerGO = new GameObject("Manager");
+        managerGO.AddComponent<Manager>();
+        SequenceManager sequenceManager = new GameObject().AddComponent<SequenceManager>();
+        sequenceManager.AssemblySequence.Add(new ComponentData() { stepId = 0 });
+
+        Manager.Instance.sequenceManager = sequenceManager;
         
-        // Create interaction manager
-        interactionManager = new GameObject("XRInteractionManager").AddComponent<XRInteractionManager>();
+        Manager.Instance.CurrentStep = 0;
 
-        // Create and setup snap object
-        snapObject = new GameObject("SnapObject");
-        snapToPosition = snapObject.AddComponent<SnapToPosition>();
+        // Create dummy StateManager.
+        stateManagerGO = new GameObject("StateManager");
+        var sm = stateManagerGO.AddComponent<StateManager>();
+        sm.CurrentState = State.Initialize;
 
-        // Create and setup snap point
-        GameObject snapPointObject = new GameObject("SnapPoint");
-        snapPointObject.transform.parent = snapObject.transform;
-        meshRenderer = snapPointObject.AddComponent<MeshRenderer>();
-        componentObject = snapPointObject.AddComponent<ComponentObject>();
+        // Create XRInteractionManager.
+        xrInteractionManagerGO = new GameObject("XRInteractionManager");
+        xrInteractionManagerGO.AddComponent<XRInteractionManager>();
 
-        // Simulate the Awake and Start methods
-        InvokePrivateMethod(snapToPosition, "Awake", null);
-        InvokePrivateMethod(snapToPosition, "Start", null);
+        // Create the parent object with SnapToPosition.
+        snapParent = new GameObject("SnapParent");
+        snapToPosition = snapParent.AddComponent<SnapToPosition>();
 
-        // Create and setup other object
-        otherObject = new GameObject("OtherObject");
-        otherObject.transform.position = snapPointObject.transform.position + Vector3.up * 0.05f; // Close to snap point
-        componentObject = otherObject.AddComponent<ComponentObject>();
-        fastener = otherObject.AddComponent<Nail>();
-        otherObject.AddComponent<MeshRenderer>();
+        // Create a child snap point.
+        snapPointObj = new GameObject("SnapPoint");
+        snapPointObj.transform.parent = snapParent.transform;
+        // Add required components.
+        snapPointObj.AddComponent<MeshRenderer>();
+        snapPointObj.AddComponent<ComponentObject>();
 
-        rigidbody = otherObject.AddComponent<Rigidbody>();
-        rigidbody.isKinematic = false;
+        // Manually call Start() to populate the snapPoints list.
+        snapToPosition.Start();
 
-        // Assign group or type if necessary
-        componentObject.SetGroup("None");
-        componentObject.SetComponentType(ComponentObject.ComponentType.None);
-
-        // Set the other object to be dynamic
-        otherObject.AddComponent<BoxCollider>().isTrigger = false;
+        // Create a candidate object that should snap.
+        // Name it the same as the snap point (to meet the condition in CheckSnap).
+        snapCandidate = new GameObject("SnapPoint");
+        // Place it near the snap point.
+        snapCandidate.transform.position = snapPointObj.transform.position + Vector3.one * 0.05f;
+        snapCandidate.transform.rotation = Quaternion.identity;
+        // Add components required by CheckSnap.
+        snapCandidate.AddComponent<BoxCollider>();
+        Rigidbody rb = snapCandidate.AddComponent<Rigidbody>();
+        rb.isKinematic = false;
+        var candidateComp = snapCandidate.AddComponent<ComponentObject>();
+        candidateComp.IsReleased = true;
+        candidateComp.SetIsPlaced(false);
+        // Register candidate as a component that can snap.
+        Manager.Instance.ComponentsThatCanSnap.Add(snapCandidate.transform);
     }
-
- 
-
-
-    [Test]
-    public void TestCheckSnap()
-    {
-        GameObject snapPointObject = new GameObject("SnapPoint");
-        snapPointObject.transform.parent = snapObject.transform;
-        snapPointObject.transform.position = snapObject.transform.position;
-        snapPointObject.transform.rotation = snapObject.transform.rotation;
-        MeshRenderer snapPointMeshRenderer = snapPointObject.AddComponent<MeshRenderer>();
-        ComponentObject snapPointComponentObject = snapPointObject.AddComponent<ComponentObject>();
-        // Initialize snapPoints list and add the created snap point
-        List<SnapPoint> snapPoints = new List<SnapPoint>
-    {
-        new SnapPoint
-        {
-            snapTransform = snapPointObject.transform,
-            componentName = "OtherObject",
-            meshRenderer = snapPointMeshRenderer,
-            componentObject = snapPointComponentObject
-        }
-    };
-
-        // Set the private field 'snapPoints' using reflection
-        SetPrivateField(snapToPosition, "snapPoints", snapPoints);
-        // Call the private CheckSnap method using reflection
-        InvokePrivateMethod(snapToPosition, "CheckSnap", new object[] { otherObject.GetComponent<Collider>() });
-
-        // Verify the object has snapped correctly
-        Assert.AreEqual(snapObject.transform.position, otherObject.transform.position, "The object should have snapped to the correct position.");
-        Assert.AreEqual(snapObject.transform.rotation, otherObject.transform.rotation, "The object should have snapped to the correct rotation.");
-    }
-
-    [Test]
-    public void TestAddGrabbable()
-    {
-        // Call the private AddGrabbable method using reflection
-        InvokePrivateMethod(snapToPosition, "AddGrabbable", new object[] { otherObject.GetComponent<Collider>() });
-
-        // Verify that the XRGrabInteractable component is correctly configured and enabled
-        XRGrabInteractable grabInteractable = snapObject.GetComponent<XRGrabInteractable>();
-        Assert.IsNotNull(grabInteractable, "The XRGrabInteractable component should be added.");
-        Assert.IsTrue(grabInteractable.enabled, "The XRGrabInteractable component should be enabled.");
-
-        // Call the private AddGrabbable method using reflection
-        InvokePrivateMethod(snapToPosition, "AddGrabbable", new object[] { otherObject.GetComponent<Collider>() });
-
-
-        // Verify that the XRGrabInteractable component is correctly configured and enabled
-        XRGrabInteractable grabInteractable2 = snapObject.GetComponent<XRGrabInteractable>();
-        Assert.IsNotNull(grabInteractable2, "The XRGrabInteractable component should be added.");
-        Assert.IsTrue(grabInteractable2.enabled, "The XRGrabInteractable component should be enabled.");
-    }
-
-
 
     [TearDown]
-    public void TearDown()
+    public void Teardown()
     {
-        GameObject.DestroyImmediate(snapObject);
-        GameObject.DestroyImmediate(otherObject);
-        GameObject.DestroyImmediate(interactionManager.gameObject);
-        GameObject.DestroyImmediate(stateManager.gameObject);
-        GameObject.DestroyImmediate(audioManager.gameObject);
+        Object.DestroyImmediate(managerGO);
+        Object.DestroyImmediate(stateManagerGO);
+        Object.DestroyImmediate(xrInteractionManagerGO);
+        Object.DestroyImmediate(snapParent);
+        Object.DestroyImmediate(snapCandidate);
     }
 
-    // Method to invoke private/protected methods using reflection
-    private void InvokePrivateMethod(object target, string methodName, object[] parameters)
+    [UnityTest]
+    public IEnumerator Test_CheckSnap_SnapsObjectCorrectly()
     {
-        MethodInfo methodInfo = target.GetType().GetMethod(methodName, BindingFlags.NonPublic | BindingFlags.Instance);
-        methodInfo.Invoke(target, parameters);
-    }
-    private void SetPrivateField(object target, string fieldName, object value)
-    {
-        var field = target.GetType().GetField(fieldName, System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
-        field.SetValue(target, value);
+        // Retrieve the candidate's collider.
+        Collider candidateCollider = snapCandidate.GetComponent<Collider>();
+
+        // Use reflection to invoke the private CheckSnap(Collider) method.
+        MethodInfo checkSnapMethod = typeof(SnapToPosition).GetMethod("CheckSnap", BindingFlags.NonPublic | BindingFlags.Instance);
+        Assert.IsNotNull(checkSnapMethod, "CheckSnap method not found on SnapToPosition.");
+        checkSnapMethod.Invoke(snapToPosition, new object[] { candidateCollider });
+
+        // Wait one frame for changes to take effect.
+        yield return null;
+
+        // Verify that the candidate's position and rotation now match the snap point.
+        Assert.AreEqual(snapPointObj.transform.position, snapCandidate.transform.position, "The candidate did not snap to the correct position.");
+        Assert.AreEqual(snapPointObj.transform.rotation, snapCandidate.transform.rotation, "The candidate did not snap to the correct rotation.");
+        // Verify that the candidate is now parented to the snap point.
+        Assert.AreEqual(snapPointObj.transform, snapCandidate.transform.parent, "The candidate is not parented to the snap point.");
+        // Verify that the candidate's Rigidbody is now set to kinematic.
+        Assert.IsTrue(snapCandidate.GetComponent<Rigidbody>().isKinematic, "Candidate's Rigidbody should be kinematic after snapping.");
+        yield return null;
     }
 
-    private object GetPrivateField(object target, string fieldName)
+    [UnityTest]
+    public IEnumerator Test_AddChildCollidersToParentGrabbable_AddsColliders()
     {
-        var field = target.GetType().GetField(fieldName, System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
-        return field.GetValue(target);
+        // Create an additional child with a collider under snapParent.
+        GameObject childObj = new GameObject("ChildCollider");
+        childObj.transform.parent = snapParent.transform;
+        BoxCollider childCollider = childObj.AddComponent<BoxCollider>();
+
+        // Invoke the private AddChildCollidersToParentGrabbable() method.
+        MethodInfo method = typeof(SnapToPosition).GetMethod("AddChildCollidersToParentGrabbable", BindingFlags.NonPublic | BindingFlags.Instance);
+        Assert.IsNotNull(method, "AddChildCollidersToParentGrabbable method not found.");
+        method.Invoke(snapToPosition, null);
+
+        yield return null;
+
+        // Check that an XRGrabInteractable has been added and that its collider list includes the child's collider.
+        XRGrabInteractable grabInteractable = snapParent.GetComponent<XRGrabInteractable>();
+        Assert.IsNotNull(grabInteractable, "XRGrabInteractable was not added to snapParent.");
+        Assert.IsTrue(grabInteractable.colliders.Contains(childCollider), "Child collider was not added to XRGrabInteractable's colliders list.");
+        yield return null;
+    }
+
+    [UnityTest]
+    public IEnumerator Test_TransferCollidersToSnapPoint_AddsNewCollider()
+    {
+        // Add a MeshCollider to the snap candidate.
+        MeshCollider originalCollider = snapCandidate.AddComponent<MeshCollider>();
+        originalCollider.convex = true;
+        originalCollider.isTrigger = false;
+
+        // Invoke the private TransferCollidersToSnapPoint(Transform, Transform) method.
+        MethodInfo method = typeof(SnapToPosition).GetMethod("TransferCollidersToSnapPoint", BindingFlags.NonPublic | BindingFlags.Instance);
+        Assert.IsNotNull(method, "TransferCollidersToSnapPoint method not found.");
+        method.Invoke(snapToPosition, new object[] { snapCandidate.transform, snapPointObj.transform });
+
+        yield return null;
+
+        // Verify that the snap point now has an additional MeshCollider with matching properties.
+        MeshCollider[] colliders = snapPointObj.GetComponents<MeshCollider>();
+        bool found = false;
+        foreach (var col in colliders)
+        {
+            if (col.sharedMesh == originalCollider.sharedMesh &&
+                col.convex == originalCollider.convex &&
+                col.isTrigger == originalCollider.isTrigger)
+            {
+                found = true;
+                break;
+            }
+        }
+        Assert.IsTrue(found, "A new MeshCollider with the expected properties was not added to the snap point.");
+        yield return null;
+    }
+
+    [UnityTest]
+    public IEnumerator Test_CalculatePerformance_ReturnsExpectedValue()
+    {
+        // Use reflection to invoke the private CalculatePerformance method.
+        MethodInfo method = typeof(SnapToPosition).GetMethod("CalculatePerformance", BindingFlags.NonPublic | BindingFlags.Instance);
+        Assert.IsNotNull(method, "CalculatePerformance method not found.");
+
+        // For perfect alignment, set the candidate exactly at the snap point.
+        snapCandidate.transform.position = snapPointObj.transform.position;
+        snapCandidate.transform.rotation = snapPointObj.transform.rotation;
+        // isFastener is false.
+        object result = method.Invoke(snapToPosition, new object[] { snapCandidate.transform, new SnapPoint { snapTransform = snapPointObj.transform }, false });
+        float performance = (float)result;
+        // With zero distance and rotation difference, performance should be 1.
+        Assert.AreEqual(1f, performance, 0.001f, "Performance should be 1 when the candidate is perfectly aligned with the snap point.");
+        yield return null;
     }
 }

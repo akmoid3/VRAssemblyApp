@@ -53,8 +53,7 @@ public class PlayBackManagerTests
         // Set up the Manager and StateManager instances
         manager = new GameObject().AddComponent<Manager>();
         stateManager = new GameObject().AddComponent<StateManager>();
-
-        SetPrivateField(manager, "sequenceManager", sequenceManager);
+        manager.sequenceManager = sequenceManager;
 
     }
 

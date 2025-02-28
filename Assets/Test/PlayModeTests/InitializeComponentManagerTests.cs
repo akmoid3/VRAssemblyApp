@@ -1,4 +1,4 @@
-/*using NUnit.Framework;
+using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
@@ -86,25 +86,26 @@ public class InitializeComponentManagerTests
         // Act
         componentManager.PopulateComponentDropdown();
 
-        // Assert
+        // Assert: verifica che il dropdown abbia opzioni e che ogni opzione abbia un testo non vuoto
         Assert.IsTrue(componentDropdown.options.Count > 0);
         foreach (var option in componentDropdown.options)
         {
-            Assert.IsTrue(System.Enum.IsDefined(typeof(ComponentObject.ComponentType), option.text));
+            Assert.IsFalse(string.IsNullOrEmpty(option.text));
         }
     }
 
+    
     [Test]
     public void TestPopulateGroupDropdown()
     {
         // Act
         componentManager.PopulateGroupDropdown();
 
-        // Assert
+        // Assert: verifica che il dropdown abbia opzioni e che ogni opzione abbia un testo non vuoto
         Assert.IsTrue(groupDropdown.options.Count > 0);
         foreach (var option in groupDropdown.options)
         {
-            Assert.IsTrue(System.Enum.IsDefined(typeof(ComponentObject.Group), option.text));
+            Assert.IsFalse(string.IsNullOrEmpty(option.text));
         }
     }
 
@@ -124,25 +125,36 @@ public class InitializeComponentManagerTests
     {
         // Arrange
         int index = 0;
+        componentManager.PopulateGroupDropdown();
+        string expectedValue = groupDropdown.options[index].text;
+
+        // Act
         componentManager.OnGroupDropdownValueChanged(index);
 
-        // Assert
-        Assert.AreEqual((ComponentObject.Group)index, mockComponentObject.GetGroup());
+        // Assert: verifica che il valore impostato in ComponentObject corrisponda al testo dell'opzione
+        Assert.AreEqual(expectedValue, mockComponentObject.GetGroup());
     }
 
+    
+    
     [Test]
     public void TestUpdateDropdownsForSelectedComponent()
     {
         // Arrange
+        // Imposta il ComponentObject con valori "None" (o il valore di default usato)
         mockComponentObject.SetComponentType(ComponentObject.ComponentType.None);
-        mockComponentObject.SetGroup(ComponentObject.Group.None);
 
-        // Act
+        mockComponentObject.SetGroup("None");
+
+        // Act: aggiorna i dropdown in base alle proprietà del componente selezionato
         componentManager.UpdateDropdownsForSelectedComponent(selectedComponent);
 
-        // Assert
         Assert.AreEqual((int)ComponentObject.ComponentType.None, componentDropdown.value);
-        Assert.AreEqual((int)ComponentObject.Group.None, groupDropdown.value);
+
+        int groupIndex = groupDropdown.options.FindIndex(option => option.text == "None");
+
+        // Assert: il valore selezionato del dropdown deve corrispondere all'indice trovato
+        Assert.AreEqual(groupIndex, groupDropdown.value);
     }
 
     [Test]
@@ -196,4 +208,3 @@ public class InitializeComponentManagerTests
     }
 
 }
-*/

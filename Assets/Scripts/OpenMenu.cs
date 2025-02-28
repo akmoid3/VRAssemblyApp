@@ -6,9 +6,15 @@ public class OpenMenu : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Space))
+        ToggleMenu();
+    }
+    
+    public void ToggleMenu(bool simulateKeyPress = false)
+    {
+        if (simulateKeyPress || Input.GetKeyDown(KeyCode.Space))
         {
             m_Menu.SetActive(!m_Menu.activeSelf);
         }
     }
+
 }
