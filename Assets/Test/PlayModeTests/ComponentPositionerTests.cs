@@ -7,6 +7,7 @@ using UnityEngine;
 using UnityEngine.TestTools;
 using UnityEngine.UI;
 
+
 [TestFixture]
 public class ComponentPositionerTests
 {
