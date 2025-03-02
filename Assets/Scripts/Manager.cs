@@ -28,7 +28,7 @@ public class Manager : MonoBehaviour
     private SnapToPosition interactor;
     private List<Transform> componentsThatCanSnap;
 
-    private static Dictionary<int, GameObject> currentAssembledSequence;
+    public static Dictionary<int, GameObject> currentAssembledSequence;
 
     // Singleton
     public static Manager Instance { get; private set; }
@@ -170,7 +170,7 @@ public class Manager : MonoBehaviour
     }
 
 
-    private void HandleComponentFastener(Transform component, ComponentData componentData)
+    public void HandleComponentFastener(Transform component, ComponentData componentData)
     {
         Fastener fastener = component.GetComponent<Fastener>();
         if (fastener == null)

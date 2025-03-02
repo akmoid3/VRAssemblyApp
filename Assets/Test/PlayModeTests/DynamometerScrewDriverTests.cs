@@ -5,7 +5,6 @@ using TMPro;
 using System.Collections;
 using System.Collections.Generic;
 using System.Reflection;
-using Unity.VRTemplate;
 using UnityEngine.TestTools;
 
 public class DynamometerScrewDriverTests
@@ -64,7 +63,7 @@ public class DynamometerScrewDriverTests
     public void TestSetForce_UpdatesForceAndForceText()
     {
         GameObject knobGO = new GameObject("DummyKnob");
-        XRKnob dummyKnob = knobGO.AddComponent<XRKnob>();
+        XRKnob.XRKnob dummyKnob = knobGO.AddComponent<XRKnob.XRKnob>();
         dummyKnob.value = 0.5f; // Expect approximately 60: Mathf.Lerp(0,120,0.5f)
 
         dynamometerScrewDriver.SetForce(dummyKnob);

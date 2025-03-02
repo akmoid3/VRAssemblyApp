@@ -33,9 +33,11 @@ public class FileCheckerTests
 
         if (Directory.Exists(testDirectory))
         {
-            Directory.Delete(testDirectory);
+            // Recursively delete the directory and all its contents.
+            Directory.Delete(testDirectory, true);
         }
     }
+
 
     [Test]
     public void DoesJsonFileExist_FileExists_ReturnsTrue()

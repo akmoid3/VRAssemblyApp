@@ -184,11 +184,14 @@ public class HintManager : MonoBehaviour
 
     private void ClearHintLines()
     {
+        if(currentLineRenderer != null)
         currentLineRenderer.enabled = false;
     }
 
     private void HideSnappoints(SnapToPosition interactor)
     {
+        if(interactor == null)
+            return;
         // Hide snap points if visible
         foreach (Transform snapPoint in interactor.transform)
         {
@@ -200,7 +203,7 @@ public class HintManager : MonoBehaviour
         }
     }
 
-    public void HideHints(SnapToPosition interactor)
+    public virtual void HideHints(SnapToPosition interactor)
     {
         ClearHintLines();
         HideSnappoints(interactor);

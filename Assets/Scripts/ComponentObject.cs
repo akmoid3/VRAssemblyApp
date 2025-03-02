@@ -50,7 +50,7 @@ public class ComponentObject : MonoBehaviour
     }
 
 
-    private void Start()
+    public void Start()
     {
         // Initialize the AudioSource
         audioSource = GetComponent<AudioSource>();

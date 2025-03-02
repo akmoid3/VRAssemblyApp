@@ -10,7 +10,7 @@ public class AutomaticPlacementManager : MonoBehaviour
     private GameObject interactorClone;
     private bool isPlacingComponent = false;
 
-    public void PlaceCurrentStepComponent(int stepIndex, Transform componentToPlace, SnapToPosition interactor,
+    public virtual void PlaceCurrentStepComponent(int stepIndex, Transform componentToPlace, SnapToPosition interactor,
         float timeMovement)
     {
         if (isPlacingComponent) return; // Prevent spamming if placement is ongoing
@@ -30,7 +30,7 @@ public class AutomaticPlacementManager : MonoBehaviour
         // Start coroutine to move the component and reset the flag afterward
     }
 
-    public void PlaceStepComponent(int stepIndex, Transform componentToPlace, SnapToPosition interactor)
+    public virtual void PlaceStepComponent(int stepIndex, Transform componentToPlace, SnapToPosition interactor)
     {
         Transform correctSnappoint = interactor.transform.GetChild(stepIndex);
         componentToPlace.GetComponent<ComponentObject>().IsReleased = true;

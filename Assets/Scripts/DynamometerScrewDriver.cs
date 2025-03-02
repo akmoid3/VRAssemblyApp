@@ -1,7 +1,6 @@
 using System.Collections;
 using TMPro;
 using UnityEngine;
-using Unity.VRTemplate;
 using UnityEngine.XR.Interaction.Toolkit;
 
 public class DynamometerScrewDriver : BaseScrewDriver
@@ -31,7 +30,7 @@ public class DynamometerScrewDriver : BaseScrewDriver
         }
     }
 
-    public void SetForce(XRKnob knob)
+    public void SetForce(XRKnob.XRKnob knob)
     {
         if(knob != null)
         {

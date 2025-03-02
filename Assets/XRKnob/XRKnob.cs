@@ -3,8 +3,7 @@ using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.XR.Interaction.Toolkit;
 
-
-namespace Unity.VRTemplate
+namespace XRKnob
 {
     /// <summary>
     /// An interactable knob that follows the rotation of the interactor
