@@ -183,21 +183,19 @@ public class PdfLoaderTests
     [Test]
     public void ShowPage_InvalidIndex_ShouldLogWarning()
     {
-    
-        // Act: Invoke ShowPage with invalid index
-        var showPageMethod = _pdfLoader.GetType().GetMethod("ShowPage", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
 
         // Invalid index: no pages loaded (index 0)
         LogAssert.Expect(LogType.Warning, "Invalid page index or no pages loaded.");
-        showPageMethod.Invoke(_pdfLoader, new object[] { 0 });
-
+        _pdfLoader.ShowPage(0);
+        
         // Invalid index: negative index
         LogAssert.Expect(LogType.Warning, "Invalid page index or no pages loaded.");
-        showPageMethod.Invoke(_pdfLoader, new object[] { -1 });
+        _pdfLoader.ShowPage(-1);
 
         // Invalid index: index greater than pages count
         LogAssert.Expect(LogType.Warning, "Invalid page index or no pages loaded.");
-        showPageMethod.Invoke(_pdfLoader, new object[] { 2 });  // Index 2 is out of bounds
+        _pdfLoader.ShowPage(2);
+
     }
 
 

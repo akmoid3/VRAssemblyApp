@@ -25,11 +25,9 @@ public class PrefabManagerTests
         mockLoader = new Mock<IModelLoader>();
         mockFileMonitor = new Mock<IFileMonitor>();
         manager = new GameObject().AddComponent<Manager>();
-
-        typeof(PrefabManager).GetField("loader", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance).SetValue(prefabManager, mockLoader.Object);
-        typeof(PrefabManager).GetField("fileMonitor", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance).SetValue(prefabManager, mockFileMonitor.Object);
-
-        typeof(PrefabManager).GetField("prefabContainer", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance).SetValue(prefabManager, prefabManagerGameObject.transform);
+        prefabManager.loader = mockLoader.Object;
+        prefabManager.fileMonitor = mockFileMonitor.Object;
+        prefabManager.prefabContainer = prefabManagerGameObject.transform;
     }
 
     [TearDown]
@@ -129,7 +127,7 @@ public class PrefabManagerTests
     {
         string modelName = "testModel";
         GameObject fakeModel = new GameObject(modelName);
-        typeof(PrefabManager).GetField("prefabInstances", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance).SetValue(prefabManager, new Dictionary<string, GameObject> { { modelName, fakeModel } });
+        prefabManager.prefabInstances = new Dictionary<string, GameObject> { { modelName, fakeModel } };
 
         prefabManager.DestroyAllPrefabs();
 
@@ -160,7 +158,7 @@ public class PrefabManagerTests
     };
 
         // Set the prefabInstances field using reflection
-        typeof(PrefabManager).GetField("prefabInstances", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance).SetValue(prefabManager, prefabInstances);
+        prefabManager.prefabInstances = prefabInstances;
 
         // Act
         var hideAllPrefabsMethod = typeof(PrefabManager).GetMethod("HideAllPrefabs", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);

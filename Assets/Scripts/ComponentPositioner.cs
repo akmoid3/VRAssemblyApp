@@ -168,7 +168,7 @@ public class ComponentPositioner : MonoBehaviour
             Destroy(instantiatedPrefab);
         }
 
-        AddCoACDCollidersToComponentsAsync(Manager.Instance.Components,Manager.Instance.ModelName);
+        //AddCoACDCollidersToComponentsAsync(Manager.Instance.Components,Manager.Instance.ModelName);
     }
 
     /// Processes each component, generates convex collider meshes using CoACD, assigns MeshColliders,

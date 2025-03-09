@@ -5,11 +5,11 @@ using UnityEngine;
 
 public class PrefabManager : MonoBehaviour
 {
-    [SerializeField] private Transform prefabContainer;
-    [SerializeField] private IModelLoader loader;
-    [SerializeField] private IFileMonitor fileMonitor;
-    private Manager manager;
-    private Dictionary<string, GameObject> prefabInstances = new Dictionary<string, GameObject>();
+    [SerializeField] public Transform prefabContainer;
+    [SerializeField] public IModelLoader loader;
+    [SerializeField] public IFileMonitor fileMonitor;
+    public Manager manager;
+    public Dictionary<string, GameObject> prefabInstances = new Dictionary<string, GameObject>();
     public event Action<List<string>> OnModelsLoaded;
 
     private void Awake()
@@ -29,7 +29,7 @@ public class PrefabManager : MonoBehaviour
         OnFilesChanged(new HashSet<string>(Directory.GetFiles(fileMonitor.PersistentDataPath, "*.glb")));
     }
 
-    private void OnFilesChanged(HashSet<string> newFiles)
+    public void OnFilesChanged(HashSet<string> newFiles)
     {
         List<string> modelNames = new List<string>();
         foreach (var file in newFiles)

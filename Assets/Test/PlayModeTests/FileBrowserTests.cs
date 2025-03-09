@@ -126,8 +126,8 @@ public class FileBrowserTests
         Assert.IsTrue(Directory.Exists(directoryPath), "Models directory should be created.");
     }
 
-    [Test]
-    public void OnFilesSelected_CopiesAndRenamesPdfFile()
+    [UnityTest]
+    public IEnumerator OnFilesSelected_CopiesAndRenamesPdfFile()
     {
         // Arrange
         string directoryName = "PDFTest";
@@ -149,7 +149,7 @@ public class FileBrowserTests
         Assert.IsNotNull(onFilesSelectedMethod, "OnFilesSelected method not found.");
         onFilesSelectedMethod.Invoke(fileBrowserManager, new object[] { filePaths, directoryName });
 
-
+        yield return null;
 
         var finalPath = Path.Combine(directoryPath, mockManager.Model.name + ".pdf");
 

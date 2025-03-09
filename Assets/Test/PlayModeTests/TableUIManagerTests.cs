@@ -25,10 +25,13 @@ public class TableUIManagerTests
     private AudioSource audioSource;
     private TableComponentListSO componentListSO;
     private AudioManager audioManager;
+    private Manager manager;
 
     [SetUp]
     public void Setup()
     {
+        manager = new GameObject().AddComponent<Manager>();
+        manager.ComponentsThatCanSnap = new List<Transform>();
         // Create a GameObject and attach the TableUIManager component.
         uiManagerGO = new GameObject("TableUIManager");
         uiManager = uiManagerGO.AddComponent<TableUIManager>();

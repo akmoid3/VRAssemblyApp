@@ -10,7 +10,7 @@ public class Manager : MonoBehaviour
     [SerializeField] private StateManager stateManager;
     [SerializeField] private InteractionManager interactionManager;
     [SerializeField] public SequenceManager sequenceManager;
-    [SerializeField] private HintManager hintManager;
+    [SerializeField] public HintManager hintManager;
     [SerializeField] private AutomaticPlacementManager automaticPlacementManager;
 
     [FormerlySerializedAs("pdfLoader")] [SerializeField]
@@ -166,7 +166,8 @@ public class Manager : MonoBehaviour
 
     public void HighlightComponentToPlace(List<Transform> componentsToHighlight)
     {
-        hintManager.HighlightComponentToPlace(componentsToHighlight);
+        if(hintManager)
+            hintManager.HighlightComponentToPlace(componentsToHighlight);
     }
 
 
@@ -254,7 +255,11 @@ public class Manager : MonoBehaviour
     {
         if (!sequenceManager)
             return;
-
+        if(!LoaderPDF)
+            return;
+        if(AssemblySequence == null)
+            return;
+        
         if (AssemblySequence != null && CurrentStep >= AssemblySequence.Count - 1 &&
             StateManager.Instance.CurrentState == State.PlayBack)
         {
@@ -335,7 +340,8 @@ public class Manager : MonoBehaviour
 
     public void RepositionComponentsOnTable(List<Transform> components)
     {
-        componentPositioner.RepositionComponentsOnTable(components);
+        if(componentPositioner != null)
+            componentPositioner.RepositionComponentsOnTable(components);
     }
 
     public void PlaybackSpawnComponents()
@@ -357,6 +363,8 @@ public class Manager : MonoBehaviour
         }
 
         // Group components by stepId to handle each step individually
+        if(AssemblySequence == null)
+            return;
         var groupedByStep = AssemblySequence
             .GroupBy(c => c.stepId)
             .ToDictionary(
@@ -450,7 +458,8 @@ public class Manager : MonoBehaviour
         }
 
         // Reposition components after ensuring all are present
-        componentPositioner.RepositionComponentsOnTable(components);
+        if(componentPositioner != null)
+            componentPositioner.RepositionComponentsOnTable(components);
     }
 
 
@@ -658,11 +667,12 @@ public class Manager : MonoBehaviour
         {
             componentsThatCanSnap[0].GetComponent<Rigidbody>().isKinematic = true;
             componentsThatCanSnap[0].GetComponent<ComponentObject>().IsAutomaticSnap = true;
+            automaticPlacementManager.PlaceStepComponent(step, component, Interactor);
+            hintManager.HideHints(Interactor);
         }
 
 
-        automaticPlacementManager.PlaceStepComponent(step, component, Interactor);
-        hintManager.HideHints(Interactor);
+        
     }
 
     public void ShowHint()
@@ -672,7 +682,8 @@ public class Manager : MonoBehaviour
 
     public void HideHint()
     {
-        hintManager.HideHints(Interactor);
+        if(hintManager != null)
+            hintManager.HideHints(Interactor);
     }
 
     public void CloseApp()

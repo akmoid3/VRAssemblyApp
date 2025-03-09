@@ -61,7 +61,8 @@ public abstract class Fastener : MonoBehaviour
     public virtual void Start()
     {
         fastenerRenderer = GetComponent<Renderer>();
-        defaultColor = fastenerRenderer.material.color;
+        if(fastenerRenderer != null)
+            defaultColor = fastenerRenderer.material.color;
 
         // Initialize the AudioSource
         audioSource = GetComponent<AudioSource>();
@@ -72,18 +73,20 @@ public abstract class Fastener : MonoBehaviour
 
         componentObject = GetComponent<ComponentObject>();
 
-        if (componentObject == null)
+        if (componentObject != null)
         {
-            Debug.LogError("ComponentObject is not found on this Fastener.");
+            selectedAxisDirRaw = componentObject.GetSelectedAxis();
         }
 
-        selectedAxisDirRaw = componentObject.GetSelectedAxis();
 
         // Calculate the length of the fastener along the selected axis
+        if (fastenerRenderer != null)
+        {
+            fastenerLengthAlongAxis = Mathf.Abs(Vector3.Dot(selectedAxisDirRaw, fastenerRenderer.bounds.size));
 
-        fastenerLengthAlongAxis = Mathf.Abs(Vector3.Dot(selectedAxisDirRaw, fastenerRenderer.bounds.size));
-
-        distanceToTravel = fastenerLengthAlongAxis - headSize;
+            distanceToTravel = fastenerLengthAlongAxis - headSize;
+        }
+       
 
 
     }
@@ -129,11 +132,13 @@ public abstract class Fastener : MonoBehaviour
                     Manager.Instance.IncrementCurrentError();
                     isFirstError = false;
                     ToolManager toolManager = FindObjectOfType<ToolManager>();
-                    toolManager.HighlightToolByName(CorrectToolName);
+                    if(toolManager != null)
+                        toolManager.HighlightToolByName(CorrectToolName);
                     return;
                 }
-                
-                FindObjectOfType<ToolManager>().ClearAllToolHighlights();
+                ToolManager toolM = FindObjectOfType<ToolManager>();
+                if(toolM != null)
+                    FindObjectOfType<ToolManager>().ClearAllToolHighlights();
                 
             }
         }

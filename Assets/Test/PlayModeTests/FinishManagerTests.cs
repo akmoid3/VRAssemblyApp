@@ -1,144 +1,206 @@
+using System.Collections;
+using System.Collections.Generic;
 using NUnit.Framework;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 using UnityEngine.TestTools;
-using TMPro;
 using UnityEngine.UI;
-using System.Reflection;
+using UnityEngine.SceneManagement;
+using TMPro;
 
+[TestFixture]
 public class FinishManagerTests
 {
     private FinishManager finishManager;
-    private GameObject finishPanel;
-    private TextMeshProUGUI timerText;
-    private TextMeshProUGUI errorCountText;
-    private TextMeshProUGUI hintCountText;
-    private TextMeshProUGUI accuracyText;
-    private Button finishButton;
+    private GameObject gameObject;
+    private GameObject panelObject;
+    private Button buttonObject;
+    private TextMeshProUGUI timerTextObject;
+    private TextMeshProUGUI errorCountTextObject;
+    private TextMeshProUGUI hintCountTextObject;
+    private TextMeshProUGUI averagePerformanceTextObject;
+    private GameObject managerObject;
     private Manager manager;
+
     private StateManager stateManager;
-    private SequenceManager sequenceManager;
-    private HintManager hintManager;
-
-
 
     [SetUp]
-    public void SetUp()
+    public void Setup()
     {
-        sequenceManager = new GameObject().AddComponent<SequenceManager>();
-        hintManager = new GameObject().AddComponent<HintManager>();
-
-
-        // Create a new GameObject and attach the FinishManager component
-        var gameObject = new GameObject();
+        stateManager = new GameObject().AddComponent<StateManager>();
+        SetupManagerSingleton();
+        // Create necessary GameObject setup
+        gameObject = new GameObject("FinishManager");
         finishManager = gameObject.AddComponent<FinishManager>();
 
-        // Create UI elements and assign them to the FinishManager
-        finishPanel = new GameObject();
-        finishManager.GetType().GetField("finishPanel", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)
-            .SetValue(finishManager, finishPanel);
+        // Create and set up finish panel
+        panelObject = new GameObject("FinishPanel");
+        panelObject.transform.SetParent(gameObject.transform);
 
-        timerText = new GameObject().AddComponent<TextMeshProUGUI>();
-        finishManager.GetType().GetField("timerText", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)
-            .SetValue(finishManager, timerText);
+        // Create button
+        var buttonGO = new GameObject("FinishButton");
+        buttonGO.transform.SetParent(panelObject.transform);
+        buttonObject = buttonGO.AddComponent<Button>();
 
-        errorCountText = new GameObject().AddComponent<TextMeshProUGUI>();
-        finishManager.GetType().GetField("errorCountText", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)
-            .SetValue(finishManager, errorCountText);
+        // Create text objects
+        var timerGO = new GameObject("TimerText");
+        timerGO.transform.SetParent(panelObject.transform);
+        timerTextObject = timerGO.AddComponent<TextMeshProUGUI>();
+        timerTextObject.text = "00:00";
 
-        hintCountText = new GameObject().AddComponent<TextMeshProUGUI>();
-        finishManager.GetType().GetField("hintCountText", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)
-            .SetValue(finishManager, hintCountText);
+        var errorGO = new GameObject("ErrorCountText");
+        errorGO.transform.SetParent(panelObject.transform);
+        errorCountTextObject = errorGO.AddComponent<TextMeshProUGUI>();
 
-        accuracyText = new GameObject().AddComponent<TextMeshProUGUI>();
-        finishManager.GetType().GetField("averagePerformanceText", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)
-            .SetValue(finishManager, accuracyText);
-        
-        finishButton = new GameObject().AddComponent<Button>();
-        finishManager.GetType().GetField("finishButton", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)
-            .SetValue(finishManager, finishButton);
+        var hintGO = new GameObject("HintCountText");
+        hintGO.transform.SetParent(panelObject.transform);
+        hintCountTextObject = hintGO.AddComponent<TextMeshProUGUI>();
 
-        // Setup mock Manager and StateManager
-        manager = new GameObject().AddComponent<Manager>();
-        stateManager = new GameObject().AddComponent<StateManager>();
-        manager.sequenceManager = sequenceManager;
+        var performanceGO = new GameObject("AveragePerformanceText");
+        performanceGO.transform.SetParent(panelObject.transform);
+        averagePerformanceTextObject = performanceGO.AddComponent<TextMeshProUGUI>();
 
-        SetPrivateField(manager, "hintManager", hintManager);
+        // Set serialized fields via reflection
+        SetPrivateField(finishManager, "finishPanel", panelObject);
+        SetPrivateField(finishManager, "finishButton", buttonObject);
+        SetPrivateField(finishManager, "timerText", timerTextObject);
+        SetPrivateField(finishManager, "errorCountText", errorCountTextObject);
+        SetPrivateField(finishManager, "hintCountText", hintCountTextObject);
+        SetPrivateField(finishManager, "averagePerformanceText", averagePerformanceTextObject);
+
+
+        manager.PerformaceForEachStep = new List<float> { 0.0f, 0.5f, 0.7f, 0.9f };
+        manager.ErrorCount = 3;
+        manager.HintCount = 2;
+        manager.FinishTime = "01:30";
+    }
+
+    private void SetupManagerSingleton()
+    {
+        managerObject = new GameObject("Manager");
+        manager = managerObject.AddComponent<Manager>();
+
+        manager.sequenceManager = new GameObject().AddComponent<SequenceManager>();
+        manager.sequenceManager.AssemblySequence = new List<ComponentData>();
+        manager.hintManager = new GameObject().AddComponent<HintManager>();
+        // Initialize Manager properties
+        manager.Components = new List<Transform>();
+        manager.PerformaceForEachStep = new List<float>();
+        manager.CurrentAssembledSequence = new Dictionary<int, GameObject>();
+        manager.Interactor = new GameObject("Interactor").AddComponent<SnapToPosition>();
+        var childObject = new GameObject("Child0").transform;
+        childObject.SetParent(manager.Interactor.transform);
     }
 
     [TearDown]
     public void TearDown()
     {
-        // Clean up after each test
-        Object.DestroyImmediate(finishManager.gameObject);
-        Object.DestroyImmediate(finishPanel);
-        Object.DestroyImmediate(timerText.gameObject);
-        Object.DestroyImmediate(errorCountText.gameObject);
-        Object.DestroyImmediate(hintCountText.gameObject);
-        Object.DestroyImmediate(finishButton.gameObject);
-        if(manager != null)
-        Object.DestroyImmediate(manager.gameObject);
-        if(stateManager != null)
-        Object.DestroyImmediate(stateManager.gameObject);
+        StateManager.OnStateChanged -= finishManager.SetPanelActive;
+        if (gameObject)
+            Object.DestroyImmediate(gameObject);
+
+        if (manager != null)
+            Object.DestroyImmediate(manager);
+
+        if (stateManager != null)
+            Object.DestroyImmediate(stateManager);
+    }
+
+    // Helper method to set private fields via reflection
+    private void SetPrivateField<T>(FinishManager target, string fieldName, T value)
+    {
+        var field = typeof(FinishManager).GetField(fieldName,
+            System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+        field?.SetValue(target, value);
     }
 
     [Test]
-    public void TestSetPanelActive_ActivatesFinishPanelAndUpdatesText_WhenStateIsFinish()
+    public void TestAwake()
     {
-        // Arrange
-        finishPanel.SetActive(false);
-        Manager.Instance.GetType().GetProperty("ErrorCount").SetValue(Manager.Instance, 5);
-        Manager.Instance.GetType().GetProperty("HintCount").SetValue(Manager.Instance, 10);
+        // Act - Manually call Awake through reflection
+        var awakeMethod = typeof(FinishManager).GetMethod("Awake",
+            System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+        awakeMethod?.Invoke(finishManager, null);
 
-        // Act
-        finishManager.SetPanelActive(State.Finish);
+        stateManager.UpdateState(State.Finish);
 
-        // Assert
-        Assert.IsTrue(finishPanel.activeSelf, "finishPanel should be active when state is Finish");
-        Assert.AreEqual("Errors: 5", errorCountText.text, "errorCountText should be updated with the correct error count");
-        Assert.AreEqual("Hints: 10", hintCountText.text, "hintCountText should be updated with the correct hint count");
+        // Check if panel is active, which would indicate the event subscription worked
+        Assert.IsTrue(panelObject.activeSelf);
     }
 
     [Test]
-    public void TestSetPanelActive_DeactivatesFinishPanel_WhenStateIsNotFinish()
+    public void TestUpdate_WhenStateIsFinish()
     {
-        // Arrange
-        finishPanel.SetActive(true);
+        timerTextObject.text = "00:00";
 
-        // Act
-        finishManager.SetPanelActive(State.PlayBack);
-
-        // Assert
-        Assert.IsFalse(finishPanel.activeSelf, "finishPanel should be inactive when state is not Finish");
-    }
-
-  
-    [Test]
-    public void TestUpdate_UpdatesTimerText_WhenStateIsFinishAndTimerIsZero()
-    {
-        // Arrange
-        timerText.text = "00:00";
-        Manager.Instance.GetType().GetProperty("FinishTime").SetValue(Manager.Instance, "10:45");
-
-        StateManager.Instance.GetType().GetProperty("CurrentState").SetValue(StateManager.Instance, State.Finish);
+        stateManager.UpdateState(State.Finish);
 
         // Act
         finishManager.Update();
 
         // Assert
-        Assert.AreEqual("Time: 10:45", timerText.text, "timerText should be updated with the Manager's FinishTime");
+        Assert.AreEqual($"Time: {manager.FinishTime}", timerTextObject.text);
     }
 
-    private void SetPrivateField(object obj, string fieldName, object value)
+    [Test]
+    public void TestUpdate_WhenStateIsNotFinish()
     {
-        var field = obj.GetType().GetField(fieldName, BindingFlags.NonPublic | BindingFlags.Instance);
-        if (field != null)
-        {
-            field.SetValue(obj, value);
-        }
-        else
-        {
-            Debug.LogError($"Field {fieldName} not found in {obj.GetType()}");
-        }
+        timerTextObject.text = "00:00";
+
+        // Act
+        finishManager.Update();
+
+        // Assert
+        Assert.AreEqual("00:00", timerTextObject.text);
+    }
+
+    [Test]
+    public void TestSetPanelActive_WhenStateIsFinish()
+    {
+        // Act
+        finishManager.SetPanelActive(State.Finish);
+
+        // Assert
+        Assert.IsTrue(panelObject.activeSelf);
+        Assert.AreEqual($"Errors: {Manager.Instance.ErrorCount}", errorCountTextObject.text);
+        Assert.AreEqual($"Hints: {Manager.Instance.HintCount}", hintCountTextObject.text);
+
+        // This will test line 43 which calculates average performance
+        float expectedAvg = finishManager.CalculateAveragePerformance();
+        string expectedText = $"Accuracy: {expectedAvg * 100:F2}";
+        Assert.AreEqual(expectedText, averagePerformanceTextObject.text);
+    }
+
+    [Test]
+    public void TestSetPanelActive_WhenStateIsNotFinish()
+    {
+        // Arrange
+        panelObject.SetActive(true);
+
+        // Act
+        finishManager.SetPanelActive(State.PlayBack);
+
+        // Assert
+        Assert.IsFalse(panelObject.activeSelf);
+    }
+
+    [Test]
+    public void TestCalculateAveragePerformance()
+    {
+        float result = finishManager.CalculateAveragePerformance();
+
+        Assert.AreEqual(0.699999988f, result);
+    }
+
+    [Test]
+    public void TestCalculateAveragePerformance_WithNoElements()
+    {
+        // Arrange
+        Manager.Instance.PerformaceForEachStep = new List<float>() { 0.0f };
+
+        // Act
+        float result = finishManager.CalculateAveragePerformance();
+
+        // Assert
+        Assert.AreEqual(0.0f, result);
     }
 }

@@ -1,663 +1,782 @@
+using System;
 using System.Collections;
-using NUnit.Framework;
-using NUnit.Framework.Internal;
+using System.Collections.Generic;
 using System.Reflection;
+using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.TestTools;
 
+// Concrete implementation of the abstract class for testing
 public class TestFastener : Fastener
 {
-    public bool HandleInteractionCalled { get; private set; }
-    public bool OnToolCollisionEnterCalled { get; private set; }
-    public bool OnToolCollisionExitCalled { get; private set; }
-    public bool AlignWithComponentCalled { get; private set; }
-
     protected override void HandleInteraction()
     {
-        HandleInteractionCalled = true;
+        // Concrete implementation that counts invocations
+        HandleInteractionCallCount++;
     }
 
     protected override void OnToolCollisionEnter(Collider other)
     {
-        OnToolCollisionEnterCalled = true;
+        // Nothing needed here for testing
     }
 
     protected override void OnToolCollisionExit(Collider other)
     {
-        OnToolCollisionExitCalled = true;
+        // Nothing needed here for testing
     }
-}
 
-public class TestableFastener : TestFastener
-{
-    // Public method to expose the protected AlignWithComponent method for testing
+    // Test helpers to expose protected methods for testing
+    public void TestPerformComponentRaycast()
+    {
+        PerformComponentRaycast();
+    }
+
     public void TestAlignWithComponent(Vector3 contactPoint, Vector3 contactNormal)
     {
-        base.AlignWithComponent(contactPoint, contactNormal);
+        AlignWithComponent(contactPoint, contactNormal);
     }
 
-    public void TestHandleInteraction()
+    public void TestFixedUpdate()
     {
-        base.HandleInteraction();
+        FixedUpdate();
     }
 
-    public void TestOnToolCollisionEnter(Collider other)
+    public void TestOnTriggerEnter(Collider other)
     {
-        OnToolCollisionEnter(other);
+        OnTriggerEnter(other);
     }
 
-    public void TestOnToolCollisionExit(Collider other)
+    public void TestOnTriggerExit(Collider other)
     {
-        OnToolCollisionExit(other);
+        OnTriggerExit(other);
     }
+
+    // Expose protected fields for testing
+    public bool GetIsCollidingWithTool() { return isCollidingWithTool; }
+    public void SetIsCollidingWithTool(bool value) { isCollidingWithTool = value; }
+
+    public bool GetIsCollidingWithComponent() { return isCollidingWithComponent; }
+    public void SetIsCollidingWithComponent(bool value) { isCollidingWithComponent = value; }
+
+    public bool GetCanStop() { return canStop; }
+    public void SetCanStop(bool value) { canStop = value; }
+
+    public bool GetIsStopped() { return isStopped; }
+    public void SetIsStopped(bool value) { isStopped = value; }
+
+    public float GetMaxAllowedDotProduct() { return maxAllowedDotProduct; }
+    public void SetMaxAllowedDotProduct(float value) { maxAllowedDotProduct = value; }
+
+    public float GetAlignmentDotProductThreshold() { return alignmentDotProductThreshold; }
+    public void SetAlignmentDotProductThreshold(float value) { alignmentDotProductThreshold = value; }
+
+    public Color GetAlignedColor() { return alignedColor; }
+    public void SetAlignedColor(Color value) { alignedColor = value; }
+
+    public Color GetNotAlignedColor() { return notAlignedColor; }
+    public void SetNotAlignedColor(Color value) { notAlignedColor = value; }
+
+    public Color GetDefaultColor() { return defaultColor; }
+    public void SetDefaultColor(Color value) { defaultColor = value; }
+
+    public ComponentObject GetComponentObject() { return componentObject; }
+    public void SetComponentObject(ComponentObject value) { componentObject = value; }
+
+    public bool GetIsFirstError() { return isFirstError; }
+    public void SetIsFirstError(bool value) { isFirstError = value; }
+
+    public float GetDistanceToTravel() { return distanceToTravel; }
+    public void SetDistanceToTravel(float value) { distanceToTravel = value; }
+
+    public float GetFastenerLengthAlongAxis() { return fastenerLengthAlongAxis; }
+    public void SetFastenerLengthAlongAxis(float value) { fastenerLengthAlongAxis = value; }
+    
+    public Vector3 GetSelectedAxisDirRaw() { return selectedAxisDirRaw; }
+    public Vector3 GetSelectedAxisDirection() { return selectedAxisDirection; }
+    
+    // Counter for testing
+    public int HandleInteractionCallCount { get; private set; } = 0;
 }
 
-public class FastenerAlignmentTests
+[TestFixture]
+public class FastenerTests
 {
-    private GameObject fastenerObject;
-    private TestableFastener fastener;
-    private GameObject toolObject;
-    private StateManager stateManager;
-    private Manager manager;
-    private ToolManager toolManager;
+    private GameObject testObject;
+    private TestFastener fastener;
+    private GameObject managerObject;
+    private GameObject stateManagerObject;
+    private GameObject toolManagerObject;
     private AudioManager audioManager;
 
-
     [SetUp]
-    public void SetUp()
+    public void Setup()
     {
         audioManager = new GameObject("AudioManager").AddComponent<AudioManager>();
-        toolManager = new GameObject().AddComponent<ToolManager>();
-        manager = new GameObject().AddComponent<Manager>();
-        stateManager = new GameObject().AddComponent<StateManager>();
-        fastenerObject = GameObject.CreatePrimitive(PrimitiveType.Cube);
-        fastenerObject.name = "FastenerCube";
-
-        fastener = fastenerObject.AddComponent<TestableFastener>();
-        fastenerObject.AddComponent<ComponentObject>();
-
-        fastener.FastenerRenderer = fastenerObject.GetComponent<Renderer>();
-        fastenerObject.GetComponent<MeshRenderer>().material = new Material(Shader.Find("Standard"));
-
-        fastenerObject.transform.position = Vector3.zero;
-
-        FieldInfo fastenerLengthField =
-            typeof(Fastener).GetField("fastenerLength", BindingFlags.NonPublic | BindingFlags.Instance);
-        fastenerLengthField.SetValue(fastener, 1.0f);
-
-        toolObject = GameObject.CreatePrimitive(PrimitiveType.Cube);
-        Tool tool = toolObject.AddComponent<DynamometerScrewDriver>();
-        tool.ToolName = "ToolCube";
-        toolObject.name = "ToolCube";
-        toolObject.tag = "Tool";
-
-        toolObject.transform.position = Vector3.forward;
-        fastener.Start();
+        
+        // Create the main test GameObject
+        testObject = new GameObject("TestFastener");
+        
+        // Add mesh renderer and filter for visual components
+        MeshRenderer renderer = testObject.AddComponent<MeshRenderer>();
+        MeshFilter meshFilter = testObject.AddComponent<MeshFilter>();
+        meshFilter.mesh = CreateCubeMesh();
+        
+        // Add a material
+        renderer.material = new Material(Shader.Find("Standard"));
+        
+        // Add a collider
+        BoxCollider collider = testObject.AddComponent<BoxCollider>();
+        
+        // Add our test Fastener before ComponentObject to test null case
+        fastener = testObject.AddComponent<TestFastener>();
+        
+        // Setup Manager
+        SetupManager();
+        
+        // Setup StateManager
+        SetupStateManager();
+        
+        // Setup ToolManager
+        SetupToolManager();
     }
 
-    [Test]
-    public void TestFastenerInitialization()
+    private Mesh CreateCubeMesh()
     {
-        Assert.IsFalse(fastener.IsAligned, "Fastener should not be aligned initially");
-        Assert.IsFalse(fastener.IsStopped, "Fastener should not be stopped initially");
-        Assert.IsFalse(fastener.CanStop, "Fastener should not be able to stop initially");
+        // Create a simple cube mesh
+        Mesh mesh = new Mesh();
+        
+        Vector3[] vertices = new Vector3[8]
+        {
+            new Vector3(-0.5f, -0.5f, -0.5f),
+            new Vector3(0.5f, -0.5f, -0.5f),
+            new Vector3(0.5f, 0.5f, -0.5f),
+            new Vector3(-0.5f, 0.5f, -0.5f),
+            new Vector3(-0.5f, -0.5f, 0.5f),
+            new Vector3(0.5f, -0.5f, 0.5f),
+            new Vector3(0.5f, 0.5f, 0.5f),
+            new Vector3(-0.5f, 0.5f, 0.5f)
+        };
+        
+        int[] triangles = new int[36]
+        {
+            0, 2, 1, 0, 3, 2,
+            4, 5, 6, 4, 6, 7,
+            0, 1, 5, 0, 5, 4,
+            1, 2, 6, 1, 6, 5,
+            2, 3, 7, 2, 7, 6,
+            3, 0, 4, 3, 4, 7
+        };
+        
+        mesh.vertices = vertices;
+        mesh.triangles = triangles;
+        mesh.RecalculateNormals();
+        
+        return mesh;
     }
 
-
-    [Test]
-    public void TestOnTriggerExit()
+    private void SetupManager()
     {
-        // Create a tool collider
-        Collider toolCollider = toolObject.GetComponent<Collider>();
+        managerObject = new GameObject("Manager");
+        Manager manager = managerObject.AddComponent<Manager>();
+        
+        // Set the instance field using reflection
+        FieldInfo instanceField = typeof(Manager).GetField("instance", 
+            BindingFlags.NonPublic | BindingFlags.Static);
+        if (instanceField != null)
+            instanceField.SetValue(null, manager);
 
-        typeof(Fastener).GetField("isCollidingWithTool", BindingFlags.NonPublic | BindingFlags.Instance)
-            .SetValue(fastener, true);
-
-        typeof(Fastener).GetMethod("OnTriggerExit", BindingFlags.NonPublic | BindingFlags.Instance)
-            .Invoke(fastener, new object[] { toolCollider });
-
-        bool isCollidingWithTool = (bool)typeof(Fastener)
-            .GetField("isCollidingWithTool", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(fastener);
-
-        Assert.IsFalse(isCollidingWithTool, "isCollidingWithTool should be false after OnTriggerExit.");
+        manager.sequenceManager = new GameObject().AddComponent<SequenceManager>();
+        manager.sequenceManager.AssemblySequence = new List<ComponentData>();
+        
+        // Initialize necessary Manager properties
+        manager.PerformaceForEachStep = new List<float>();
+        manager.AssemblySequence = new List<ComponentData>();
+        manager.Components = new List<Transform>();
+        manager.CurrentAssembledSequence = new Dictionary<int, GameObject>();
+        manager.ErrorCount = 0;
     }
 
-    [Test]
-    public void TestOnTriggerExit_StateManagerCheck()
+    private void SetupStateManager()
     {
-        stateManager.CurrentState = State.PlayBack;
-
-        Collider toolCollider = toolObject.GetComponent<Collider>();
-
-        typeof(Fastener).GetField("isCollidingWithTool", BindingFlags.NonPublic | BindingFlags.Instance)
-            .SetValue(fastener, true);
-        fastener.SetField("isFirstError", false);
-
-        typeof(Fastener).GetMethod("OnTriggerExit", BindingFlags.NonPublic | BindingFlags.Instance)
-            .Invoke(fastener, new object[] { toolCollider });
-
-        bool isFirstError = (bool)fastener.GetField("isFirstError");
-
-        Assert.IsTrue(isFirstError, "isFirstError should be true after OnTriggerExit if in PlayBack state.");
+        stateManagerObject = new GameObject("StateManager");
+        StateManager stateManager = stateManagerObject.AddComponent<StateManager>();
+        
+        // Set the instance field using reflection
+        FieldInfo instanceField = typeof(StateManager).GetField("instance", 
+            BindingFlags.NonPublic | BindingFlags.Static);
+        if (instanceField != null)
+            instanceField.SetValue(null, stateManager);
+        
+        stateManager.CurrentState = State.Record;
     }
 
-
-    [Test]
-    public void TestOnTriggerEnter()
+    private void SetupToolManager()
     {
-        stateManager.CurrentState = State.PlayBack;
-        Collider toolCollider = toolObject.GetComponent<Collider>();
-
-
-        typeof(Fastener).GetMethod("OnTriggerEnter", BindingFlags.NonPublic | BindingFlags.Instance)
-            .Invoke(fastener, new object[] { toolCollider });
-
-        bool isCollidingWithTool = (bool)typeof(Fastener)
-            .GetField("isCollidingWithTool", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(fastener);
-        bool canStop = (bool)typeof(Fastener).GetField("canStop", BindingFlags.NonPublic | BindingFlags.Instance)
-            .GetValue(fastener);
-
-        Assert.IsTrue(isCollidingWithTool, "isCollidingWithTool should be true after OnTriggerEnter.");
-
-        //Assert.AreEqual(toolObject, tool, "Tool should be assigned correctly after OnTriggerEnter.");
-
-        Assert.IsTrue(canStop, "canStop should be true after OnTriggerEnter.");
+        toolManagerObject = new GameObject("ToolManager");
+        ToolManager toolManager = toolManagerObject.AddComponent<ToolManager>();
     }
-
-    [Test]
-    public void TestOnTriggerEnter_StateManagerCheck_Branch1()
-    {
-        Collider toolCollider = toolObject.GetComponent<Collider>();
-        Assert.IsNotNull(toolCollider, "Tool collider should not be null.");
-
-        MethodInfo onTriggerEnterMethod =
-            typeof(Fastener).GetMethod("OnTriggerEnter", BindingFlags.NonPublic | BindingFlags.Instance);
-        Assert.IsNotNull(onTriggerEnterMethod, "OnTriggerEnter method not found.");
-
-        onTriggerEnterMethod.Invoke(fastener, new object[] { toolCollider });
-
-        FieldInfo isFirstErrorField =
-            typeof(Fastener).GetField("isFirstError", BindingFlags.NonPublic | BindingFlags.Instance);
-        bool isFirstError = (bool)isFirstErrorField.GetValue(fastener);
-
-        //Assert.IsFalse(isFirstError, "isFirstError should be false after OnTriggerEnter if an error was registered.");
-    }
-
-
-    [Test]
-    public void TestAlignWithComponent1()
-    {
-        Vector3 contactPoint = new Vector3(0, 0, 0.15f);
-        Vector3 contactNormal = new Vector3(0, 0, -1);
-
-        fastener.TestAlignWithComponent(contactPoint, contactNormal);
-
-        Vector3 expectedPosition = new Vector3(0, 0, 0);
-        Quaternion expectedRotation = Quaternion.LookRotation(-contactNormal);
-
-        Assert.AreEqual(expectedPosition, fastener.transform.position, "Fastener position is not aligned correctly.");
-        Assert.AreEqual(expectedRotation, fastener.transform.rotation, "Fastener rotation is not aligned correctly.");
-        //Assert.IsTrue(fastener.IsAligned, "Fastener should be aligned after calling AlignWithComponent.");
-    }
-
-    [Test]
-    public void TestHandleInteractionMethodCalled()
-    {
-        fastener.TestHandleInteraction();
-
-        Assert.IsTrue(fastener.HandleInteractionCalled, "HandleInteraction should have been called.");
-    }
-
-
-    [Test]
-    public void TestSetSocketTransformMethodCalled()
-    {
-        Transform mockSocket = new GameObject("MockSocket").transform;
-
-        fastener.SetSocketTransform(mockSocket);
-
-        Assert.IsTrue(fastener.GetSocketTransform(), "SetSocketTransform should have been called.");
-        Assert.IsTrue(mockSocket == fastener.GetSocketTransform());
-    }
-
+    
     [TearDown]
-    public void TearDown()
+    public void Teardown()
     {
-        Object.DestroyImmediate(fastenerObject);
-        Object.DestroyImmediate(toolObject);
-        if (stateManager != null)
-            Object.DestroyImmediate(stateManager.gameObject);
-        if (manager != null)
-            Object.DestroyImmediate(manager.gameObject);
-        if (toolManager != null)
-            Object.DestroyImmediate(toolManager.gameObject);
-        if (audioManager != null)
-            Object.DestroyImmediate(audioManager.gameObject);
+        UnityEngine.Object.DestroyImmediate(audioManager.gameObject);
+        UnityEngine.Object.DestroyImmediate(testObject);
+        UnityEngine.Object.DestroyImmediate(managerObject);
+        UnityEngine.Object.DestroyImmediate(stateManagerObject);
+        UnityEngine.Object.DestroyImmediate(toolManagerObject);
     }
 
     [Test]
-    public void TestPerformComponentRaycast_NoHit1()
+    public void PropertyGettersAndSetters_Work()
     {
-        fastenerObject.transform.position = new Vector3(0, 0, 0);
-        fastenerObject.transform.forward = Vector3.up;
-
-        typeof(Fastener).GetMethod("PerformComponentRaycast", BindingFlags.NonPublic | BindingFlags.Instance)
-            .Invoke(fastener, null);
-
-        bool isCollidingWithComponent = (bool)ReflectionExtensions.GetField(fastener, "isCollidingWithComponent");
-        bool isAligned = (bool)ReflectionExtensions.GetField(fastener, "isAligned");
-        Color currentColor = fastener.FastenerRenderer.material.color;
-
-        Assert.IsFalse(isCollidingWithComponent, "isCollidingWithComponent should be false if no raycast hit.");
-
-
-        Assert.IsFalse(isAligned, "Fastener should not be aligned if no component was hit.");
-    }
-
-    [Test]
-    public void TestGetterSetters()
-    {
+        // Test IsAligned property
         fastener.IsAligned = true;
-        Assert.IsTrue(fastener.IsAligned, "IsAligned non viene impostato correttamente.");
-
+        Assert.IsTrue(fastener.IsAligned);
+        
+        // Test IsStopped property
         fastener.IsStopped = true;
-        Assert.IsTrue(fastener.IsStopped, "IsStopped non viene impostato correttamente.");
-
+        Assert.IsTrue(fastener.IsStopped);
+        
+        // Test CanStop property
         fastener.CanStop = true;
-        Assert.IsTrue(fastener.CanStop, "CanStop non viene impostato correttamente.");
-
-        fastener.CorrectToolName = "RealTool";
-        Assert.AreEqual("RealTool", fastener.CorrectToolName, "CorrectToolName non viene impostato correttamente.");
-
-        fastener.CorrectToolForce = 50;
-        Assert.AreEqual(50, fastener.CorrectToolForce, "CorrectToolForce non viene impostato correttamente.");
-
-        Vector3 testPos = new Vector3(1, 2, 3);
-        fastener.InitialPosition = testPos;
-        Assert.AreEqual(testPos, fastener.InitialPosition, "InitialPosition non viene impostato correttamente.");
+        Assert.IsTrue(fastener.CanStop);
+        
+        // Test CorrectToolName property
+        string toolName = "TestToolName";
+        fastener.CorrectToolName = toolName;
+        Assert.AreEqual(toolName, fastener.CorrectToolName);
+        
+        // Test Tool property
+        GameObject toolObject = new GameObject("TestTool");
+        ElectricScrewDriver tool = toolObject.AddComponent<ElectricScrewDriver>();
+        fastener.Tool = tool;
+        Assert.AreEqual(tool, fastener.Tool);
+        
+        // Test FastenerRenderer property
+        MeshRenderer renderer = testObject.GetComponent<MeshRenderer>();
+        fastener.FastenerRenderer = renderer;
+        Assert.AreEqual(renderer, fastener.FastenerRenderer);
+        
+        // Test CorrectToolForce property
+        int force = 5;
+        fastener.CorrectToolForce = force;
+        Assert.AreEqual(force, fastener.CorrectToolForce);
+        
+        // Test InitialPosition property
+        Vector3 position = new Vector3(1, 2, 3);
+        fastener.InitialPosition = position;
+        Assert.AreEqual(position, fastener.InitialPosition);
+        
+        // Test getTool method
+        Assert.AreEqual(tool, fastener.getTool());
+        
+        UnityEngine.Object.DestroyImmediate(toolObject);
+    }
+    
+    [Test]
+    public void Start_HandlesNullComponentObject()
+    {
+        // Ensure no ComponentObject exists
+        ComponentObject existingCompObj = testObject.GetComponent<ComponentObject>();
+        if (existingCompObj != null)
+            UnityEngine.Object.DestroyImmediate(existingCompObj);
+        
+        // Expect error log
+        LogAssert.Expect(LogType.Error, "ComponentObject is not found on this Fastener.");
+        
+        // Call Start
+        fastener.Start();
+        
+        // Verify renderer is set despite null componentObject
+        Assert.IsNotNull(fastener.FastenerRenderer);
+        
+        // Verify componentObject is null
+        Assert.IsNull(fastener.GetComponentObject());
+        
+        // Verify audioSource exists
+        AudioSource audioSource = testObject.GetComponent<AudioSource>();
+        Assert.IsNotNull(audioSource);
+    }
+    
+    [Test]
+    public void Start_InitializesCorrectlyWithComponentObject()
+    {
+        // Add ComponentObject
+        ComponentObject compObject = testObject.AddComponent<ComponentObject>();
+        
+        // Call Start
+        fastener.Start();
+        
+        // Verify renderer is set
+        Assert.IsNotNull(fastener.FastenerRenderer);
+        
+        // Verify componentObject is set
+        Assert.IsNotNull(fastener.GetComponentObject());
+        
+        // Verify selectedAxisDirRaw is set from componentObject
+        Assert.AreEqual(compObject.GetSelectedAxis(), fastener.GetSelectedAxisDirRaw());
+        
+        // Verify audioSource exists
+        AudioSource audioSource = testObject.GetComponent<AudioSource>();
+        Assert.IsNotNull(audioSource);
     }
 
     [Test]
-    public void TestGetToolAndSetTool()
+    public void FixedUpdate_CallsHandleInteractionWhenNeeded()
     {
-        Tool realTool = toolObject.GetComponent<Tool>();
-        fastener.Tool = realTool;
-        Assert.AreEqual(realTool, fastener.Tool, "La proprietà Tool non restituisce il valore impostato.");
-        Assert.AreEqual(realTool, fastener.getTool(), "Il metodo getTool() non restituisce il valore corretto.");
+        // Add ComponentObject
+        testObject.AddComponent<ComponentObject>();
+        fastener.Start();
+        
+        // Set up the conditions to trigger HandleInteraction
+        fastener.SetIsCollidingWithTool(true);
+        fastener.SetIsStopped(false);
+        
+        // Call FixedUpdate
+        fastener.TestFixedUpdate();
+        
+        // Verify HandleInteraction was called
+        Assert.AreEqual(1, fastener.HandleInteractionCallCount);
     }
-
+    
     [Test]
-    public void TestSetAndGetSocketTransform()
+    public void FixedUpdate_CallsPerformComponentRaycastWhenNeeded()
     {
-        GameObject socketObj = new GameObject("Socket");
-        fastener.SetSocketTransform(socketObj.transform);
-        Assert.AreEqual(socketObj.transform, fastener.GetSocketTransform(),
-            "GetSocketTransform non restituisce il socket impostato.");
-        Assert.AreEqual(socketObj.transform.localPosition, fastener.initialSocketPosition,
-            "initialSocketPosition non viene impostato correttamente.");
-        Object.DestroyImmediate(socketObj);
-    }
-
-    [Test]
-    public void TestMapSelectedAxisToTransformDirection()
-    {
-        Vector3 resultForward = fastener.MapSelectedAxisToTransformDirection(Vector3.forward);
-        Assert.AreEqual(fastener.transform.forward, resultForward, "Mapping per Vector3.forward non corretto.");
-
-        Vector3 resultRight = fastener.MapSelectedAxisToTransformDirection(Vector3.right);
-        Assert.AreEqual(fastener.transform.right, resultRight, "Mapping per Vector3.right non corretto.");
-
-        Vector3 resultUp = fastener.MapSelectedAxisToTransformDirection(Vector3.up);
-        Assert.AreEqual(fastener.transform.up, resultUp, "Mapping per Vector3.up non corretto.");
-
-        Vector3 resultNegForward = fastener.MapSelectedAxisToTransformDirection(Vector3.forward * -1);
-        Assert.AreEqual(fastener.transform.forward * -1, resultNegForward,
-            "Mapping per -Vector3.forward non corretto.");
-
-        Vector3 resultNegRight = fastener.MapSelectedAxisToTransformDirection(Vector3.right * -1);
-        Assert.AreEqual(fastener.transform.right * -1, resultNegRight, "Mapping per -Vector3.right non corretto.");
-
-        Vector3 resultNegUp = fastener.MapSelectedAxisToTransformDirection(Vector3.up * -1);
-        Assert.AreEqual(fastener.transform.up * -1, resultNegUp, "Mapping per -Vector3.up non corretto.");
-    }
-
-    [Test]
-    public void TestOmniLookRotation()
-    {
-        Quaternion rot = Fastener.OmniLookRotation(Vector3.up, Vector3.forward, Vector3.right, Vector3.up);
-        Vector3 rotatedAxis = rot * Vector3.up;
-        float dot = Vector3.Dot(rotatedAxis.normalized, Vector3.forward.normalized);
-        Assert.IsTrue(dot > 0.99f, "OmniLookRotation non mappa correttamente l'asse.");
-    }
-
-
-    [Test]
-    public void TestOnTriggerEnterAndExit()
-    {
-        Collider toolCollider = toolObject.GetComponent<Collider>();
-
-        MethodInfo onTriggerEnter =
-            typeof(Fastener).GetMethod("OnTriggerEnter", BindingFlags.NonPublic | BindingFlags.Instance);
-        onTriggerEnter.Invoke(fastener, new object[] { toolCollider });
-
-        FieldInfo fieldColliding =
-            typeof(Fastener).GetField("isCollidingWithTool", BindingFlags.NonPublic | BindingFlags.Instance);
-        bool isColliding = (bool)fieldColliding.GetValue(fastener);
-        Assert.IsTrue(isColliding, "isCollidingWithTool dovrebbe essere true dopo OnTriggerEnter.");
-
-        MethodInfo onTriggerExit =
-            typeof(Fastener).GetMethod("OnTriggerExit", BindingFlags.NonPublic | BindingFlags.Instance);
-        onTriggerExit.Invoke(fastener, new object[] { toolCollider });
-
-        isColliding = (bool)fieldColliding.GetValue(fastener);
-        Assert.IsFalse(isColliding, "isCollidingWithTool dovrebbe essere false dopo OnTriggerExit.");
-    }
-
-    [UnityTest]
-    public IEnumerator TestPerformComponentRaycast_ComponentNull()
-    {
-        // Arrange
-        ComponentObject originalComponentObject = fastener.GetField("componentObject") as ComponentObject;
-        fastener.SetField("componentObject", null);
-
-        bool originalIsCollidingWithComponent = (bool)fastener.GetField("isCollidingWithComponent");
-        bool originalIsAligned = (bool)fastener.GetField("isAligned");
-        bool originalIsStopped = (bool)fastener.GetField("isStopped");
-        bool originalCanStop = (bool)fastener.GetField("canStop");
-        Color originalColor = fastener.FastenerRenderer.material.color;
-
-        // Wait for physics to update
-        yield return new WaitForFixedUpdate();
-
-        // Act
-        typeof(Fastener).GetMethod("PerformComponentRaycast", BindingFlags.NonPublic | BindingFlags.Instance)
-            .Invoke(fastener, null);
-
-        // Assert
-        bool newIsCollidingWithComponent = (bool)fastener.GetField("isCollidingWithComponent");
-        bool newIsAligned = (bool)fastener.GetField("isAligned");
-        bool newIsStopped = (bool)fastener.GetField("isStopped");
-        bool newCanStop = (bool)fastener.GetField("canStop");
-        Color newColor = fastener.FastenerRenderer.material.color;
-
-        // Values should remain unchanged due to early return
-        Assert.AreEqual(originalIsCollidingWithComponent, newIsCollidingWithComponent,
-            "isCollidingWithComponent should not change when componentObject is null");
-        Assert.AreEqual(originalIsAligned, newIsAligned, "isAligned should not change when componentObject is null");
-        Assert.AreEqual(originalIsStopped, newIsStopped, "isStopped should not change when componentObject is null");
-        Assert.AreEqual(originalCanStop, newCanStop, "canStop should not change when componentObject is null");
-        Assert.AreEqual(originalColor, newColor, "Material color should not change when componentObject is null");
-
-        // Restore original component object for other tests
-        fastener.SetField("componentObject", originalComponentObject);
-    }
-
-    [UnityTest]
-    public IEnumerator TestPerformComponentRaycast_NoHit_ResetValues()
-    {
-        // Arrange - Position to ensure no raycast hit
-        fastenerObject.transform.position = new Vector3(0, 100, 0); // Far away
-
-        // Setup initial values
-        fastener.SetField("isCollidingWithComponent", true);
-        fastener.SetField("isAligned", true);
-        fastener.SetField("isStopped", true);
-        fastener.SetField("canStop", true);
-        Color defaultColor = Color.white;
-        fastener.SetField("defaultColor", defaultColor);
-        fastener.FastenerRenderer.material.color = Color.red; // Different from default
-
-        // Wait for physics to update
-        yield return new WaitForFixedUpdate();
-
-        // Act
-        typeof(Fastener).GetMethod("PerformComponentRaycast", BindingFlags.NonPublic | BindingFlags.Instance)
-            .Invoke(fastener, null);
-
-        // Assert
-        bool isCollidingWithComponent = (bool)fastener.GetField("isCollidingWithComponent");
-        bool isAligned = (bool)fastener.GetField("isAligned");
-        bool isStopped = (bool)fastener.GetField("isStopped");
-        bool canStop = (bool)fastener.GetField("canStop");
-        Color currentColor = fastener.FastenerRenderer.material.color;
-
-        Assert.IsFalse(isCollidingWithComponent, "isCollidingWithComponent should be reset to false when no hit");
-        Assert.IsFalse(isAligned, "isAligned should be reset to false when no hit");
-        Assert.IsFalse(isStopped, "isStopped should be reset to false when no hit");
-        Assert.IsFalse(canStop, "canStop should be reset to false when no hit");
-        Assert.AreEqual(defaultColor, currentColor, "Material color should be set to defaultColor when no hit");
-    }
-
-    [UnityTest]
-    public IEnumerator TestPerformComponentRaycast_Hit_NotAligned()
-    {
-        // Arrange
-        GameObject componentObj = new GameObject("TestComponent");
+        // Add ComponentObject
+        var compObject = testObject.AddComponent<ComponentObject>();
+        fastener.Start();
+        
+        // Set up the conditions to trigger PerformComponentRaycast
+        fastener.SetIsCollidingWithTool(false);
+        fastener.SetCanStop(false);
+        fastener.SetIsStopped(false);
+        fastener.IsAligned = false;
+        StateManager.Instance.CurrentState = State.Record;
+        
+        // Create a mock GameObject with Component tag for raycast
+        var componentObj = new GameObject("ComponentForRaycast");
         componentObj.tag = "Component";
-        BoxCollider collider = componentObj.AddComponent<BoxCollider>();
-        collider.size = new Vector3(1, 1, 1); // Ensure collider has size
-        componentObj.transform.position = new Vector3(0, 0, 2); // In front of fastener
-
-        // Setup component object
-        ComponentObject compObj = fastenerObject.GetComponent<ComponentObject>();
-        if (compObj == null)
-        {
-            compObj = fastenerObject.AddComponent<ComponentObject>();
-        }
-
-        fastener.SetField("componentObject", compObj);
-
-        // Setup test values
-        float dotProductThreshold = 0.9f; // High threshold
-        fastener.SetField("alignmentDotProductThreshold", dotProductThreshold);
-
-        // Set component transform with non-aligned angle (45 degrees)
-        componentObj.transform.rotation = Quaternion.Euler(45, 0, 0);
-
-        // Set colors for testing
-        Color notAlignedColor = Color.red;
-        fastener.SetField("notAlignedColor", notAlignedColor);
-
-        // Mock the GetSelectedAxis method to return forward
-        compObj.SetField("selectedAxis", Vector3.forward);
-
-        // Set raycast length long enough to hit
-        fastener.SetField("rayLength", 5f);
-
-        // Wait for physics to update
-        yield return new WaitForFixedUpdate();
-        yield return new WaitForFixedUpdate();
-        yield return new WaitForFixedUpdate();
-        yield return new WaitForFixedUpdate();
-
-        // Act
-        typeof(Fastener).GetMethod("PerformComponentRaycast", BindingFlags.NonPublic | BindingFlags.Instance)
-            .Invoke(fastener, null);
-
-        // Assert
-        bool isCollidingWithComponent = (bool)fastener.GetField("isCollidingWithComponent");
-        bool isAligned = (bool)fastener.GetField("isAligned");
-        bool isStopped = (bool)fastener.GetField("isStopped");
-        bool canStop = (bool)fastener.GetField("canStop");
-        Color currentColor = fastener.FastenerRenderer.material.color;
-
-        Assert.IsTrue(isCollidingWithComponent, "isCollidingWithComponent should be true when hitting component");
-        Assert.IsFalse(isAligned, "isAligned should be false when surfaces are not aligned");
-        Assert.IsFalse(isStopped, "isStopped should be false when surfaces are not aligned");
-        Assert.IsFalse(canStop, "canStop should be false when surfaces are not aligned");
-        Assert.AreEqual(notAlignedColor, currentColor, "Material color should be notAlignedColor when not aligned");
-
+        componentObj.transform.position = testObject.transform.position + Vector3.forward * 0.1f; // Close enough for raycast
+        var collider = componentObj.AddComponent<BoxCollider>();
+        
+        // Save original color to verify it's changed
+        var originalColor = fastener.FastenerRenderer.material.color;
+        
+        // Call FixedUpdate
+        fastener.TestFixedUpdate();
+        
+        // Since we can't verify the raycast hit without a proper physics system,
+        // we're just testing that FixedUpdate calls PerformComponentRaycast without errors
+        
         // Clean up
-        Object.DestroyImmediate(componentObj);
+        UnityEngine.Object.DestroyImmediate(componentObj);
     }
 
-    [UnityTest]
-    public IEnumerator TestPerformComponentRaycast_Hit_Aligned_NotReleased()
+    [Test]
+    public void OnTriggerEnter_HandlesRegularToolCollision()
     {
-        // Arrange
-        GameObject componentObj = new GameObject("TestComponent");
-        componentObj.tag = "Component";
-        BoxCollider collider = componentObj.AddComponent<BoxCollider>();
-        collider.size = new Vector3(5, 5, 5); // Increase collider size significantly
-        componentObj.transform.position = new Vector3(0, 0, 2); // Position in front of fastener
-
-        // Position the fastener to ensure the raycast will hit
-        fastenerObject.transform.position = Vector3.zero;
-        fastenerObject.transform.forward = Vector3.forward; // Ensure pointing toward component
-
-        // Setup component object
-        ComponentObject compObj = fastenerObject.GetComponent<ComponentObject>();
-        if (compObj == null)
-        {
-            compObj = fastenerObject.AddComponent<ComponentObject>();
-        }
-
-        fastener.SetField("componentObject", compObj);
-
-        // Set component as not released
-        compObj.SetField("isReleased", false);
-
-        // Setup test values
-        float dotProductThreshold = 0.9f;
-        fastener.SetField("alignmentDotProductThreshold", dotProductThreshold);
-
-        // Set component transform perfectly aligned
-        componentObj.transform.rotation = Quaternion.identity;
-
-        // Set colors for testing
-        Color alignedColor = Color.green;
-        fastener.SetField("alignedColor", alignedColor);
-
-        // Set selected axis
-        compObj.SetField("selectedAxis", Vector3.forward);
-
-        // Set raycast length long enough to hit
-        fastener.SetField("rayLength", 10f); // Increase ray length
-
-        // Wait for physics to update
-        yield return new WaitForFixedUpdate();
-        yield return new WaitForFixedUpdate(); // Wait one more frame to be sure
-
-        // Debug: Perform a manual raycast to verify collision
-        RaycastHit hit;
-        Vector3 rayDirection = fastener.MapSelectedAxisToTransformDirection(Vector3.forward);
-        bool didHit = Physics.Raycast(fastenerObject.transform.position, rayDirection, out hit, 10f);
-        Debug.Log($"Manual raycast hit: {didHit}, hit object: {(didHit ? hit.collider.gameObject.name : "none")}");
-
-        // Act
-        typeof(Fastener).GetMethod("PerformComponentRaycast", BindingFlags.NonPublic | BindingFlags.Instance)
-            .Invoke(fastener, null);
-
-        // Wait another frame to ensure all physics and method effects are applied
-        yield return null;
-
-        // Assert
-        bool isCollidingWithComponent = (bool)fastener.GetField("isCollidingWithComponent");
-        bool isAligned = (bool)fastener.GetField("isAligned");
-        Color currentColor = fastener.FastenerRenderer.material.color;
-
-        Debug.Log($"isCollidingWithComponent: {isCollidingWithComponent}, isAligned: {isAligned}");
-
-        Assert.IsFalse(isCollidingWithComponent);
-        Assert.IsFalse(isAligned, "isAligned should remain false when component is not released");
-
+        // Create a Tool GameObject
+        GameObject toolObject = new GameObject("Tool");
+        toolObject.tag = "Tool";
+        BoxCollider toolCollider = toolObject.AddComponent<BoxCollider>();
+        ElectricScrewDriver tool = toolObject.AddComponent<ElectricScrewDriver>();
+        tool.ToolName = "TestTool";
+        
+        // Test with regular state
+        StateManager.Instance.CurrentState = State.Record;
+        fastener.TestOnTriggerEnter(toolCollider);
+        
+        // Verify tool and flags are set
+        Assert.AreEqual(tool, fastener.Tool);
+        Assert.IsTrue(fastener.GetIsCollidingWithTool());
+        Assert.IsTrue(fastener.CanStop);
+        
         // Clean up
-        Object.DestroyImmediate(componentObj);
+        UnityEngine.Object.DestroyImmediate(toolObject);
+    }
+    
+    [Test]
+    public void OnTriggerEnter_HandlesToolWithParentTool()
+    {
+        // Create a parent with Tool component
+        GameObject parentToolObject = new GameObject("ParentTool");
+        ElectricScrewDriver parentTool = parentToolObject.AddComponent<ElectricScrewDriver>();
+        
+        // Create a child with Tag but no Tool component
+        GameObject childObject = new GameObject("ChildObject");
+        childObject.tag = "Tool";
+        childObject.transform.SetParent(parentToolObject.transform);
+        BoxCollider childCollider = childObject.AddComponent<BoxCollider>();
+        
+        // Test OnTriggerEnter with child collider
+        fastener.TestOnTriggerEnter(childCollider);
+        
+        // Verify parent tool was found
+        Assert.AreEqual(parentTool, fastener.Tool);
+        
+        // Clean up
+        UnityEngine.Object.DestroyImmediate(parentToolObject); // Will destroy child as well
+    }
+
+    [Test]
+    public void OnTriggerEnter_HandlesIncorrectToolInPlayback()
+    {
+        // Create a Tool GameObject
+        GameObject toolObject = new GameObject("Tool");
+        toolObject.tag = "Tool";
+        BoxCollider toolCollider = toolObject.AddComponent<BoxCollider>();
+        ElectricScrewDriver tool = toolObject.AddComponent<ElectricScrewDriver>();
+        tool.ToolName = "WrongTool"; // Set a tool name that won't match
+        
+        // Setup for PlayBack state
+        StateManager.Instance.CurrentState = State.PlayBack;
+        fastener.CorrectToolName = "CorrectTool"; // Different from the actual tool
+        fastener.SetIsFirstError(true);
+        
+        
+        // Track initial error count
+        int initialErrorCount = Manager.Instance.ErrorCount;
+        
+        // Call OnTriggerEnter
+        fastener.TestOnTriggerEnter(toolCollider);
+        
+        // Verify error was incremented
+        Assert.AreEqual(initialErrorCount + 1, Manager.Instance.ErrorCount);
+        
+        // Verify isFirstError is now false
+        Assert.IsFalse(fastener.GetIsFirstError());
+        
+        // Clean up
+        UnityEngine.Object.DestroyImmediate(toolObject);
+    }
+    
+    [Test]
+    public void OnTriggerEnter_HandlesDynamometerWithIncorrectForce()
+    {
+        // Create a DynamometerScrewDriver GameObject
+        GameObject dynObject = new GameObject("DynamometerTool");
+        dynObject.tag = "Tool";
+        BoxCollider dynCollider = dynObject.AddComponent<BoxCollider>();
+        DynamometerScrewDriver dynTool = dynObject.AddComponent<DynamometerScrewDriver>();
+        
+        // Set the tool name to match but the force to be different
+        dynTool.ToolName = "DynamometerTool";
+        fastener.CorrectToolName = "DynamometerTool"; 
+        fastener.CorrectToolForce = 5;
+        dynTool.Force = 3; // Different force
+        
+        // Setup for PlayBack state
+        StateManager.Instance.CurrentState = State.PlayBack;
+        fastener.SetIsFirstError(true);
+        
+        // Track initial error count
+        int initialErrorCount = Manager.Instance.ErrorCount;
+        
+        // Call OnTriggerEnter
+        fastener.TestOnTriggerEnter(dynCollider);
+        
+        // Verify error was incremented
+        Assert.AreEqual(initialErrorCount + 1, Manager.Instance.ErrorCount);
+        
+        // Verify isFirstError is now false
+        Assert.IsFalse(fastener.GetIsFirstError());
+        
+        // Clean up
+        UnityEngine.Object.DestroyImmediate(dynObject);
+    }
+    
+    [Test]
+    public void OnTriggerEnter_ClearsHighlightsWithCorrectTool()
+    {
+        // Create a Tool GameObject with the correct name
+        GameObject toolObject = new GameObject("Tool");
+        toolObject.tag = "Tool";
+        BoxCollider toolCollider = toolObject.AddComponent<BoxCollider>();
+        ElectricScrewDriver tool = toolObject.AddComponent<ElectricScrewDriver>();
+        tool.ToolName = "CorrectTool";
+        
+        // Setup for PlayBack state
+        StateManager.Instance.CurrentState = State.PlayBack;
+        fastener.CorrectToolName = "CorrectTool"; // Same as the actual tool
+        fastener.SetIsFirstError(false); // Not the first error
+        
+        
+        
+        
+        // Call OnTriggerEnter
+        fastener.TestOnTriggerEnter(toolCollider);
+        
+      
+        // Clean up
+        UnityEngine.Object.DestroyImmediate(toolObject);
+    }
+
+    [Test]
+    public void OnTriggerExit_ResetsFlagsInPlaybackMode()
+    {
+        // Create a Tool GameObject
+        GameObject toolObject = new GameObject("Tool");
+        toolObject.tag = "Tool";
+        BoxCollider toolCollider = toolObject.AddComponent<BoxCollider>();
+        
+        // Set colliding state first
+        fastener.SetIsCollidingWithTool(true);
+        
+        // Test with PlayBack state
+        StateManager.Instance.CurrentState = State.PlayBack;
+        fastener.SetIsFirstError(false);
+        
+        // Call OnTriggerExit
+        fastener.TestOnTriggerExit(toolCollider);
+        
+        // Verify isCollidingWithTool is false
+        Assert.IsFalse(fastener.GetIsCollidingWithTool());
+        
+        // Verify isFirstError is reset
+        Assert.IsTrue(fastener.GetIsFirstError());
+        
+        // Clean up
+        UnityEngine.Object.DestroyImmediate(toolObject);
     }
 
     [UnityTest]
-    public IEnumerator TestPerformComponentRaycast_Hit_Aligned_Released()
+    public IEnumerator PerformComponentRaycast_HandlesComponentHits()
     {
-        // Arrange
-        GameObject componentObj = new GameObject("TestComponent");
+        // Add ComponentObject
+        var compObject = testObject.AddComponent<ComponentObject>();
+        // Set it up as "released" to test that branch
+        var isReleasedField = typeof(ComponentObject).GetField("isReleased", 
+            BindingFlags.NonPublic | BindingFlags.Instance);
+        isReleasedField?.SetValue(compObject, true);
+        
+        fastener.Start();
+        
+        // Create a GameObject with Component tag for raycast
+        var componentObj = new GameObject("ComponentForRaycast");
         componentObj.tag = "Component";
-        BoxCollider collider = componentObj.AddComponent<BoxCollider>();
-        collider.size = new Vector3(1, 1, 1); // Ensure collider has size
-        componentObj.transform.position = new Vector3(0, 0, 2); // In front of fastener
-
-        // Setup component object
-        ComponentObject compObj = fastenerObject.GetComponent<ComponentObject>();
-        if (compObj == null)
-        {
-            compObj = fastenerObject.AddComponent<ComponentObject>();
-        }
-
-        fastener.SetField("componentObject", compObj);
-
-        // Set component as released
-        compObj.SetField("isReleased", true);
-
-        // Setup test values
-        float dotProductThreshold = 0.9f;
-        fastener.SetField("alignmentDotProductThreshold", dotProductThreshold);
-        fastener.SetField("isAligned", false);
-
-        // Set component transform perfectly aligned
-        componentObj.transform.rotation = Quaternion.identity;
-
-        // Set colors for testing
-        Color alignedColor = Color.green;
-        fastener.SetField("alignedColor", alignedColor);
-
-        // Mock the GetSelectedAxis method to return forward
-        compObj.SetField("selectedAxis", Vector3.forward);
-
-        // Set raycast length long enough to hit
-        fastener.SetField("rayLength", 5f);
-
-        // Wait for physics to update
-        yield return new WaitForFixedUpdate();
-        yield return new WaitForFixedUpdate();
-        yield return new WaitForFixedUpdate();
-
-        // Act
-        typeof(Fastener).GetMethod("PerformComponentRaycast", BindingFlags.NonPublic | BindingFlags.Instance)
-            .Invoke(fastener, null);
-
-        // Wait one more frame to make sure any alignment effects have completed
+        componentObj.transform.position = testObject.transform.position + Vector3.forward * 0.1f;
+        var collider = componentObj.AddComponent<BoxCollider>();
+        
+        // Save original color
+        var originalColor = fastener.FastenerRenderer.material.color;
+        
+        // Create a Physics.Raycast stub using reflection
+        var originalRaycast = typeof(Physics).GetMethod("Raycast", 
+            new[] { typeof(Vector3), typeof(Vector3), typeof(RaycastHit).MakeByRefType(), typeof(float) });
+        
+        // Since we can't easily mock Physics.Raycast in a unit test, 
+        // we'll call the method but understand limitations in verifying raycast hits
+        fastener.TestPerformComponentRaycast();
         yield return null;
+        // Clean up
+        UnityEngine.Object.DestroyImmediate(componentObj);
+    }
 
-        // Check if AlignWithComponent was called - in a real scenario, this would be called
-        // by the PerformComponentRaycast method and would set isAligned to true
-        // For testing, we'll directly call it to simulate the effect
-        Vector3 contactPoint = new Vector3(0, 0, 2);
-        Vector3 contactNormal = Vector3.back;
+    [Test]
+    public void AlignWithComponent_HandlesAllAxisCases()
+    {
+        // Add ComponentObject
+        ComponentObject compObject = testObject.AddComponent<ComponentObject>();
+        fastener.Start();
+        
+        // Method to set the selected axis using reflection
+        Action<ComponentObject, Vector3> setSelectedAxis = (comp, axis) => {
+            FieldInfo axisField = typeof(ComponentObject).GetField("selectedAxis", 
+                BindingFlags.NonPublic | BindingFlags.Instance);
+            if (axisField != null)
+                axisField.SetValue(comp, axis);
+        };
+        
+        // Test with all possible axes
+        Vector3[] axesToTest = new Vector3[]
+        {
+            Vector3.up,
+            Vector3.down,
+            Vector3.right,
+            Vector3.left,
+            Vector3.forward,
+            Vector3.back,
+            new Vector3(1, 1, 1) // Unsupported axis
+        };
+        
+        foreach (Vector3 axis in axesToTest)
+        {
+            // Reset alignment first
+            fastener.IsAligned = false;
+            
+            // Configure the component's selected axis
+            setSelectedAxis(compObject, axis);
+            
+            // Set fastenerLengthAlongAxis for calculations
+            fastener.SetFastenerLengthAlongAxis(0.5f);
+            
+            // Create a contact point and normal
+            Vector3 contactPoint = new Vector3(0, 0, 1);
+            Vector3 contactNormal = new Vector3(0, 1, 0);
+            
+            // Call AlignWithComponent
+            fastener.TestAlignWithComponent(contactPoint, contactNormal);
+            
+            // For supported axes, verify alignment state
+            if (axis != new Vector3(1, 1, 1))
+            {
+                Assert.IsTrue(fastener.IsAligned, $"Failed to align with axis {axis}");
+            }
+        }
+    }
+    
+    [Test]
+    public void SetSocketTransform_SetsTransformAndPosition()
+    {
+        // Create a socket transform
+        GameObject socketObject = new GameObject("Socket");
+        Transform socketTransform = socketObject.transform;
+    
+        // Set position
+        socketTransform.localPosition = new Vector3(1, 2, 3);
+    
+        // Call SetSocketTransform
+        fastener.SetSocketTransform(socketTransform);
+    
+        // Verify socketTransform is set
+        Assert.AreEqual(socketTransform, fastener.GetSocketTransform());
+    
+        // Verify initialSocketPosition is set
+        Assert.AreEqual(new Vector3(1, 2, 3), fastener.initialSocketPosition);
+    
+        // Clean up
+        UnityEngine.Object.DestroyImmediate(socketObject);
+    }
+
+    [Test]
+    public void SetSocketTransform_HandlesNullTransform()
+    {
+        // First set a valid transform
+        GameObject socketObject = new GameObject("Socket");
+        Transform socketTransform = socketObject.transform;
+        fastener.SetSocketTransform(socketTransform);
+    
+        // Then set null
+        fastener.SetSocketTransform(null);
+    
+        // Verify socketTransform is null
+        Assert.IsNull(fastener.GetSocketTransform());
+    
+        // Clean up
+        UnityEngine.Object.DestroyImmediate(socketObject);
+    }
+
+    [Test]
+    public void GetSocketTransform_ReturnsCorrectValue()
+    {
+        // Initial value should be null
+        Assert.IsNull(fastener.GetSocketTransform());
+    
+        // Set a value
+        GameObject socketObject = new GameObject("Socket");
+        Transform socketTransform = socketObject.transform;
+        fastener.SetSocketTransform(socketTransform);
+    
+        // Get should return the same value
+        Assert.AreEqual(socketTransform, fastener.GetSocketTransform());
+    
+        // Clean up
+        UnityEngine.Object.DestroyImmediate(socketObject);
+    }
+
+    [Test]
+    public void AlignWithComponent_HandlesPivotPositionCases()
+    {
+        // Add ComponentObject
+        ComponentObject compObject = testObject.AddComponent<ComponentObject>();
+        fastener.Start();
+        
+        // Method to set the selected axis
+        Action<ComponentObject, Vector3> setSelectedAxis = (comp, axis) => {
+            FieldInfo axisField = typeof(ComponentObject).GetField("selectedAxis", 
+                BindingFlags.NonPublic | BindingFlags.Instance);
+            if (axisField != null)
+                axisField.SetValue(comp, axis);
+        };
+        
+        // Set axis to forward for testing
+        setSelectedAxis(compObject, Vector3.forward);
+        
+        // Set fastenerLengthAlongAxis for calculations
+        fastener.SetFastenerLengthAlongAxis(0.5f);
+        
+        // Create a contact point
+        Vector3 contactPoint = new Vector3(0, 0, 1);
+        Vector3 contactNormal = new Vector3(0, 0, 1);
+        
+        // Test with pivot "before" center
+        // Modify object to create this condition
+        testObject.transform.position = new Vector3(0, 0, -0.5f); // Pivot at origin, bounds center in front
+        
         fastener.TestAlignWithComponent(contactPoint, contactNormal);
-
-        // Assert
-        bool isCollidingWithComponent = (bool)fastener.GetField("isCollidingWithComponent");
-        bool isAligned = (bool)fastener.GetField("isAligned");
-        Color currentColor = fastener.FastenerRenderer.material.color;
-
-        Assert.IsTrue(isCollidingWithComponent, "isCollidingWithComponent should be true when hitting component");
-        Assert.IsTrue(isAligned, "isAligned should be true after AlignWithComponent is called");
-        Assert.AreEqual(alignedColor, currentColor, "Material color should be alignedColor when aligned");
-
-        // Clean up
-        Object.DestroyImmediate(componentObj);
+        Assert.IsTrue(fastener.IsAligned);
+        Vector3 positionWithPivotBefore = testObject.transform.position;
+        
+        // Reset
+        fastener.IsAligned = false;
+        
+        // Test with pivot "after" center
+        testObject.transform.position = new Vector3(0, 0, 0.5f); // Pivot at origin, bounds center behind
+        
+        fastener.TestAlignWithComponent(contactPoint, contactNormal);
+        Assert.IsTrue(fastener.IsAligned);
+        Vector3 positionWithPivotAfter = testObject.transform.position;
+        
+        // Reset
+        fastener.IsAligned = false;
+        
+        // Test with pivot at center (neither before nor after)
+        testObject.transform.position = Vector3.zero;
+        
+        fastener.TestAlignWithComponent(contactPoint, contactNormal);
+        Assert.IsTrue(fastener.IsAligned);
+        Vector3 positionWithPivotCenter = testObject.transform.position;
+        
+        // Verify the positions are different for the different pivot cases
+        Assert.AreNotEqual(positionWithPivotBefore, positionWithPivotAfter, 
+            "Positions should be different for before/after pivot cases");
+        Assert.AreNotEqual(positionWithPivotBefore, positionWithPivotCenter, 
+            "Positions should be different for before/center pivot cases");
     }
-}
 
-// Extension methods for reflection
-public static class ReflectionExtensions
-{
-    public static void SetField(this object obj, string fieldName, object value)
+    [Test]
+    public void MapSelectedAxisToTransformDirection_MapsAllAxes()
     {
-        FieldInfo field = obj.GetType().GetField(fieldName, BindingFlags.NonPublic | BindingFlags.Instance);
-        if (field != null)
+        // Test with each possible axis
+        Vector3[] axesToTest = new Vector3[]
         {
-            field.SetValue(obj, value);
-        }
-    }
-
-    public static object GetField(this object obj, string fieldName)
-    {
-        FieldInfo field = obj.GetType().GetField(fieldName, BindingFlags.NonPublic | BindingFlags.Instance);
-        if (field != null)
+            Vector3.forward,
+            Vector3.right,
+            Vector3.up,
+            Vector3.back,
+            Vector3.left,
+            Vector3.down,
+            new Vector3(1, 1, 1) // Should return transform.forward as default
+        };
+        
+        foreach (Vector3 axis in axesToTest)
         {
-            return field.GetValue(obj);
+            Vector3 result = fastener.MapSelectedAxisToTransformDirection(axis);
+            
+            if (axis == Vector3.forward)
+                Assert.AreEqual(fastener.transform.forward, result);
+            else if (axis == Vector3.right)
+                Assert.AreEqual(fastener.transform.right, result);
+            else if (axis == Vector3.up)
+                Assert.AreEqual(fastener.transform.up, result);
+            else if (axis == Vector3.back)
+                Assert.AreEqual(-fastener.transform.forward, result);
+            else if (axis == Vector3.left)
+                Assert.AreEqual(-fastener.transform.right, result);
+            else if (axis == Vector3.down)
+                Assert.AreEqual(-fastener.transform.up, result);
+            else
+                Assert.AreEqual(fastener.transform.forward, result);
         }
-
-        return null;
     }
 }

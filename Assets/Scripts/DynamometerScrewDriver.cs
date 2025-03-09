@@ -110,6 +110,8 @@ public class DynamometerScrewDriver : BaseScrewDriver
 
     private IEnumerator ShowCorrectForceCoroutine(int correctForce, float duration)
     {
+        if (forceText == null)
+             yield break;
         // Salva lo stato iniziale del testo (colore e contenuto)
         Color originalColor = forceText.color;
         string originalText = forceText.text;

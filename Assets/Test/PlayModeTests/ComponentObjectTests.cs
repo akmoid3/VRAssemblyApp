@@ -44,6 +44,7 @@ public class ComponentObjectTests
         
         // Allow Start() to execute naturally
         componentObject.Start();
+        
     }
 
     [TearDown]

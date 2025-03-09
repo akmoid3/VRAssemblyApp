@@ -27,11 +27,14 @@ public class FinishManager : MonoBehaviour
     private void OnDestroy()
     {
         StateManager.OnStateChanged -= SetPanelActive;
-        finishButton.onClick.RemoveListener(OnFinishClicked);
+        if (finishButton != null)
+            finishButton.onClick.RemoveListener(OnFinishClicked);
     }
+    
 
     public void SetPanelActive(State state)
     {
+
         finishPanel.SetActive(state == State.Finish);
         if (state == State.Finish)
         {
@@ -48,7 +51,8 @@ public class FinishManager : MonoBehaviour
     {
         float performance = 0f;
         bool firstElement = true;
-
+        int count = 0;
+    
         foreach (var var in Manager.Instance.PerformaceForEachStep)
         {
             if (firstElement)
@@ -56,13 +60,17 @@ public class FinishManager : MonoBehaviour
                 firstElement = false;
                 continue;
             }
-
+        
             performance += var;
+            count++;
         }
-
-        float average = performance / (Manager.Instance.PerformaceForEachStep.Count - 1);
-   
-
+    
+        // Check to avoid division by zero
+        if (count == 0)
+            return 0f;
+        
+        float average = performance / count;
+    
         return average;
     }
 

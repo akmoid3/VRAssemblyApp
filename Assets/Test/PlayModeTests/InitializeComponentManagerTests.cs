@@ -103,14 +103,13 @@ public class InitializeComponentManagerTests
         componentManager.Awake();
         
         // Manually invoke the event to test if the handler is registered
-        var field = typeof(StateManager).GetField("OnStateChanged", BindingFlags.Public | BindingFlags.Static);
-        var onStateChanged = field.GetValue(null) as System.Action<State>;
+        
         
         // Reset canvas state for testing
         componentManager.canvasInit.SetActive(false);
         
         // Invoke the event with Initialize state
-        onStateChanged?.Invoke(State.Initialize);
+        stateManager.UpdateState(State.Initialize);
         
         // Assert
         Assert.IsTrue(componentManager.canvasInit.activeSelf);
@@ -131,9 +130,7 @@ public class InitializeComponentManagerTests
         componentManager.canvasInit.SetActive(false);
         
         // Manually invoke the event
-        var field = typeof(StateManager).GetField("OnStateChanged", BindingFlags.Public | BindingFlags.Static);
-        var onStateChanged = field.GetValue(null) as System.Action<State>;
-        onStateChanged?.Invoke(State.Initialize);
+        stateManager.UpdateState(State.Initialize);
         
         // Assert - The canvas should not be activated because the handler is unregistered
         Assert.IsFalse(componentManager.canvasInit.activeSelf);
