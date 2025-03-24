@@ -31,12 +31,12 @@ public class PlayBackManager : MonoBehaviour
 
     public void IncrementErrorCount(int n)
     {
-        errorCountText.text = n.ToString();
+        errorCountText.text = "Errors: " + n;
     }
 
     public void IncrementHintCount(int n)
     {
-        hintCountText.text = n.ToString();
+        hintCountText.text = "Hints: " + n;
     }
 
     public void IncrementStepCount(int n)

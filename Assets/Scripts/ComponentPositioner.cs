@@ -18,6 +18,7 @@ public class ComponentPositioner : MonoBehaviour
     [SerializeField] private float scrollSpeed = 1.0f;
 
     [SerializeField] private GameObject parent;
+    [SerializeField] private bool generateColliders;
 
     private List<Transform> spawnedChildren = new List<Transform>();
     private Bounds tableBounds;
@@ -168,7 +169,8 @@ public class ComponentPositioner : MonoBehaviour
             Destroy(instantiatedPrefab);
         }
 
-        //AddCoACDCollidersToComponentsAsync(Manager.Instance.Components,Manager.Instance.ModelName);
+        if(generateColliders)
+            AddCoACDCollidersToComponentsAsync(Manager.Instance.Components,Manager.Instance.ModelName);
     }
 
     /// Processes each component, generates convex collider meshes using CoACD, assigns MeshColliders,
