@@ -154,6 +154,7 @@ public class StepsManager : MonoBehaviour
 
     private void ShowPlacement(int step)
     {
+        processOneTimeComponentsPerSteps = false;
         Manager.Instance.RepositionComponentsOnTable(Manager.Instance.Components);
         Manager.Instance.CurrentStep = 0;
         Manager.Instance.CurrentAssembledSequence.Clear();
