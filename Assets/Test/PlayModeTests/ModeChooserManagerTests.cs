@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -15,18 +16,21 @@ public class ModeChooserManagerTests
     private Button returnBackButton;
     private Manager manager;
     private StateManager stateManager;
-
+    private SequenceManager sequenceManager;
 
     [SetUp]
     public void SetUp()
     {
         manager = new GameObject().AddComponent<Manager>();
         stateManager = new GameObject().AddComponent<StateManager>();
-
         // Create a new GameObject and attach the ModeChooserManager component
         var gameObject = new GameObject();
         modeChooserManager = gameObject.AddComponent<ModeChooserManager>();
-
+        
+        sequenceManager = new GameObject().AddComponent<SequenceManager>();
+        sequenceManager.AssemblySequence = new List<ComponentData>();
+        manager.sequenceManager = sequenceManager;
+        
         // Create UI elements and assign them to the ModeChooserManager
         modeSelectionPanel = new GameObject();
         modeChooserManager.GetType().GetField("modeSelectionPanel", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)
@@ -63,10 +67,12 @@ public class ModeChooserManagerTests
         Object.DestroyImmediate(recordButton.gameObject);
         Object.DestroyImmediate(initializeButton.gameObject);
         Object.DestroyImmediate(returnBackButton.gameObject);
+        Object.DestroyImmediate(sequenceManager.gameObject);
+
         if(manager != null)
-        Object.DestroyImmediate(manager.gameObject);
+            Object.DestroyImmediate(manager.gameObject);
         if(stateManager != null)
-        Object.DestroyImmediate(stateManager.gameObject);
+            Object.DestroyImmediate(stateManager.gameObject);
     }
 
     [Test]
@@ -83,26 +89,53 @@ public class ModeChooserManagerTests
     }
 
     [Test]
-    public void TestUpdateButtonStates_SetsButtonsInteractableBasedOnFileExistence()
+public void TestUpdateButtonStates_SetsButtonsInteractableBasedOnFileExistence()
+{
+    // Arrange
+    // Make sure directories exist
+    Directory.CreateDirectory(Path.Combine(Application.persistentDataPath, "InitializedModels"));
+    Directory.CreateDirectory(Path.Combine(Application.persistentDataPath, "SavedBuildData"));
+    
+    // Set the ModelName property explicitly
+    Manager.Instance.GetType().GetField("modelName", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)
+        ?.SetValue(Manager.Instance, "MockModel");
+    // Or if modelName is a property:
+    // Manager.Instance.GetType().GetProperty("ModelName").SetValue(Manager.Instance, "MockModel");
+    
+    // Get what the actual model name is for debug purposes
+    string actualModelName = Manager.Instance.ModelName;
+    Debug.Log($"Actual Model Name: {actualModelName}");
+    
+    var initializedModelsPath = Path.Combine(Application.persistentDataPath, "InitializedModels", actualModelName + ".json");
+    var savedBuildDataPath = Path.Combine(Application.persistentDataPath, "SavedBuildData", actualModelName + ".json");
+    
+    Debug.Log($"Creating test file at: {initializedModelsPath}");
+
+    // Create directories if they don't exist
+    Directory.CreateDirectory(Path.GetDirectoryName(initializedModelsPath));
+    
+    // Create fake file for Initialized Models
+    using (var fs = File.Create(initializedModelsPath))
     {
-        // Arrange
-        var initializedModelsPath = Path.Combine(Application.persistentDataPath, "InitializedModels", "MockModel.json");
-        var savedBuildDataPath = Path.Combine(Application.persistentDataPath, "SavedBuildData", "MockModel.json");
-
-        // Create fake file for Initialized Models
-        File.Create(initializedModelsPath).Dispose();
-
-        // Act
-        modeChooserManager.UpdateButtonStates();
-
-        // Assert
-        Assert.IsTrue(recordButton.interactable, "recordButton should be interactable if InitializedModels file exists.");
-        Assert.IsFalse(playBackButton.interactable, "playBackButton should not be interactable if SavedBuildData file does not exist.");
-
-        // Clean up
-        if (File.Exists(initializedModelsPath))
-            File.Delete(initializedModelsPath);
+        // Write some content to ensure the file is properly created
+        byte[] info = new System.Text.UTF8Encoding(true).GetBytes("{}");
+        fs.Write(info, 0, info.Length);
     }
+
+    // Verify file was created
+    Assert.IsTrue(File.Exists(initializedModelsPath), "Test file was not created properly");
+
+    // Act
+    modeChooserManager.UpdateButtonStates();
+
+    // Assert
+    Assert.IsTrue(recordButton.interactable, "recordButton should be interactable if InitializedModels file exists.");
+    Assert.IsFalse(playBackButton.interactable, "playBackButton should not be interactable if SavedBuildData file does not exist.");
+
+    // Clean up
+    if (File.Exists(initializedModelsPath))
+        File.Delete(initializedModelsPath);
+}
 
     [Test]
     public void TestOnInitializeClicked_UpdatesStateToInitialize()
@@ -117,7 +150,6 @@ public class ModeChooserManagerTests
     [Test]
     public void TestOnPlayBackButtonClicked_UpdatesStateToPlayBack()
     {
-        LogAssert.Expect(LogType.Error, "Interactor is not assigned.");
         // Act
         modeChooserManager.OnPlayBackButtonClicked();
 

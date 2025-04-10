@@ -127,47 +127,74 @@ public class FileBrowserTests
     }
 
     [UnityTest]
-    public IEnumerator OnFilesSelected_CopiesAndRenamesPdfFile()
+public IEnumerator OnFilesSelected_CopiesAndRenamesPdfFile()
+{
+    // Arrange
+    string directoryName = "PDFTest";
+    string pdfFileName = "test.pdf";
+    string pdfFilePath = Path.Combine(Application.persistentDataPath, pdfFileName);
+    
+    // Create test PDF file if it doesn't exist
+    if (!File.Exists(pdfFilePath))
     {
-        // Arrange
-        string directoryName = "PDFTest";
-        string pdfFileName = "test.pdf";
-        string pdfFilePath = Path.Combine(Application.persistentDataPath, pdfFileName);
-
-
-        // Make sure the destination directory does not exist before the test
-        string directoryPath = Path.Combine(Application.persistentDataPath, directoryName);
-        if (Directory.Exists(directoryPath))
+        using (StreamWriter writer = File.CreateText(pdfFilePath))
         {
-            Directory.Delete(directoryPath, true);
+            writer.WriteLine("Test PDF content");
         }
-
-
-        // Act
-        string[] filePaths = new string[] { pdfFilePath };
-        MethodInfo onFilesSelectedMethod = fileBrowserManager.GetType().GetMethod("OnFilesSelected", BindingFlags.NonPublic | BindingFlags.Instance);
-        Assert.IsNotNull(onFilesSelectedMethod, "OnFilesSelected method not found.");
-        onFilesSelectedMethod.Invoke(fileBrowserManager, new object[] { filePaths, directoryName });
-
-        yield return null;
-
-        var finalPath = Path.Combine(directoryPath, mockManager.Model.name + ".pdf");
-
-        // Check if the original PDF was copied and renamed correctly
-        Assert.IsTrue(File.Exists(finalPath), "PDF file should be renamed and moved to the Models directory." + finalPath);
-        Assert.AreEqual(File.ReadAllText(pdfFilePath), File.ReadAllText(finalPath), "PDF file contents should match after renaming.");
-
-        
-        if (File.Exists(directoryPath + "modello.pdf"))
-        {
-            File.Delete(directoryPath + "modello.pdf");
-        }
-        if (Directory.Exists(directoryPath))
-        {
-            Directory.Delete(directoryPath, true);
-        }
-
-
     }
+
+    // Make sure the destination directory does not exist before the test
+    string directoryPath = Path.Combine(Application.persistentDataPath, directoryName);
+    if (Directory.Exists(directoryPath))
+    {
+        Directory.Delete(directoryPath, true);
+    }
+    
+    // Store the expected model name for validation
+    string expectedModelName = Manager.Instance.ModelName;
+    Debug.Log($"Expected model name: {expectedModelName}");
+
+    // Act
+    string[] filePaths = new string[] { pdfFilePath };
+    MethodInfo onFilesSelectedMethod = fileBrowserManager.GetType().GetMethod("OnFilesSelected", 
+        BindingFlags.NonPublic | BindingFlags.Instance);
+    Assert.IsNotNull(onFilesSelectedMethod, "OnFilesSelected method not found.");
+    onFilesSelectedMethod.Invoke(fileBrowserManager, new object[] { filePaths, directoryName });
+
+    yield return null;
+
+    // Use the actual model name from Manager.Instance instead of mockManager.Model.name
+    var finalPath = Path.Combine(directoryPath, expectedModelName + ".pdf");
+    Debug.Log($"Looking for PDF at: {finalPath}");
+
+    // Check if the directory was created
+    Assert.IsTrue(Directory.Exists(directoryPath), "Directory should be created: " + directoryPath);
+    
+    // List files for debugging
+    if (Directory.Exists(directoryPath))
+    {
+        Debug.Log("Files in directory:");
+        foreach (var file in Directory.GetFiles(directoryPath))
+        {
+            Debug.Log($"- {file}");
+        }
+    }
+
+    // Check if the original PDF was copied and renamed correctly
+    Assert.IsTrue(File.Exists(finalPath), 
+        "PDF file should be renamed and moved to the Models directory: " + finalPath);
+    
+    if (File.Exists(finalPath))
+    {
+        Assert.AreEqual(File.ReadAllText(pdfFilePath), File.ReadAllText(finalPath), 
+            "PDF file contents should match after renaming.");
+    }
+
+    // Cleanup
+    if (Directory.Exists(directoryPath))
+    {
+        Directory.Delete(directoryPath, true);
+    }
+}
 
 }

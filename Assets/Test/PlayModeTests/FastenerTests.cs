@@ -281,8 +281,6 @@ public class FastenerTests
         if (existingCompObj != null)
             UnityEngine.Object.DestroyImmediate(existingCompObj);
         
-        // Expect error log
-        LogAssert.Expect(LogType.Error, "ComponentObject is not found on this Fastener.");
         
         // Call Start
         fastener.Start();

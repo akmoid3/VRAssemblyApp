@@ -15,7 +15,7 @@ public class SnapPoint
 
 public class SnapToPosition : MonoBehaviour
 {
-    private float snapDistance = 0.1f;
+    private float snapDistance = 0.2f;
     private float fastenerSnapDistance = 0.01f;
     private float snapAngle = 5f;
     private List<SnapPoint> snapPoints;

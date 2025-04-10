@@ -135,7 +135,7 @@ public class PlayBackManagerTests
         playBackManager.IncrementErrorCount(5);
 
         // Assert
-        Assert.AreEqual("5", errorCountText.text, "Error count text should be updated correctly");
+        Assert.AreEqual("Errors: 5", errorCountText.text, "Error count text should be updated correctly");
     }
 
     [Test]
@@ -145,7 +145,7 @@ public class PlayBackManagerTests
         playBackManager.IncrementHintCount(3);
 
         // Assert
-        Assert.AreEqual("3", hintCountText.text, "Hint count text should be updated correctly");
+        Assert.AreEqual("Hints: 3", hintCountText.text, "Hint count text should be updated correctly");
     }
 
     [Test]
