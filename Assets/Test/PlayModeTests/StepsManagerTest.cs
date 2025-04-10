@@ -375,14 +375,14 @@ public partial class StepsManagerTests
         
         // Call ShowPlacement
         var showPlacementMethod = typeof(StepsManager).GetMethod("ShowPlacement", BindingFlags.NonPublic | BindingFlags.Instance);
-        showPlacementMethod.Invoke(stepsManager, new object[] { 2 }); // Show up to step 2
+        showPlacementMethod.Invoke(stepsManager, new object[] { 1 }); // Show up to step 2
         
         // Verify processOneTimeComponentsPerSteps is true
         Assert.IsTrue((bool)processOneTimeComponentsPerStepsField.GetValue(stepsManager));
         
         // Call again with processOneTimeComponentsPerSteps already true
         processOneTimeComponentsPerStepsField.SetValue(stepsManager, true);
-        showPlacementMethod.Invoke(stepsManager, new object[] { 1 }); // Show up to step 1
+        showPlacementMethod.Invoke(stepsManager, new object[] { 0 }); // Show up to step 1
         
         // Clean up
         UnityEngine.Object.DestroyImmediate(component1);

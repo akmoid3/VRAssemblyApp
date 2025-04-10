@@ -187,8 +187,7 @@ public class StepsManager : MonoBehaviour
             }
 
             Manager.Instance.PlaceComponent(i, componentForStep);
-            if(Manager.Instance.Interactor.transform.childCount < i)
-                componentForStep.SetParent(Manager.Instance.Interactor.transform.GetChild(i));
+            componentForStep.SetParent(Manager.Instance.Interactor.transform.GetChild(i));
 
             // If it is last step highlight it
             if (i == step - 1)
