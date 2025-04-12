@@ -36,14 +36,21 @@ public class SnapToPosition : MonoBehaviour
         set => snapAngle = value;
     }
 
+ 
     private void Awake()
     {
         interactionManager = FindObjectOfType<XRInteractionManager>();
+    
+        
     }
+
 
 
     public void Start()
     {
+        gameObject.layer = LayerMask.NameToLayer("SnapPoint");
+        
+       
         snapPoints = new List<SnapPoint>();
 
         foreach (Transform child in transform)
@@ -67,11 +74,25 @@ public class SnapToPosition : MonoBehaviour
 
             snapPoints.Add(snapPoint);
         }
+        
+        XRGrabInteractable grabInteractable = GetComponent<XRGrabInteractable>();
+        if (grabInteractable == null)
+        {
+            grabInteractable = gameObject.AddComponent<XRGrabInteractable>();
+            grabInteractable.throwOnDetach = false;
+            grabInteractable.useDynamicAttach = true;
+            grabInteractable.selectMode = InteractableSelectMode.Multiple;
+            grabInteractable.movementType = XRBaseInteractable.MovementType.VelocityTracking;
+        }
     }
 
 
     private void OnTriggerStay(Collider other)
     {
+        Debug.Log("OnTriggerStay: " + other.name);
+        // Check if the collider is on the OriginalColliders layer
+        if (other.gameObject.layer != LayerMask.NameToLayer("OriginalColliders"))
+            return;
         if(Manager.Instance.sequenceManager == null)
             return;
         if (other == null ||
@@ -86,7 +107,7 @@ public class SnapToPosition : MonoBehaviour
         //     this.GetComponent<Rigidbody>().isKinematic = true;
         // }
         
-        if (Manager.Instance.ComponentsThatCanSnap.Contains(other.transform))
+        if (Manager.Instance.ComponentsThatCanSnap.Contains(other.transform.parent))
         {
             CheckSnap(other);
             
@@ -96,7 +117,10 @@ public class SnapToPosition : MonoBehaviour
 
     private void CheckSnap(Collider other)
     {
-        ComponentObject componentObject = other.GetComponent<ComponentObject>();
+        Transform parent = other.transform.parent;
+        
+        ComponentObject componentObject = parent.GetComponent<ComponentObject>();
+        Debug.Log(componentObject.gameObject.name);
         var snapPoint = snapPoints[Manager.Instance.CurrentStep];
 
         if (!componentObject.IsReleased)
@@ -104,15 +128,15 @@ public class SnapToPosition : MonoBehaviour
 
         if (componentObject != null)
         {
-            if (other.name == snapPoint.componentName ||
+            if (parent.name == snapPoint.componentName ||
                 (componentObject.GetGroup() != "None" &&
                  componentObject.GetGroup() == snapPoint.componentObject.GetGroup() &&
                  componentObject.GetType() == snapPoint.componentObject.GetType()))
             {
-                float distance = Vector3.Distance(other.transform.position, snapPoint.snapTransform.position);
-                float angle = Quaternion.Angle(other.transform.rotation, snapPoint.snapTransform.rotation);
+                float distance = Vector3.Distance(parent.transform.position, snapPoint.snapTransform.position);
+                float angle = Quaternion.Angle(parent.transform.rotation, snapPoint.snapTransform.rotation);
 
-                Fastener fastener = other.GetComponent<Fastener>();
+                Fastener fastener = parent.GetComponent<Fastener>();
 
                 if (fastener != null)
                 {
@@ -122,19 +146,21 @@ public class SnapToPosition : MonoBehaviour
                 if ((fastener && distance < fastenerSnapDistance) ||
                     (distance < snapDistance && angle < snapAngle && !componentObject.GetIsPlaced()))
                 {
-                    float performance = CalculatePerformance(other.transform, snapPoint, fastener != null);
+                    float performance = CalculatePerformance(parent.transform, snapPoint, fastener != null);
 
                     if (fastener && componentObject.GetIsPlaced() || componentObject.IsAutomaticSnap)
                         performance = 1;
                     Manager.Instance.PerformaceForEachStep.Add(performance);
-                    other.attachedRigidbody.isKinematic = true;
+                    parent.GetComponent<Rigidbody>().isKinematic = true;
                     snapPoint.meshRenderer.enabled = true;
 
-                    other.transform.SetPositionAndRotation(snapPoint.snapTransform.position,
+                    parent.transform.SetPositionAndRotation(snapPoint.snapTransform.position,
                         snapPoint.snapTransform.rotation);
 
-                    other.GetComponent<Rigidbody>().isKinematic = true;
-                    IXRInteractable xrInteractable = other.GetComponent<IXRInteractable>();
+                    parent.GetComponent<Rigidbody>().isKinematic = true;
+                    //parent.GetComponent<MeshCollider>().convex = false;
+
+                    IXRInteractable xrInteractable = parent.GetComponent<IXRInteractable>();
                     if (xrInteractable != null)
                     {
                         interactionManager.RegisterInteractable(xrInteractable);
@@ -146,7 +172,7 @@ public class SnapToPosition : MonoBehaviour
 
                     snapPoint.meshRenderer.enabled = true;
 
-                    other.transform.SetParent(snapPoint.snapTransform);
+                    parent.transform.SetParent(snapPoint.snapTransform);
 
                     componentObject.SetIsPlaced(true);
 
@@ -158,19 +184,23 @@ public class SnapToPosition : MonoBehaviour
                     
                     //AddGrabbable(other as MeshCollider);
                     
-                    TransferCollidersToSnapPoint(other.transform, snapPoint.snapTransform);
-                    AddChildCollidersToParentGrabbable();
+                    
 
                     if (fastener != null)
                     {
                         snapPoint.snapTransform.GetComponent<Collider>().enabled = false;
+                    }
+                    else
+                    {
+                        TransferCollidersToSnapPoint(other.transform, snapPoint.snapTransform);
+                        AddChildCollidersToParentGrabbable();
                     }
                     componentObject.PlayBuildPopSound();
                     int currentStepId = Manager.Instance.AssemblySequence[Manager.Instance.CurrentStep].stepId;
 
                     if (!Manager.Instance.CurrentAssembledSequence.ContainsKey(currentStepId))
                     {
-                        Manager.Instance.CurrentAssembledSequence.Add(currentStepId, other.gameObject);
+                        Manager.Instance.CurrentAssembledSequence.Add(currentStepId, parent.gameObject);
                     }
 
                     Manager.Instance.HideHint();
@@ -183,8 +213,15 @@ public class SnapToPosition : MonoBehaviour
 
     private void TransferCollidersToSnapPoint(Transform snappedComponent, Transform snapPointTransform)
     {
-        MeshCollider[] componentColliders = snappedComponent.GetComponentsInChildren<MeshCollider>();
-    
+        MeshCollider newCollider =  snapPointTransform.gameObject.GetComponent<MeshCollider>();
+        newCollider.enabled = true;
+        if (snappedComponent.gameObject.layer == LayerMask.NameToLayer("OriginalColliders"))
+        {
+            snappedComponent.gameObject.layer = LayerMask.NameToLayer("Snapped");
+        }
+
+        /*MeshCollider[] componentColliders = snappedComponent.GetComponentsInChildren<MeshCollider>();
+
         foreach (MeshCollider originalCollider in componentColliders)
         {
             originalCollider.gameObject.layer = LayerMask.NameToLayer("OriginalColliders");
@@ -196,7 +233,7 @@ public class SnapToPosition : MonoBehaviour
 
             // Cambia layer per il nuovo collider
             newCollider.gameObject.layer = LayerMask.NameToLayer("SnapPointColliders");
-        }
+        }*/
     }
 
     private float CalculatePerformance(Transform component, SnapPoint snapPoint, bool isFastener)
@@ -225,7 +262,7 @@ public class SnapToPosition : MonoBehaviour
 
     private void AddChildCollidersToParentGrabbable()
     {
-        XRGrabInteractable grabInteractable = GetComponent<XRGrabInteractable>();
+        /*XRGrabInteractable grabInteractable = GetComponent<XRGrabInteractable>();
         if (grabInteractable == null)
         {
             grabInteractable = gameObject.AddComponent<XRGrabInteractable>();
@@ -253,7 +290,7 @@ public class SnapToPosition : MonoBehaviour
 
         interactionManager?.RegisterInteractable(grabInteractable as IXRInteractable);
 
-        grabInteractable.enabled = true;
+        grabInteractable.enabled = true;*/
     }
 
 

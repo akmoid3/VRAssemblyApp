@@ -1284,7 +1284,7 @@ MonoBehaviour:
   extraSpacing: 0.1
   scrollSpeed: 2
   parent: {fileID: 0}
-  generateColliders: 0
+  generateColliders: 1
   audioSource: {fileID: 0}
   startScrollClip: {fileID: 8300000, guid: 2550ddaf63947ae4eb334b0a26653853, type: 3}
   loopScrollClip: {fileID: 8300000, guid: 51b1208422f35794e9e11455974eaf42, type: 3}
@@ -1408,12 +1408,12 @@ MonoBehaviour:
     preprocessMode: 0
     preprocessResolution: 50
     sampleResolution: 4000
-    mctsNodes: 20
-    mctsIteration: 150
-    mctsMaxDepth: 3
+    mctsNodes: 10
+    mctsIteration: 100
+    mctsMaxDepth: 2
     pca: 0
     merge: 1
-    maxConvexHull: -1
+    maxConvexHull: 2
     seed: 0
   _colliderData: {fileID: 0}
   _colliders: []
@@ -27897,6 +27897,11 @@ PrefabInstance:
       propertyPath: m_InvalidColorGradient.m_ColorSpace
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 6962680226186472951, guid: 895f6f3c2d334633b5800312285058d2,
+        type: 3}
+      propertyPath: m_PhysicsLayerMask.m_Bits
+      value: 4294967295
+      objectReference: {fileID: 0}
     - target: {fileID: 7169631891049266947, guid: 895f6f3c2d334633b5800312285058d2,
         type: 3}
       propertyPath: m_Layer
@@ -28045,7 +28050,7 @@ PrefabInstance:
     - target: {fileID: 9032954039820430273, guid: 895f6f3c2d334633b5800312285058d2,
         type: 3}
       propertyPath: m_RaycastMask.m_Bits
-      value: 2147483809
+      value: 2147484577
       objectReference: {fileID: 0}
     - target: {fileID: 9032954039820430273, guid: 895f6f3c2d334633b5800312285058d2,
         type: 3}
@@ -28080,7 +28085,7 @@ PrefabInstance:
     - target: {fileID: 9146015503685400394, guid: 895f6f3c2d334633b5800312285058d2,
         type: 3}
       propertyPath: m_RaycastMask.m_Bits
-      value: 2147483809
+      value: 2147484577
       objectReference: {fileID: 0}
     - target: {fileID: 9146015503685400394, guid: 895f6f3c2d334633b5800312285058d2,
         type: 3}

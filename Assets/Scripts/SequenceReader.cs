@@ -182,6 +182,11 @@ public class SequenceReader : MonoBehaviour
                 MeshRenderer meshRenderer = obj.AddComponent<MeshRenderer>();
                 meshRenderer.sharedMaterial = holographicMaterial;
                 meshRenderer.enabled = false;
+                MeshCollider meshCollider = obj.AddComponent<MeshCollider>();
+                meshCollider.convex = true;
+                meshCollider.enabled = false;
+                meshCollider.gameObject.layer = LayerMask.NameToLayer("SnapPointColliders");
+
             }
 
             obj.transform.localScale = prefabChild.transform.localScale;
