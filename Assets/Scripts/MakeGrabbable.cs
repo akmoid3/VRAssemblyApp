@@ -8,12 +8,19 @@ public class MakeGrabbable : MonoBehaviour
     private readonly List<IXRInteractable> originalInteractables = new List<IXRInteractable>();
     private XRInteractionManager interactionManager;
     private Manager manager;
+    private GameObject interactionColliderChild;
 
     [Header("XRGrabInteractable Settings")]
     [SerializeField] private bool throwOnDetach = false;
     [SerializeField] private XRBaseInteractable.MovementType movementType = XRBaseInteractable.MovementType.VelocityTracking;
     [SerializeField] private bool useDynamicAttach = true;
     [SerializeField] private InteractableSelectMode selectMode = InteractableSelectMode.Multiple;
+    
+    [Header("Interaction Collider Settings")]
+    [SerializeField] private string interactionColliderChildName = "InteractionCollider";
+    [SerializeField] [Range(0.1f, 1f)] private float colliderSimplificationScale = 0.9f;
+    [SerializeField] private bool autoCreateInteractionCollider = true;
+    private string interactionLayerName = "Interaction";
 
     public bool ThrowOnDetach { get => throwOnDetach; set => throwOnDetach = value; }
     public XRBaseInteractable.MovementType MovementType { get => movementType; set => movementType = value; }
@@ -23,7 +30,6 @@ public class MakeGrabbable : MonoBehaviour
     private void Awake()
     {
         interactionManager = FindObjectOfType<XRInteractionManager>();
-
         ComponentInizialization();
     }
 
@@ -31,6 +37,7 @@ public class MakeGrabbable : MonoBehaviour
     {
         manager = Manager.Instance;
     }
+
     private void ComponentInizialization()
     {
         if (GetComponent<Rigidbody>() == null)
@@ -45,44 +52,76 @@ public class MakeGrabbable : MonoBehaviour
 
         if (GetComponent<XRGrabInteractable>())
             Destroy(GetComponent<XRGrabInteractable>());
-
-        MeshCollider collider = GetComponent<MeshCollider>();
-        if (collider == null)
+            
+        if (autoCreateInteractionCollider && interactionColliderChild == null)
         {
-            collider = this.gameObject.AddComponent<MeshCollider>();
-            collider.convex = true;
-        }
-        else
-        {
-            if(!collider.convex)
-                collider.convex = true;
-
+            CreateInteractionColliderChild();
         }
     }
 
     private void SaveOriginalCollidersAndInteractables() {
-
         originalColliders.Clear();
         originalInteractables.Clear();
 
         originalInteractables.AddRange(GetComponents<XRBaseInteractable>());
-        originalColliders.AddRange(GetComponents<Collider>());
     }
+
+
+    public GameObject CreateInteractionColliderChild()
+    {
+        Transform existingChild = transform.Find(interactionColliderChildName);
+        if (existingChild != null)
+        {
+            interactionColliderChild = existingChild.gameObject;
+            return interactionColliderChild;
+        }
+
+        int interactionLayer = LayerMask.NameToLayer(interactionLayerName);
+        if (interactionLayer == -1)
+        {
+            Debug.LogWarning($"Layer '{interactionLayerName}' not found.");
+            interactionLayer = 0;
+        }
+
+        interactionColliderChild = new GameObject(interactionColliderChildName);
+        interactionColliderChild.transform.SetParent(transform);
+        interactionColliderChild.transform.localPosition = Vector3.zero;
+        interactionColliderChild.transform.localRotation = Quaternion.identity;
+        interactionColliderChild.transform.localScale = Vector3.one * colliderSimplificationScale;
+        
+        interactionColliderChild.layer = interactionLayer;
+
+        MeshCollider collider = interactionColliderChild.AddComponent<MeshCollider>();
+        
+        MeshFilter meshFilter = GetComponent<MeshFilter>();
+        if (meshFilter != null && meshFilter.sharedMesh != null)
+        {
+            collider.sharedMesh = meshFilter.sharedMesh;
+        }
+       
+        
+        collider.convex = true;
+        collider.isTrigger = false;
+        
+        return interactionColliderChild;
+    }
+
     public virtual void MakeObjectGrabbable()
     {
         if (gameObject.GetComponent<XRGrabInteractable>() != null)
             return;
-        DestroyClonedColliders();
+            
         SaveOriginalCollidersAndInteractables();
-
         DestroyInteractables();
+        
+        // Make sure we have an interaction collider
+        if (interactionColliderChild == null)
+        {
+            CreateInteractionColliderChild();
+        }
 
-        // Clone original colliders
-        List<Collider> clonedColliders = GetClonedColliders();
-        // Add grab interactable 
         XRGrabInteractable grabInteractable = gameObject.AddComponent<XRGrabInteractable>();
         grabInteractable.enabled = false;
-
         
         grabInteractable.throwOnDetach = throwOnDetach;
         grabInteractable.movementType = movementType;
@@ -93,77 +132,61 @@ public class MakeGrabbable : MonoBehaviour
         grabInteractable.hoverEntered.AddListener(OnHoverEnter);
         grabInteractable.hoverExited.AddListener(OnHoverExit);
 
-        // Clear existing colliders and add cloned colliders
         grabInteractable.colliders.Clear();
-        grabInteractable.colliders.AddRange(clonedColliders);
-
+        
+        Collider interactionCollider = interactionColliderChild.GetComponent<Collider>();
+        if (interactionCollider != null)
+        {
+            grabInteractable.colliders.Add(interactionCollider);
+        }
 
         grabInteractable.enabled = true;
     }
 
-    private void DestroyClonedColliders()
-    {
-
-        var clonedColls = GetComponents<Collider>();
-        foreach (var collider in clonedColls)
-        {
-            if (!originalColliders.Contains(collider))
-            {
-                Destroy(collider);
-            }
-        }
-    }
-
-    private List<Collider> GetClonedColliders()
-    {
-        List<Collider> clonedColliders = new List<Collider>();
-        foreach (var collider in originalColliders)
-        {
-            Collider clonedCollider = gameObject.AddComponent(collider.GetType()) as Collider;
-            collider.CopyPropertiesAndFields(clonedCollider);
-            clonedColliders.Add(clonedCollider);
-            collider.enabled = false;
-        }
-        return clonedColliders;
-    }
-
     public void DestroyInteractables() {
-
-        // Disable original interactables
         foreach (var interactable in originalInteractables)
         {
             interactionManager.UnregisterInteractable(interactable);
             Destroy(interactable as MonoBehaviour);
         }
+        
+        var currentInteractables = GetComponents<XRBaseInteractable>();
+        foreach (var interactable in currentInteractables)
+        {
+            interactionManager.UnregisterInteractable(interactable);
+            Destroy(interactable);
+        }
     }
+
     public virtual void MakeObjectNonGrabbable()
     {
         if(gameObject.GetComponent<XRSimpleInteractable>() != null)
             return;
-        DestroyClonedColliders();
+            
         SaveOriginalCollidersAndInteractables();
-
         DestroyInteractables();
+        
+        if (interactionColliderChild == null)
+        {
+            CreateInteractionColliderChild();
+        }
 
-
-        // Clone original colliders
-        List<Collider> clonedColliders = GetClonedColliders();
-
-        // Add grab interactable 
         XRSimpleInteractable simpleInteractable = gameObject.AddComponent<XRSimpleInteractable>();
         simpleInteractable.enabled = false;
 
-        // Apply inspector-modifiable 
         simpleInteractable.selectMode = selectMode;
         simpleInteractable.selectEntered.AddListener(OnSelectEnter);
         simpleInteractable.selectExited.AddListener(OnSelectExit);
         simpleInteractable.hoverEntered.AddListener(OnHoverEnter);
         simpleInteractable.hoverExited.AddListener(OnHoverExit);
 
-        // Clear existing colliders and add cloned colliders
         simpleInteractable.colliders.Clear();
-        simpleInteractable.colliders.AddRange(clonedColliders);
-
+        
+        Collider interactionCollider = interactionColliderChild.GetComponent<Collider>();
+        if (interactionCollider != null)
+        {
+            simpleInteractable.colliders.Add(interactionCollider);
+        }
 
         simpleInteractable.enabled = true;
     }
@@ -187,4 +210,13 @@ public class MakeGrabbable : MonoBehaviour
     {
         manager.OnHoverExit(args);
     }
+
+    private void OnDestroy()
+    {
+        if (interactionColliderChild != null && Application.isPlaying)
+        {
+            Destroy(interactionColliderChild);
+        }
+    }
+
 }
